@@ -1,15 +1,13 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import CustomNavbar from './components/Navbar';
-import { useIsAuthenticated } from 'react-auth-kit';
-import { useLocation, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import ProtectedRoutes from './utils/Routes/ProtectedRoutes';
-import AdminPage from './pages/Admin';
-import GuardPage from './pages/Guard';
-import StaffPage from './pages/Staff';
+import "./App.css";
+import CustomNavbar from "./components/Navbar";
+import { useIsAuthenticated } from "react-auth-kit";
+import { useLocation, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import ProtectedRoutes from "./utils/Routes/ProtectedRoutes";
+import AdminPage from "./pages/Admin";
+import Dashboard from "./pages/Dashboard";
+import Reports from "./pages/Reports";
+import Trips from "./pages/Trips";
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
@@ -23,6 +21,7 @@ export default function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+
         <Route
           path="/admin"
           element={
@@ -32,24 +31,32 @@ export default function App() {
           }
         />
         <Route
-          path="/guard"
+          path="/reports"
           element={
-            <ProtectedRoutes allowedRoles={["Guard", "Admin"]}>
-              <GuardPage />
+            <ProtectedRoutes allowedRoles={["Staff", "Admin"]}>
+              <Reports />
             </ProtectedRoutes>
           }
         />
         <Route
-          path="/staff"
+          path="/trips"
           element={
-            <ProtectedRoutes allowedRoles={["Staff", "Admin"]}>
-              <StaffPage />
+            <ProtectedRoutes allowedRoles={["Staff", "Admin", "Guard"]}>
+              <Trips />
             </ProtectedRoutes>
           }
         />
-        <Route path="/" element={<h2>Welcome Home</h2>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoutes allowedRoles={["Admin", "Guard", "Staff"]}>
+              <Dashboard />
+            </ProtectedRoutes>
+          }
+        />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </>
   );
 }
-
