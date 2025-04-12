@@ -100,6 +100,10 @@ button:focus-visible {
   font-size: 0.75rem;
 }
 
+.toast-animate {
+  animation: fadeIn 0.5s ease forwards;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -110,5 +114,27 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Animations */
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

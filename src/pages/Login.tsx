@@ -1,13 +1,22 @@
+import { useState } from "react";
 import { useSignIn } from "react-auth-kit";
 import { Button, Col, Container, FloatingLabel, Form, Row, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { LoginProps } from "../utils/TypesIndex";
 
 export default function Login() {
   const signIn = useSignIn();
   const navigate = useNavigate();
 
-  const handleLogin = (role: string) => {
+  const [formData, setFormData] = useState<LoginProps>({
+    email: "",
+    password: "",
+  });
+
+  const handleLogin = (role: string = "Admin") => {
     const fakeToken = "fake-jwt-token"; // In real app, get from backend
+
+    // TODO: Integrate to backend!
 
     const success = signIn({
       token: fakeToken,
@@ -16,11 +25,21 @@ export default function Login() {
       authState: { email: "user@example.com", role },
     });
 
+    console.log(formData);
+
     if (success) {
       navigate(`/${role.toLowerCase()}`);
     } else {
       alert("Login failed!");
     }
+  };
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   return (
@@ -44,15 +63,22 @@ export default function Login() {
             </Row>
             <div className="px-1">
               <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3 small-input">
-                <Form.Control type="email" placeholder="name@example.com" />
+                <Form.Control name="email" type="email" placeholder="name@example.com" onChange={handleOnChange} />
               </FloatingLabel>
               <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3 small-input">
-                <Form.Control type="password" placeholder="Password" />
+                <Form.Control name="password" type="password" placeholder="Password" onChange={handleOnChange} />
               </FloatingLabel>
             </div>
 
             <Row className="mx-1">
-              <Button size="lg">Log In</Button>
+              <Button
+                size="lg"
+                onClick={() => {
+                  handleLogin();
+                }}
+              >
+                Log In
+              </Button>
             </Row>
 
             <Row className="mt-5">
@@ -65,12 +91,12 @@ export default function Login() {
         </Row>
       </Row>
 
-      <div style={{ padding: "2rem" }}>
+      {/* <div style={{ padding: "2rem" }}>
         <h2>Login</h2>
         <button onClick={() => handleLogin("Admin")}>Login as Admin</button>
         <button onClick={() => handleLogin("Guard")}>Login as Guard</button>
         <button onClick={() => handleLogin("Staff")}>Login as Staff</button>
-      </div>
+      </div> */}
     </Container>
   );
 }
