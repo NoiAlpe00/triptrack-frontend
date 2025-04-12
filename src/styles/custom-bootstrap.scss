@@ -1,0 +1,11 @@
+// Override default variables before importing Bootstrap
+$primary: #4B1077; 
+$danger: #FA7C75;
+
+// Optionally override other colors
+// $secondary: #6c757d;
+// $success: #28a745;
+// ...
+
+// Import Bootstrap (after overrides)
+@import "bootstrap/scss/bootstrap";
