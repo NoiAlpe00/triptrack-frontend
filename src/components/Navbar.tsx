@@ -1,4 +1,4 @@
-import { useSignOut, useAuthUser } from "react-auth-kit";
+import { useSignOut } from "react-auth-kit";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -6,7 +6,6 @@ export default function CustomNavbar() {
   const location = useLocation();
   const signOut = useSignOut();
   const navigate = useNavigate();
-  const auth = useAuthUser();
 
   const handleLogout = () => {
     signOut();
