@@ -75,9 +75,10 @@ button:focus-visible {
   color: #fff !important;
 }
 
-/* Floating Label */
+/* Floating Label - Input and dropdown */
 
-.small-input .form-control {
+.small-input .form-control,
+.small-input .form-select {
   font-size: 0.75rem !important;
   padding: 1rem 0.76rem 0rem 0.76rem !important; /* top, right, bottom, left */
   height: auto !important;
@@ -86,6 +87,25 @@ button:focus-visible {
 }
 
 .small-input label {
+  padding-top: 0.95rem;
+  font-size: 0.75rem !important;
+}
+
+/* Floating Label - Text Area */
+
+.small-input-textarea .form-control {
+  font-size: 0.75rem !important;
+  padding: 1rem 0.76rem 0rem 0.76rem !important;
+  /* height: auto !important; */
+  line-height: 2rem !important;
+  resize: vertical !important;
+}
+
+.no-resize .form-control {
+  resize: none !important;
+}
+
+.small-input-textarea label {
   padding-top: 0.95rem;
   font-size: 0.75rem !important;
 }
@@ -102,6 +122,14 @@ button:focus-visible {
 
 .toast-animate {
   animation: fadeIn 0.5s ease forwards;
+}
+
+.thin-text {
+  font-weight: 300 !important;
+}
+
+.thick-text {
+  font-weight: 700 !important;
 }
 
 @media (prefers-color-scheme: light) {

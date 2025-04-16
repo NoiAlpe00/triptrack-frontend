@@ -91,12 +91,12 @@ export default function Login() {
         </Row>
       </Row>
 
-      {/* <div style={{ padding: "2rem" }}>
+      <div style={{ padding: "2rem" }}>
         <h2>Login</h2>
         <button onClick={() => handleLogin("Admin")}>Login as Admin</button>
         <button onClick={() => handleLogin("Guard")}>Login as Guard</button>
         <button onClick={() => handleLogin("Staff")}>Login as Staff</button>
-      </div> */}
+      </div>
     </Container>
   );
 }

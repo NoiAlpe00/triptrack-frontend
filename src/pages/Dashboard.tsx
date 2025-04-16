@@ -1,3 +1,125 @@
+import { Button, Card, Col, Container, Row, Image } from "react-bootstrap";
+import Export from "../assets/svgs/export.svg";
+import CustomTable from "../components/Table";
+import CustomToast from "../components/Toast";
+import { useState, useEffect } from "react";
+
 export default function Dashboard() {
-  return <div>DASHBOARD!!!</div>;
+  const [showToast, setShowToast] = useState<boolean>(false);
+
+  useEffect(() => {
+    const toastShown = sessionStorage.getItem("loginToastShow");
+
+    if (!toastShown) {
+      setShowToast(true);
+      sessionStorage.setItem("loginToastShow", "true");
+    }
+  }, []);
+  return (
+    <Container>
+      <Row className="pt-5">
+        <Row className="pb-3">
+          <Col className="align-items-start">
+            <h2 className="text-primary thin-text text-start">Trips Overview</h2>
+          </Col>
+        </Row>
+        <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
+              <Card.Text className="text-end">
+                <h1 className="text-primary">100</h1>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={{ order: 1 }} lg={{ span: 4, order: 2 }} xs={{ order: 1 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Title className="text-start text-secondary">Approved</Card.Title>
+              <Card.Text className="text-end">
+                <h1 className="text-primary thick-text">75</h1>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 3 }} xs={{ order: 3 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Title className="text-start text-secondary">Declined</Card.Title>
+              <Card.Text className="text-end">
+                <h1 className="text-secondary">25</h1>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row className="pb-5">
+        <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Text className="text-end">
+                <Row>
+                  <Col className="d-flex align-items-center" sm={6}>
+                    <h4 className="text-secondary thin-text">Upcoming</h4>
+                  </Col>
+                  <Col sm={6}>
+                    <h1 className="text-primary">30</h1>
+                  </Col>
+                </Row>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col lg={{ span: 4, order: 2 }} md={{ order: 1 }} xs={{ order: 1 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Text className="text-end">
+                <Row>
+                  <Col className="d-flex align-items-center" sm={6}>
+                    <h4 className="text-secondary thin-text">Ongoing</h4>
+                  </Col>
+                  <Col sm={6}>
+                    <h1 className="text-primary thick-text">20</h1>
+                  </Col>
+                </Row>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 2 }} xs={{ order: 3 }}>
+          <Card className="p-0 m-2">
+            <Card.Body>
+              <Card.Text className="text-end">
+                <Row>
+                  <Col className="d-flex align-items-center" sm={6}>
+                    <h4 className="text-secondary thin-text">Past</h4>
+                  </Col>
+                  <Col sm={6}>
+                    <h1 className="text-secondary">20</h1>
+                  </Col>
+                </Row>
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Row className="pb-3">
+          <Col md={6} className="">
+            <h2 className="text-primary thin-text text-start">Trips Summary</h2>
+          </Col>
+          <Col md={6} className="d-flex justify-content-end">
+            <Button>
+              Export Results <Image src={Export} />
+            </Button>
+          </Col>
+        </Row>
+      </Row>
+      <Row>
+        <CustomTable />
+      </Row>
+      <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
+    </Container>
+  );
 }

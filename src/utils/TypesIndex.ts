@@ -18,3 +18,17 @@ export interface CustomToastProps {
   variant: string;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export interface TripsProps {
+  id?: string;
+  title: string;
+  department: string;
+  destination: string;
+  purpose: string;
+  dateStart: string;
+  dateEnd: string;
+  driverRequest: boolean;
+  vehicleRequest: boolean;
+  driver?: string;
+  vehicle?: string;
+}
