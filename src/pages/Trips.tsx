@@ -6,6 +6,12 @@ import CreateUpdateTrip from "../modals/CreateUpdateTrip";
 import Check from "../assets/svgs/check.svg";
 import Eye from "../assets/svgs/eye.svg";
 import X from "../assets/svgs/x.svg";
+import CheckPurple from "../assets/svgs/check-purple.svg";
+import XRed from "../assets/svgs/x-red.svg";
+import Pending from "../assets/svgs/pending.svg";
+import Upcoming from "../assets/svgs/upcoming.svg";
+import Ongoing from "../assets/svgs/ongoing.svg";
+import Past from "../assets/svgs/past.svg";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -52,16 +58,91 @@ export default function Trips() {
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     {
-      field: "requestStatus", 
+      field: "requestStatus",
       headerName: "Request Status",
       flex: 1,
+      renderCell: (params: any) => (
+        <>
+          {params.row.requestStatus?.toLowerCase() == "approved" ? (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-1" src={CheckPurple} />
+                  <span className="text-primary">
+                    <strong>Approved</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={XRed} />
+                  <span className="text-danger">
+                    <strong>Declined</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={Pending} />
+                  <span className="text-primary">
+                    <strong>Pending</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          )}
+        </>
+      ),
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     {
       field: "tripStatus",
       headerName: "Trip Status",
       flex: 1,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+      renderCell: (params: any) => (
+        <>
+          {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={Upcoming} />
+                  <span className="text-primary">
+                    <strong>Upcoming</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          ) : params.row.tripStatus?.toLowerCase() == "ongoing" ? (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={Ongoing} />
+                  <span className="text-primary">
+                    <strong>Ongoing</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={Past} />
+                  <span className="text-secondary">
+                    <strong>Past</strong>
+                  </span>
+                </Col>
+              </Row>
+            </>
+          )}
+        </>
+      ),
     },
     {
       field: "operations",
@@ -79,7 +160,7 @@ export default function Trips() {
                 </Col>
                 <Col xs={6} className="px-1">
                   <Button size="sm" className="w-100 text-white" variant="danger" onClick={() => console.log(params.row)}>
-                    <Image className="pe-2" src={X} /> Decline
+                    <Image className="pe-3" src={X} /> Decline
                   </Button>
                 </Col>
               </Row>
@@ -120,7 +201,7 @@ export default function Trips() {
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
       requestStatus: "Pending",
-      tripStatus: "Upcoming",
+      tripStatus: "Past",
     },
     {
       id: 3,
@@ -149,8 +230,8 @@ export default function Trips() {
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
+      requestStatus: "Declined",
+      tripStatus: "Ongoing",
     },
     {
       id: 6,
