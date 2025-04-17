@@ -1,35 +1,19 @@
-import { Table } from "react-bootstrap";
+import { Paper } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 
-export default function CustomTable() {
+export default function CustomTable({ rows, columns, type = "dashboard"}: { rows: any; columns: any; type: string}) {
+  const paginationModel = { page: 0, pageSize: 30 };
   return (
-    <Table striped bordered hover size="sm" className="">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td colSpan={2}>Larry the Bird</td>
-          <td>@twitter</td>
-        </tr>
-      </tbody>
-    </Table>
+    <Paper sx={{ height: type == "dashboard" ? 350 : 700, width: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{ pagination: { paginationModel } }}
+        pageSizeOptions={[5, 10]}
+        rowHeight={38}
+        sx={{ border: 0 }}
+        rowSelection={false}
+      />
+    </Paper>
   );
 }

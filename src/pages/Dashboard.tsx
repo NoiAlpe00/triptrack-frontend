@@ -14,7 +14,107 @@ export default function Dashboard() {
       setShowToast(true);
       sessionStorage.setItem("loginToastShow", "true");
     }
+
   }, []);
+
+  const columns = [
+
+    { field: "title", headerName: "Title", flex: 1 },
+    { field: "date", headerName: "Date", flex: 2 },
+    {
+      field: "destination",
+      headerName: "Destination",
+      flex: 1,
+    },
+    {
+      field: "driver",
+      headerName: "Driver",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "vehicle",
+      headerName: "Vehicle",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "requestStatus",
+      headerName: "Request Status",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    // {
+    //   field: "tripStatus",
+    //   headerName: "Trip Status",
+    //   flex: 1,
+    //   // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    // },
+  ];
+
+  const rows = [
+    {
+      id: 1,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 2,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 3,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 4,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 5,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 6,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Approved",
+      tripStatus: "Upcoming",
+    },
+  ];
+
   return (
     <Container>
       <Row className="pt-5">
@@ -104,20 +204,20 @@ export default function Dashboard() {
           </Card>
         </Col>
       </Row>
-      <Row>
-        <Row className="pb-3">
+      <Row className="mb-4">
+        <Row>
           <Col md={6} className="">
             <h2 className="text-primary thin-text text-start">Trips Summary</h2>
           </Col>
-          <Col md={6} className="d-flex justify-content-end">
+          <Col md={6} className="d-flex justify-content-end pe-0">
             <Button>
               Export Results <Image src={Export} />
             </Button>
           </Col>
         </Row>
       </Row>
-      <Row>
-        <CustomTable />
+      <Row className="px-3">
+        <CustomTable rows={rows} columns={columns} type={"dashboard"} />
       </Row>
       <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
     </Container>

@@ -1,11 +1,168 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col, FloatingLabel, Form } from "react-bootstrap";
+import { Container, Row, Col, FloatingLabel, Form, Button, Image } from "react-bootstrap";
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import CreateUpdateTrip from "../modals/CreateUpdateTrip";
+import Check from "../assets/svgs/check.svg";
+import Eye from "../assets/svgs/eye.svg";
+import X from "../assets/svgs/x.svg";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
+
+  const columns = [
+    {
+      field: "view",
+      headerName: "",
+      width: 40,
+      minWidth: 40,
+      maxWidth: 40,
+      sortable: false,
+      renderCell: (params: any) => (
+        <>
+          <Row className="d-flex">
+            <Col className="px-1">
+              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
+                <Image className="" src={Eye} />
+              </Button>
+            </Col>
+          </Row>
+        </>
+      ),
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    { field: "id", headerName: "Trip Code", flex: 0.5 },
+    { field: "title", headerName: "Title", flex: 1 },
+    { field: "date", headerName: "Date", flex: 2 },
+    {
+      field: "destination",
+      headerName: "Destination",
+      flex: 1,
+    },
+    {
+      field: "driver",
+      headerName: "Driver",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "vehicle",
+      headerName: "Vehicle",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "requestStatus", 
+      headerName: "Request Status",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "tripStatus",
+      headerName: "Trip Status",
+      flex: 1,
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "operations",
+      headerName: "",
+      flex: 1.5,
+      renderCell: (params: any) => (
+        <>
+          {params.row.requestStatus?.toLowerCase() !== "approved" ? (
+            <>
+              <Row className="d-flex">
+                <Col xs={6} className="px-1">
+                  <Button size="sm" variant="success" className="w-100" onClick={() => console.log(params.row)}>
+                    <Image className="pe-2" src={Check} /> Approve
+                  </Button>
+                </Col>
+                <Col xs={6} className="px-1">
+                  <Button size="sm" className="w-100 text-white" variant="danger" onClick={() => console.log(params.row)}>
+                    <Image className="pe-2" src={X} /> Decline
+                  </Button>
+                </Col>
+              </Row>
+            </>
+          ) : (
+            <>
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Button size="sm" className="w-100" onClick={() => console.log(params.row)}>
+                    <Image className="pe-2" src={Eye} /> View Details
+                  </Button>
+                </Col>
+              </Row>
+            </>
+          )}
+        </>
+      ),
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+  ];
+
+  const rows = [
+    {
+      id: 1,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 2,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 3,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 4,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 5,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Pending",
+      tripStatus: "Upcoming",
+    },
+    {
+      id: 6,
+      title: "TRIP TO JERUSALEM",
+      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      destination: "Jerusalem",
+      driver: "Kuya Dan",
+      vehicle: "Mitsubishi Mirage",
+      requestStatus: "Approved",
+      tripStatus: "Upcoming",
+    },
+  ];
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
@@ -63,7 +220,9 @@ export default function Trips() {
         </Col>
       </Row>
       <Row>
-        <CustomTable />
+        <Col>
+          <CustomTable rows={rows} columns={columns} type={"trips"} />
+        </Col>
       </Row>
       <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
     </Container>

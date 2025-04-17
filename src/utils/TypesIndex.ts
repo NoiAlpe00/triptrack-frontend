@@ -32,3 +32,7 @@ export interface TripsProps {
   driver?: string;
   vehicle?: string;
 }
+
+export interface TripsTableRowsProps {
+  
+}
