@@ -33,6 +33,21 @@ export interface TripsProps {
   vehicle?: string;
 }
 
-export interface TripsTableRowsProps {
-  
+export interface DepartmentProps {
+  id: string;
+  name: string;
 }
+
+export interface UserProps {
+  id?: string;
+  email: string;
+  department: DepartmentProps;
+  type: string;
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  isActive: boolean;
+  isDeleted: boolean;
+}
+
+

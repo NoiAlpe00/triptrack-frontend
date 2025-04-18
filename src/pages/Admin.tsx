@@ -3,6 +3,7 @@ import CustomToast from "../components/Toast";
 import { Button, Col, Container, FloatingLabel, Form, Row, Image, Nav, Tab } from "react-bootstrap";
 import CustomTable from "../components/Table";
 import Eye from "../assets/svgs/eye.svg";
+import CreateUpdateUser from "../modals/CreateUpdateUser";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -49,17 +50,25 @@ export default function AdminPage() {
     {
       field: "view",
       headerName: "",
-      width: 40,
-      minWidth: 40,
-      maxWidth: 40,
+      width: 50,
+      minWidth: 50,
+      maxWidth: 50,
       sortable: false,
       renderCell: (params: any) => (
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
-                <Image className="" src={Eye} />
-              </Button>
+              <CreateUpdateUser
+                id={params.row.id}
+                email={""}
+                department={{ id: "", name: "string" }}
+                type={""}
+                firstName={""}
+                lastName={""}
+                contactNumber={""}
+                isActive={true}
+                isDeleted={false}
+              />
             </Col>
           </Row>
         </>
@@ -70,7 +79,7 @@ export default function AdminPage() {
     { field: "email", headerName: "Email", flex: 2 },
     { field: "userType", headerName: "Type", flex: 1 },
     { field: "contactNumber", headerName: "Contact No.", flex: 1 },
-    { field: "status", headerName: "Status", flex: 1 },
+    { field: "isActive", headerName: "Status", flex: 1 },
   ];
   const userRows = [
     {
@@ -79,7 +88,7 @@ export default function AdminPage() {
       email: "email@emec.com",
       userType: "staff",
       contactNumber: "123456",
-      status: "Active",
+      isActive: true,
     },
     {
       id: 2,
@@ -87,7 +96,7 @@ export default function AdminPage() {
       email: "email2@emec.com",
       userType: "staff",
       contactNumber: "123456",
-      status: "Incative",
+      isActive: false,
     },
     {
       id: 3,
@@ -95,7 +104,7 @@ export default function AdminPage() {
       email: "email3@emec.com",
       userType: "staff",
       contactNumber: "123456",
-      status: "Active",
+      isActive: true,
     },
   ];
 
@@ -170,7 +179,7 @@ export default function AdminPage() {
             <Col lg={6} className="">
               <h2 className="text-primary thin-text text-start">All Users</h2>
             </Col>
-            <Col lg={6} className="">
+            <Col lg={4} className="">
               <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                 <Form.Select name="statusFilter" aria-label="Floating label select example">
                   <option>Open this select menu</option>
@@ -180,6 +189,9 @@ export default function AdminPage() {
                   <option value="past">Past</option>
                 </Form.Select>
               </FloatingLabel>
+            </Col>
+            <Col lg={2} className="">
+              <CreateUpdateUser email={""} department={{id: "", name: ""}} type={"staff"} firstName={""} lastName={""} contactNumber={""} isActive={true} isDeleted={false} />
             </Col>
           </Row>
           <Row>
