@@ -34,8 +34,9 @@ export interface TripsProps {
 }
 
 export interface DepartmentProps {
-  id: string;
+  id?: string;
   name: string;
+  isDeleted?: boolean;
 }
 
 export interface UserProps {

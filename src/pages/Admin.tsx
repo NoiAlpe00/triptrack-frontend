@@ -4,6 +4,7 @@ import { Button, Col, Container, FloatingLabel, Form, Row, Image, Nav, Tab } fro
 import CustomTable from "../components/Table";
 import Eye from "../assets/svgs/eye.svg";
 import CreateUpdateUser from "../modals/CreateUpdateUser";
+import CreateUpdateDepartment from "../modals/CreateUpdateDepartment";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -21,22 +22,19 @@ export default function AdminPage() {
     {
       field: "view",
       headerName: "",
-      width: 40,
-      minWidth: 40,
-      maxWidth: 40,
+      width: 45,
+      minWidth: 45,
+      maxWidth: 45,
       sortable: false,
       renderCell: (params: any) => (
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
-                <Image className="" src={Eye} />
-              </Button>
+              <CreateUpdateDepartment id={params.row.id} name={""} isDeleted={true} />
             </Col>
           </Row>
         </>
       ),
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "name", headerName: "Name", flex: 3 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
@@ -191,7 +189,16 @@ export default function AdminPage() {
               </FloatingLabel>
             </Col>
             <Col lg={2} className="">
-              <CreateUpdateUser email={""} department={{id: "", name: ""}} type={"staff"} firstName={""} lastName={""} contactNumber={""} isActive={true} isDeleted={false} />
+              <CreateUpdateUser
+                email={""}
+                department={{ id: "", name: "" }}
+                type={"staff"}
+                firstName={""}
+                lastName={""}
+                contactNumber={""}
+                isActive={true}
+                isDeleted={false}
+              />
             </Col>
           </Row>
           <Row>
@@ -217,7 +224,7 @@ export default function AdminPage() {
                   <Col lg={6} className="">
                     <h2 className="text-primary thin-text text-start">All Department</h2>
                   </Col>
-                  <Col lg={6} className="">
+                  <Col lg={4} className="">
                     <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                       <Form.Select name="statusFilter" aria-label="Floating label select example">
                         <option>Open this select menu</option>
@@ -227,6 +234,9 @@ export default function AdminPage() {
                         <option value="past">Past</option>
                       </Form.Select>
                     </FloatingLabel>
+                  </Col>
+                  <Col lg={2} className="">
+                    <CreateUpdateDepartment name={""} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "department" && <CustomTable rows={departmentRows} columns={departmentCols} type="settings" />}</Row>

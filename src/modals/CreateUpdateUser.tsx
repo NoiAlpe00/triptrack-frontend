@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAuthUser } from "react-auth-kit";
+// import { useAuthUser } from "react-auth-kit";
 import { Button, Modal, Row, Col, FloatingLabel, Form, Image } from "react-bootstrap";
-import { TripsProps, UserProps } from "../utils/TypesIndex";
+import { UserProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 import CustomHeader from "../components/CustomHeader";
 
@@ -9,8 +9,8 @@ export default function CreateUpdateUser(passedData: UserProps) {
   console.log(passedData);
   const [show, setShow] = useState(false);
 
-  const auth = useAuthUser();
-  const role = auth()?.role ?? "Staff";
+  // const auth = useAuthUser();
+  // const role = auth()?.role ?? "Staff";
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -41,15 +41,6 @@ export default function CreateUpdateUser(passedData: UserProps) {
     }
   };
 
-  const handleRequestButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { name } = e.currentTarget;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: !prevData[name as keyof typeof prevData],
-    }));
-  };
-
   const handleSave = async () => {
     console.log("Create");
     console.log(formData);
@@ -67,7 +58,7 @@ export default function CreateUpdateUser(passedData: UserProps) {
           <Image src={Edit} />
         </Button>
       ) : (
-        <Button variant="primary" onClick={handleShow}>
+        <Button variant="primary w-100" onClick={handleShow}>
           Add User +
         </Button>
       )}
@@ -118,9 +109,9 @@ export default function CreateUpdateUser(passedData: UserProps) {
             <Col lg={6}>
               <FloatingLabel controlId="floatingSelect" label="Status" className="small-input mb-4">
                 <Form.Select
-                  name="userType"
+                  name="status"
                   onChange={handleSelectChange}
-                  value={formData.isActive === undefined ? "active" : formData.isActive == true ? "active" : "inactive"}
+                  value={formData.isDeleted === undefined ? "active" : formData.isDeleted == true ? "active" : "inactive"}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
