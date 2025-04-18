@@ -39,6 +39,12 @@ export interface DepartmentProps {
   isDeleted?: boolean;
 }
 
+export interface ChecklistProps {
+  id?: string;
+  title: string;
+  isDeleted?: boolean;
+}
+
 export interface UserProps {
   id?: string;
   email: string;

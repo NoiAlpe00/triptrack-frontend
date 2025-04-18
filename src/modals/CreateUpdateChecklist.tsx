@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { DepartmentProps } from "../utils/TypesIndex";
+import { ChecklistProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 
-export default function CreateUpdateDepartment(passedData: DepartmentProps) {
+export default function CreateUpdateChecklist(passedData: ChecklistProps) {
   console.log(passedData);
   const [show, setShow] = useState(false);
 
@@ -13,7 +13,7 @@ export default function CreateUpdateDepartment(passedData: DepartmentProps) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [formData, setFormData] = useState<DepartmentProps>(passedData);
+  const [formData, setFormData] = useState<ChecklistProps>(passedData);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,9 +60,9 @@ export default function CreateUpdateDepartment(passedData: DepartmentProps) {
           <Modal.Title>{formData.id ? "Update Department" : "Create New Department"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CustomHeader title={"Department Infomation"} subtitle={"We would like to know more about the department."} />
-          <FloatingLabel controlId="name" label="Department Name" className="mb-2 small-input">
-            <Form.Control name="name" type="text" placeholder="" onChange={handleOnChange} value={formData.name ?? ""} />
+          <CustomHeader title={"Checklist Infomation"} subtitle={"Tell us more about the items to be checked."} />
+          <FloatingLabel controlId="title" label="Checklist Title" className="mb-2 small-input">
+            <Form.Control name="title" type="text" placeholder="" onChange={handleOnChange} value={formData.title ?? ""} />
           </FloatingLabel>
           {formData.id && (
             <Button

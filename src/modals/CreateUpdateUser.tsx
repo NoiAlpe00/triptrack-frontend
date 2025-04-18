@@ -230,7 +230,7 @@ export default function CreateUpdateUser(passedData: UserProps) {
               handleClose();
             }}
           >
-            {formData.id ? "Update Trip" : "Create Trip"}
+            {formData.id ? "Update" : "Create"}
           </Button>
         </Modal.Footer>
       </Modal>

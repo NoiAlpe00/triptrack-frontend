@@ -5,6 +5,7 @@ import CustomTable from "../components/Table";
 import Eye from "../assets/svgs/eye.svg";
 import CreateUpdateUser from "../modals/CreateUpdateUser";
 import CreateUpdateDepartment from "../modals/CreateUpdateDepartment";
+import CreateUpdateChecklist from "../modals/CreateUpdateChecklist";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -141,22 +142,19 @@ export default function AdminPage() {
     {
       field: "view",
       headerName: "",
-      width: 40,
-      minWidth: 40,
-      maxWidth: 40,
+      width: 45,
+      minWidth: 45,
+      maxWidth: 45,
       sortable: false,
       renderCell: (params: any) => (
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
-                <Image className="" src={Eye} />
-              </Button>
+              <CreateUpdateChecklist id={params.row.id} title={""} isDeleted={true} />
             </Col>
           </Row>
         </>
       ),
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "title", headerName: "Name", flex: 3 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
@@ -265,7 +263,7 @@ export default function AdminPage() {
                   <Col lg={6} className="">
                     <h2 className="text-primary thin-text text-start">All Checklist</h2>
                   </Col>
-                  <Col lg={6} className="">
+                  <Col lg={4} className="">
                     <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                       <Form.Select name="statusFilter" aria-label="Floating label select example">
                         <option>Open this select menu</option>
@@ -275,6 +273,9 @@ export default function AdminPage() {
                         <option value="past">Past</option>
                       </Form.Select>
                     </FloatingLabel>
+                  </Col>
+                  <Col lg={2} className="">
+                    <CreateUpdateChecklist title={""} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "checklist" && <CustomTable rows={checklistRows} columns={checklistCols} type="settings" />}</Row>

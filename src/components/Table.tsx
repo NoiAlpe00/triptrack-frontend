@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 
 export default function CustomTable({ rows, columns, type = "dashboard" }: { rows: any; columns: any; type: string }) {
   const gridRef = useRef<any>(null);
-  const paginationModel = { page: 0, pageSize: 10 };
+  const paginationModel = { page: 0, pageSize: 25 };
 
   // Resize after visible
   useEffect(() => {
