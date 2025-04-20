@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { ChangeEvent, JSX } from "react";
 
 export interface ProtectedRouteProps {
   children: JSX.Element;
@@ -42,7 +42,15 @@ export interface DepartmentProps {
 export interface ChecklistProps {
   id?: string;
   title: string;
+  typed?: boolean;
   isDeleted?: boolean;
+}
+
+export interface TripSpecificChecklistProps {
+  checklistId: string;
+  title: string;
+  data: string;
+  typed: boolean;
 }
 
 export interface UserProps {
@@ -63,4 +71,20 @@ export interface VehicleProps {
   plateNumber: string;
   seats?: number;
   isDeleted: boolean;
+}
+
+export interface TripChecklistProps {
+  id?: string;
+  tripId: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  checklist: TripSpecificChecklistProps[];
+  type: string;
+}
+
+export interface CustomRadioButtonProps {
+  name: string;
+  value: string;
+  label: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }

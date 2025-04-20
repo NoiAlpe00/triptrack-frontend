@@ -14,11 +14,40 @@ import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
 import { formatISOString } from "../utils/utilities";
 import { useAuthUser } from "react-auth-kit";
+import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
+import { TripSpecificChecklistProps } from "../utils/TypesIndex";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
   const auth = useAuthUser();
   const userRole = auth()?.role ?? "";
+
+  const checklistSimulation: TripSpecificChecklistProps[] = [
+    {
+      checklistId: "Eme1",
+      title: "Eme1 Title",
+      data: "passed",
+      typed: false,
+    },
+    {
+      checklistId: "Eme2",
+      title: "Eme2 Title",
+      data: "passed",
+      typed: false,
+    },
+    {
+      checklistId: "Eme3",
+      title: "Eme3 Title",
+      data: "",
+      typed: true,
+    },
+    {
+      checklistId: "Eme4",
+      title: "Eme4 Title",
+      data: "",
+      typed: true,
+    },
+  ];
 
   const columns = [
     {
@@ -118,6 +147,17 @@ export default function Trips() {
           field: "departureTime",
           headerName: "Departure Time",
           flex: 1,
+          renderCell: (params: any) => (
+            <>
+              <CreateUpdateTripChecklist
+                tripId={params.row.id}
+                departureTime={params.row.departureTime}
+                arrivalTime={params.row.arrivalTime}
+                checklist={checklistSimulation}
+                type={"table departure"}
+              />
+            </>
+          ),
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         },
     ,
@@ -169,44 +209,72 @@ export default function Trips() {
           field: "arrivalTime",
           headerName: "Arrival Time",
           flex: 1,
+          renderCell: (params: any) => (
+            <>
+              <CreateUpdateTripChecklist
+                tripId={params.row.id}
+                departureTime={params.row.departureTime}
+                arrivalTime={params.row.arrivalTime}
+                checklist={checklistSimulation}
+                type={"table arrival"}
+              />
+            </>
+          ),
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         },
-    {
-      field: "operations",
-      headerName: "",
-      flex: 1.5,
-      renderCell: (params: any) => (
-        <>
-          {params.row.requestStatus?.toLowerCase() !== "approved" ? (
+    !(userRole.toLowerCase() == "guard")
+      ? {
+          field: "operations",
+          headerName: "",
+          flex: 1.5,
+          renderCell: (params: any) => (
             <>
-              <Row className="d-flex">
-                <Col xs={6} className="px-1">
-                  <Button size="sm" variant="success" className="w-100" onClick={() => console.log(params.row)}>
-                    <Image className="pe-2" src={Check} /> Approve
-                  </Button>
-                </Col>
-                <Col xs={6} className="px-1">
-                  <Button size="sm" className="w-100 text-white" variant="danger" onClick={() => console.log(params.row)}>
-                    <Image className="pe-3" src={X} /> Decline
-                  </Button>
-                </Col>
-              </Row>
+              {params.row.requestStatus?.toLowerCase() !== "approved" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col xs={6} className="px-1">
+                      <Button size="sm" variant="success" className="w-100" onClick={() => console.log(params.row)}>
+                        <Image className="pe-2" src={Check} /> Approve
+                      </Button>
+                    </Col>
+                    <Col xs={6} className="px-1">
+                      <Button size="sm" className="w-100 text-white" variant="danger" onClick={() => console.log(params.row)}>
+                        <Image className="pe-3" src={X} /> Decline
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
+              ) : (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Button size="sm" className="w-100" onClick={() => console.log(params.row)}>
+                        <Image className="pe-2" src={Eye} /> View Details
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </>
-          ) : (
+          ),
+          // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+        }
+      : {
+          field: "operations",
+          headerName: "",
+          flex: 1.5,
+          renderCell: (params: any) => (
             <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Button size="sm" className="w-100" onClick={() => console.log(params.row)}>
-                    <Image className="pe-2" src={Eye} /> View Details
-                  </Button>
-                </Col>
-              </Row>
+              <CreateUpdateTripChecklist
+                tripId={params.row.id}
+                departureTime={params.row.departureTime}
+                arrivalTime={params.row.arrivalTime}
+                checklist={checklistSimulation}
+                type={"operation"}
+              />
             </>
-          )}
-        </>
-      ),
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    },
+          ),
+        },
   ];
 
   const rows = [
@@ -214,6 +282,8 @@ export default function Trips() {
       id: 1,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -224,6 +294,8 @@ export default function Trips() {
       id: 2,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -234,6 +306,8 @@ export default function Trips() {
       id: 3,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -244,6 +318,8 @@ export default function Trips() {
       id: 4,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -254,6 +330,8 @@ export default function Trips() {
       id: 5,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -264,6 +342,8 @@ export default function Trips() {
       id: 6,
       title: "TRIP TO JERUSALEM",
       date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
+      // departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
+      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -335,8 +415,7 @@ export default function Trips() {
                 dateEnd={""}
                 driverRequest={false}
                 vehicleRequest={false}
-                purpose={""}
-              />
+                purpose={""}             />
             </>
           )}
         </Col>

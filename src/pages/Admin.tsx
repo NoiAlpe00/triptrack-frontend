@@ -148,7 +148,7 @@ export default function AdminPage() {
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <CreateUpdateChecklist id={params.row.id} title={""} isDeleted={true} />
+              <CreateUpdateChecklist id={params.row.id} title={""} isDeleted={true} typed={false} />
             </Col>
           </Row>
         </>
@@ -282,7 +282,7 @@ export default function AdminPage() {
                     </FloatingLabel>
                   </Col>
                   <Col lg={2} className="">
-                    <CreateUpdateChecklist title={""} />
+                    <CreateUpdateChecklist title={""} typed={false} />
                   </Col>
                 </Row>
                 <Row>

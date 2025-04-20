@@ -23,6 +23,16 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
     }));
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // TODO: Add Name here
+    }));
+  };
+
   const handleRequestButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = e.currentTarget;
 
@@ -34,12 +44,12 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
 
   const handleSave = async () => {
     console.log("Create");
-    console.log(formData);
+    console.log({ ...formData, typed: formData.typed?.toString() == "true" });
   };
 
   const handleUpdate = async () => {
     console.log("Update");
-    console.log(formData);
+    console.log({ ...formData, typed: formData.typed?.toString() == "true" });
   };
 
   return (
@@ -62,6 +72,12 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
           <CustomHeader title={"Checklist Infomation"} subtitle={"Tell us more about the items to be checked."} />
           <FloatingLabel controlId="title" label="Checklist Title" className="mb-2 small-input">
             <Form.Control name="title" type="text" placeholder="" onChange={handleOnChange} value={formData.title ?? ""} />
+          </FloatingLabel>
+          <FloatingLabel controlId="department" label="Is the data needs to be typed?" className="small-input mb-4">
+            <Form.Select name="department" onChange={handleSelectChange} value={formData.typed?.toString() ?? ""}>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </Form.Select>
           </FloatingLabel>
           {formData.id && (
             <Button
