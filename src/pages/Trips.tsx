@@ -13,25 +13,36 @@ import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
 import { formatISOString } from "../utils/utilities";
+import { useAuthUser } from "react-auth-kit";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
+  const auth = useAuthUser();
+  const userRole = auth()?.role ?? "";
 
   const columns = [
     {
       field: "view",
       headerName: "",
-      width: 40,
-      minWidth: 40,
-      maxWidth: 40,
+      width: 50,
+      minWidth: 50,
+      maxWidth: 50,
       sortable: false,
       renderCell: (params: any) => (
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
-                <Image className="" src={Eye} />
-              </Button>
+              <CreateUpdateTrip
+                id={params.row.id}
+                title={""}
+                department={""}
+                destination={""}
+                purpose={""}
+                dateStart={""}
+                dateEnd={""}
+                driverRequest={false}
+                vehicleRequest={false}
+              />
             </Col>
           </Row>
         </>
@@ -58,93 +69,108 @@ export default function Trips() {
       flex: 1,
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    {
-      field: "requestStatus",
-      headerName: "Request Status",
-      flex: 1,
-      renderCell: (params: any) => (
-        <>
-          {params.row.requestStatus?.toLowerCase() == "approved" ? (
+    !(userRole.toLowerCase() == "guard")
+      ? {
+          field: "requestStatus",
+          headerName: "Request Status",
+          flex: 1,
+          renderCell: (params: any) => (
             <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-1" src={CheckPurple} />
-                  <span className="text-primary">
-                    <strong>Approved</strong>
-                  </span>
-                </Col>
-              </Row>
+              {params.row.requestStatus?.toLowerCase() == "approved" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-1" src={CheckPurple} />
+                      <span className="text-primary">
+                        <strong>Approved</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={XRed} />
+                      <span className="text-danger">
+                        <strong>Declined</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              ) : (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={Pending} />
+                      <span className="text-primary">
+                        <strong>Pending</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </>
-          ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
+          ),
+          // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+        }
+      : {
+          field: "departureTime",
+          headerName: "Departure Time",
+          flex: 1,
+          // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+        },
+    ,
+    !(userRole.toLowerCase() == "guard")
+      ? {
+          field: "tripStatus",
+          headerName: "Trip Status",
+          flex: 1,
+          renderCell: (params: any) => (
             <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-2" src={XRed} />
-                  <span className="text-danger">
-                    <strong>Declined</strong>
-                  </span>
-                </Col>
-              </Row>
+              {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={Upcoming} />
+                      <span className="text-primary">
+                        <strong>Upcoming</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              ) : params.row.tripStatus?.toLowerCase() == "ongoing" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={Ongoing} />
+                      <span className="text-primary">
+                        <strong>Ongoing</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              ) : (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={Past} />
+                      <span className="text-secondary">
+                        <strong>Past</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </>
-          ) : (
-            <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-2" src={Pending} />
-                  <span className="text-primary">
-                    <strong>Pending</strong>
-                  </span>
-                </Col>
-              </Row>
-            </>
-          )}
-        </>
-      ),
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    },
-    {
-      field: "tripStatus",
-      headerName: "Trip Status",
-      flex: 1,
-      renderCell: (params: any) => (
-        <>
-          {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
-            <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-2" src={Upcoming} />
-                  <span className="text-primary">
-                    <strong>Upcoming</strong>
-                  </span>
-                </Col>
-              </Row>
-            </>
-          ) : params.row.tripStatus?.toLowerCase() == "ongoing" ? (
-            <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-2" src={Ongoing} />
-                  <span className="text-primary">
-                    <strong>Ongoing</strong>
-                  </span>
-                </Col>
-              </Row>
-            </>
-          ) : (
-            <>
-              <Row className="d-flex">
-                <Col className="px-1">
-                  <Image className="pe-2" src={Past} />
-                  <span className="text-secondary">
-                    <strong>Past</strong>
-                  </span>
-                </Col>
-              </Row>
-            </>
-          )}
-        </>
-      ),
-    },
+          ),
+        }
+      : {
+          field: "arrivalTime",
+          headerName: "Arrival Time",
+          flex: 1,
+          // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+        },
     {
       field: "operations",
       headerName: "",
@@ -246,6 +272,15 @@ export default function Trips() {
     },
   ];
 
+  const finalCols =
+    userRole.toLowerCase() === "guard"
+      ? columns.slice(1)
+      : userRole.toLowerCase() === "staff"
+      ? columns.slice(0, -1)
+      : userRole.toLowerCase() === "admin"
+      ? columns
+      : columns.slice(1, -1);
+
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
 
@@ -275,8 +310,9 @@ export default function Trips() {
             </Col>
           </Row>
         </Col>
+
         <Col md={6} className="d-flex justify-content-end mb-2">
-          <CreateUpdateTrip
+          {/* <CreateUpdateTrip
             id="asdasdasd"
             title={"Eme"}
             department={"ongoing"}
@@ -288,22 +324,26 @@ export default function Trips() {
             purpose={"dsadsadsadsadsa"}
             driver={"ongoing"}
             vehicle={"past"}
-          />
-          <CreateUpdateTrip
-            title={""}
-            department={""}
-            destination={""}
-            dateStart={""}
-            dateEnd={""}
-            driverRequest={false}
-            vehicleRequest={false}
-            purpose={""}
-          />
+          /> */}
+          {userRole.toLowerCase() === "guard" ? null : (
+            <>
+              <CreateUpdateTrip
+                title={""}
+                department={""}
+                destination={""}
+                dateStart={""}
+                dateEnd={""}
+                driverRequest={false}
+                vehicleRequest={false}
+                purpose={""}
+              />
+            </>
+          )}
         </Col>
       </Row>
       <Row>
         <Col>
-          <CustomTable rows={rows} columns={columns} type={"trips"} />
+          <CustomTable rows={rows} columns={finalCols} type={"trips"} />
         </Col>
       </Row>
       <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
