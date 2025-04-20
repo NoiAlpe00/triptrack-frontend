@@ -1,8 +1,9 @@
-import { Button, Card, Col, Container, Row, Image } from "react-bootstrap";
+import { Button, Card, Col, Container, Row, Image, FloatingLabel, Form } from "react-bootstrap";
 import Export from "../assets/svgs/export.svg";
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import { useState, useEffect } from "react";
+import { formatISOString } from "../utils/utilities";
 
 export default function Dashboard() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -14,11 +15,9 @@ export default function Dashboard() {
       setShowToast(true);
       sessionStorage.setItem("loginToastShow", "true");
     }
-
   }, []);
 
   const columns = [
-
     { field: "title", headerName: "Title", flex: 1 },
     { field: "date", headerName: "Date", flex: 2 },
     {
@@ -56,7 +55,7 @@ export default function Dashboard() {
     {
       id: 1,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -66,7 +65,7 @@ export default function Dashboard() {
     {
       id: 2,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -76,7 +75,7 @@ export default function Dashboard() {
     {
       id: 3,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -86,7 +85,7 @@ export default function Dashboard() {
     {
       id: 4,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -96,7 +95,7 @@ export default function Dashboard() {
     {
       id: 5,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -106,7 +105,7 @@ export default function Dashboard() {
     {
       id: 6,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -116,93 +115,134 @@ export default function Dashboard() {
   ];
 
   return (
-    <Container>
-      <Row className="pt-5">
+    <Container fluid>
+      <Row className="pt-5 mb-5">
         <Row className="pb-3">
-          <Col className="align-items-start">
+          <Col lg={8} className="align-items-start">
             <h2 className="text-primary thin-text text-start">Trips Overview</h2>
           </Col>
+          <Col lg={4}>
+            <Row>
+              <Col lg={6}>
+                <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input">
+                  <Form.Select name="yearFilter">
+                    <option>Open this select menu</option>
+                    <option value="all">All</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="past">Past</option>
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+              <Col lg={6} className="pe-0">
+                <FloatingLabel controlId="floatingSelectYear" label="Month" className="small-input">
+                  <Form.Select name="monthFilter">
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+            </Row>
+          </Col>
         </Row>
-        <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
-              <Card.Text className="text-end">
-                <h1 className="text-primary">100</h1>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={{ order: 1 }} lg={{ span: 4, order: 2 }} xs={{ order: 1 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Title className="text-start text-secondary">Approved</Card.Title>
-              <Card.Text className="text-end">
-                <h1 className="text-primary thick-text">75</h1>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 3 }} xs={{ order: 3 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Title className="text-start text-secondary">Declined</Card.Title>
-              <Card.Text className="text-end">
-                <h1 className="text-secondary">25</h1>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row className="pb-5">
-        <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Text className="text-end">
-                <Row>
-                  <Col className="d-flex align-items-center" sm={6}>
-                    <h4 className="text-secondary thin-text">Upcoming</h4>
-                  </Col>
-                  <Col sm={6}>
-                    <h1 className="text-primary">30</h1>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col lg={{ span: 4, order: 2 }} md={{ order: 1 }} xs={{ order: 1 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Text className="text-end">
-                <Row>
-                  <Col className="d-flex align-items-center" sm={6}>
-                    <h4 className="text-secondary thin-text">Ongoing</h4>
-                  </Col>
-                  <Col sm={6}>
-                    <h1 className="text-primary thick-text">20</h1>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 2 }} xs={{ order: 3 }}>
-          <Card className="p-0 m-2">
-            <Card.Body>
-              <Card.Text className="text-end">
-                <Row>
-                  <Col className="d-flex align-items-center" sm={6}>
-                    <h4 className="text-secondary thin-text">Past</h4>
-                  </Col>
-                  <Col sm={6}>
-                    <h1 className="text-secondary">20</h1>
-                  </Col>
-                </Row>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
+        <Row>
+          <Col lg={8}>
+            <Row>
+              <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
+                    <Row className="">
+                      <h1 className="text-primary text-end">100</h1>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={{ order: 1 }} lg={{ span: 4, order: 2 }} xs={{ order: 1 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Card.Title className="text-start text-secondary">Approved</Card.Title>
+                    <Row>
+                      <h1 className="text-primary thick-text text-end">75</h1>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 3 }} xs={{ order: 3 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Card.Title className="text-start text-secondary">Declined</Card.Title>
+                    <Row>
+                      <h1 className="text-secondary text-end">25</h1>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+            <Row>
+              <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Row>
+                      <Col className="d-flex align-items-center" sm={6}>
+                        <h4 className="text-secondary thin-text">Upcoming</h4>
+                      </Col>
+                      <Col sm={6}>
+                        <h1 className="text-primary  text-end">30</h1>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col lg={{ span: 4, order: 2 }} md={{ order: 1 }} xs={{ order: 1 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Row>
+                      <Col className="d-flex align-items-center" sm={6}>
+                        <h4 className="text-secondary thin-text">Ongoing</h4>
+                      </Col>
+                      <Col sm={6}>
+                        <h1 className="text-primary thick-text  text-end">20</h1>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 2 }} xs={{ order: 3 }}>
+                <Card className="p-0 m-2">
+                  <Card.Body>
+                    <Row>
+                      <Col className="d-flex align-items-center" sm={6}>
+                        <h4 className="text-secondary thin-text ">Past</h4>
+                      </Col>
+                      <Col sm={6}>
+                        <h1 className="text-secondary  text-end">20</h1>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+          <Col lg={4}>
+            <Row>
+              <h1 className="text-primary thin-text">INSERT GRAPH HERE</h1>
+              <h1 className="text-primary thin-text">INSERT GRAPH HERE</h1>
+              <h1 className="text-primary thin-text">INSERT GRAPH HERE</h1>
+              <h1 className="text-primary thin-text">INSERT GRAPH HERE</h1>
+            </Row>
+          </Col>
+        </Row>
       </Row>
       <Row className="mb-4">
         <Row>

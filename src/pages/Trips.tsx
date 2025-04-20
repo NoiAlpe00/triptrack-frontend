@@ -12,6 +12,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
+import { formatISOString } from "../utils/utilities";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -186,7 +187,7 @@ export default function Trips() {
     {
       id: 1,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -196,7 +197,7 @@ export default function Trips() {
     {
       id: 2,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -206,7 +207,7 @@ export default function Trips() {
     {
       id: 3,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -216,7 +217,7 @@ export default function Trips() {
     {
       id: 4,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -226,7 +227,7 @@ export default function Trips() {
     {
       id: 5,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
@@ -236,7 +237,7 @@ export default function Trips() {
     {
       id: 6,
       title: "TRIP TO JERUSALEM",
-      date: `${"2025-04-16T14:30:00.000"} - ${"2025-04-16T14:30:00.000"}`,
+      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
       destination: "Jerusalem",
       driver: "Kuya Dan",
       vehicle: "Mitsubishi Mirage",
