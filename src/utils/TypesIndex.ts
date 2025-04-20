@@ -57,4 +57,10 @@ export interface UserProps {
   isDeleted: boolean;
 }
 
-
+export interface VehicleProps {
+  id?: string;
+  model: string;
+  plateNumber: string;
+  seats?: number;
+  isDeleted: boolean;
+}

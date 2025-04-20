@@ -5,7 +5,6 @@ import { ChecklistProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 
 export default function CreateUpdateChecklist(passedData: ChecklistProps) {
-  console.log(passedData);
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();

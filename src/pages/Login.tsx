@@ -15,6 +15,8 @@ export default function Login() {
 
   const handleLogin = (role: string = "Admin") => {
     const fakeToken = "fake-jwt-token"; // In real app, get from backend
+    
+    console.log(formData)
 
     // TODO: Integrate to backend!
 
@@ -24,8 +26,6 @@ export default function Login() {
       tokenType: "Bearer",
       authState: { email: "user@example.com", role },
     });
-
-    console.log(formData);
 
     if (success) {
       navigate(`/${role.toLowerCase()}`);

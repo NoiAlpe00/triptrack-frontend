@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import CustomToast from "../components/Toast";
-import { Button, Col, Container, FloatingLabel, Form, Row, Image, Nav, Tab } from "react-bootstrap";
+import { Col, Container, FloatingLabel, Form, Row, Nav, Tab } from "react-bootstrap";
 import CustomTable from "../components/Table";
-import Eye from "../assets/svgs/eye.svg";
 import CreateUpdateUser from "../modals/CreateUpdateUser";
 import CreateUpdateDepartment from "../modals/CreateUpdateDepartment";
 import CreateUpdateChecklist from "../modals/CreateUpdateChecklist";
+import CreateUpdateVehicle from "../modals/CreateUpdateVehicle";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -111,17 +111,15 @@ export default function AdminPage() {
     {
       field: "view",
       headerName: "",
-      width: 40,
-      minWidth: 40,
-      maxWidth: 40,
+      width: 45,
+      minWidth: 45,
+      maxWidth: 45,
       sortable: false,
       renderCell: (params: any) => (
         <>
           <Row className="d-flex">
             <Col className="px-1">
-              <Button size="sm" className="w-100 align-text-center" onClick={() => console.log(params.row)}>
-                <Image className="" src={Eye} />
-              </Button>
+              <CreateUpdateVehicle id={params.row.id} isDeleted={false} model={""} plateNumber={""} />
             </Col>
           </Row>
         </>
@@ -204,7 +202,7 @@ export default function AdminPage() {
           </Row>
         </Col>
         <Col lg={6} className="px-4">
-          <Tab.Container activeKey={activeTab} onSelect={(k: any) => setActiveTab(k)}>
+          <Tab.Container activeKey={activeTab} onSelect={(k: any) => setActiveTab(k || "department")}>
             <Nav variant="pills" className="mb-3 justify-content-start">
               <Nav.Item>
                 <Nav.Link eventKey="department">Department</Nav.Link>
@@ -237,14 +235,18 @@ export default function AdminPage() {
                     <CreateUpdateDepartment name={""} />
                   </Col>
                 </Row>
-                <Row>{activeTab === "department" && <CustomTable rows={departmentRows} columns={departmentCols} type="settings" />}</Row>
+                <Row>
+                  {activeTab === "department" && (
+                    <CustomTable rows={departmentRows} columns={departmentCols} type="settings"  />
+                  )}
+                </Row>
               </Tab.Pane>
               <Tab.Pane eventKey="vehicle">
                 <Row className="d-flex align-items-center mb-2">
                   <Col lg={6} className="">
                     <h2 className="text-primary thin-text text-start">All Vehicle</h2>
                   </Col>
-                  <Col lg={6} className="">
+                  <Col lg={4} className="">
                     <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                       <Form.Select name="statusFilter" aria-label="Floating label select example">
                         <option>Open this select menu</option>
@@ -255,8 +257,13 @@ export default function AdminPage() {
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
+                  <Col lg={2} className="">
+                    <CreateUpdateVehicle model={""} plateNumber={""} isDeleted={false} />
+                  </Col>
                 </Row>
-                <Row>{activeTab === "vehicle" && <CustomTable rows={vehicleRows} columns={vehicleCols} type="settings" />}</Row>
+                <Row>
+                  {activeTab === "vehicle" && <CustomTable rows={vehicleRows} columns={vehicleCols} type="settings"  />}
+                </Row>
               </Tab.Pane>
               <Tab.Pane eventKey="checklist">
                 <Row className="d-flex align-items-center mb-2">
@@ -278,7 +285,9 @@ export default function AdminPage() {
                     <CreateUpdateChecklist title={""} />
                   </Col>
                 </Row>
-                <Row>{activeTab === "checklist" && <CustomTable rows={checklistRows} columns={checklistCols} type="settings" />}</Row>
+                <Row>
+                  {activeTab === "checklist" && <CustomTable rows={checklistRows} columns={checklistCols} type="settings" />}
+                </Row>
               </Tab.Pane>
             </Tab.Content>
           </Tab.Container>

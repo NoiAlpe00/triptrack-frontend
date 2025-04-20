@@ -6,7 +6,6 @@ import Edit from "../assets/svgs/edit.svg";
 import CustomHeader from "../components/CustomHeader";
 
 export default function CreateUpdateUser(passedData: UserProps) {
-  console.log(passedData);
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { DepartmentProps } from "../utils/TypesIndex";
+import { VehicleProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 
-export default function CreateUpdateDepartment(passedData: DepartmentProps) {
+export default function CreateUpdateVehicle(passedData: VehicleProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -12,7 +12,7 @@ export default function CreateUpdateDepartment(passedData: DepartmentProps) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [formData, setFormData] = useState<DepartmentProps>(passedData);
+  const [formData, setFormData] = useState<VehicleProps>(passedData);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,12 +56,18 @@ export default function CreateUpdateDepartment(passedData: DepartmentProps) {
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{formData.id ? "Update Department" : "Create New Department"}</Modal.Title>
+          <Modal.Title>{formData.id ? "Update Vehicle" : "Create New Vehicle"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CustomHeader title={"Department Infomation"} subtitle={"We would like to know more about the department."} />
-          <FloatingLabel controlId="name" label="Department Name" className="mb-2 small-input">
-            <Form.Control name="name" type="text" placeholder="" onChange={handleOnChange} value={formData.name ?? ""} />
+          <CustomHeader title={"Vehicle Infomation"} subtitle={"Tell us more about the vehicle details."} />
+          <FloatingLabel controlId="model" label="Model" className="mb-2 small-input">
+            <Form.Control name="model" type="text" placeholder="" onChange={handleOnChange} value={formData.model ?? ""} />
+          </FloatingLabel>
+          <FloatingLabel controlId="plateNumber" label="Plate Number" className="mb-2 small-input">
+            <Form.Control name="plateNumber" type="text" placeholder="" onChange={handleOnChange} value={formData.plateNumber ?? ""} />
+          </FloatingLabel>
+          <FloatingLabel controlId="seats" label="Seats" className="mb-2 small-input">
+            <Form.Control name="seats" type="text" placeholder="" onChange={handleOnChange} value={formData.seats ?? ""} />
           </FloatingLabel>
           {formData.id && (
             <Button
