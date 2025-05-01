@@ -132,6 +132,17 @@ button:focus-visible {
   font-weight: 700 !important;
 }
 
+/* Card Hover */
+
+.card-hover-effect {
+  transition: box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(75, 16, 119, 0.5); /* Primary glow */
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

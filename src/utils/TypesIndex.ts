@@ -88,3 +88,14 @@ export interface CustomRadioButtonProps {
   label: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
+
+export interface DoughnutChartDataProps {
+  id: number;
+  title: string;
+  date: string;
+  destination: string;
+  driver: string;
+  vehicle: string;
+  requestStatus: "Pending" | "Approved" | "Declined";
+  tripStatus: string;
+}
