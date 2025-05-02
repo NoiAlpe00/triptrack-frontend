@@ -1,3 +1,6 @@
+import jwt from "jwt-decode";
+import { TokenData } from "./TypesIndex";
+
 export function formatISOString(isoString: string): string {
   const date = new Date(isoString);
 
@@ -15,4 +18,12 @@ export function formatISOString(isoString: string): string {
   const hh = String(hours).padStart(2, "0");
 
   return `${mm}/${dd}/${yyyy} (${hh}:${minutes} ${ampm})`;
+}
+
+export function decodeToken(token: string): TokenData {
+  return jwt(token);
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

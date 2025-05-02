@@ -3,74 +3,32 @@ import Export from "../assets/svgs/export.svg";
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import { useState, useEffect } from "react";
-import { formatISOString } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
 import CustomDoughnutChart from "../components/CustomDoughnutChart";
-import { DoughnutChartDataProps } from "../utils/TypesIndex";
+import { DoughnutChartDataProps, StatusCounts, TripItem, TripProps } from "../utils/TypesIndex";
+import { getAllTrips } from "../hooks/axios";
+import { useAuthHeader } from "react-auth-kit";
 
 export default function Dashboard() {
   const [showToast, setShowToast] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<DoughnutChartDataProps[]>([
-    {
-      id: 1,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 4,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 5,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 6,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Approved",
-      tripStatus: "Upcoming",
-    },
-  ]);
+  const [tableData, setTableData] = useState<DoughnutChartDataProps[]>([]);
+  const [allTripData, setAllTripData] = useState<TripProps[]>([]);
+  const [requestStatusCounts, setRequestStatusCounts] = useState<StatusCounts<TripItem["requestStatus"]>>({
+    Approved: 0,
+    Declined: 0,
+    Pending: 0,
+  });
+
+  const [tripStatusCounts, setTripStatusCounts] = useState<StatusCounts<TripItem["tripStatus"]>>({
+    Past: 0,
+    Ongoing: 0,
+    Upcoming: 0,
+  });
+
+  const authHeader = useAuthHeader();
+  const access_token = authHeader();
+
+  const userData = decodeToken(access_token);
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
@@ -115,244 +73,151 @@ export default function Dashboard() {
     // },
   ];
 
-  const totalRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 4,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 5,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 6,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Approved",
-      tripStatus: "Upcoming",
-    },
-  ];
-
-  const approvedRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO BETHLEHEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO BETHLEHEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO BETHLEHEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-  ];
-
-  const declinedRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO CUBAO",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO CUBAO",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO CUBAO",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-  ];
-
-  const upcomingRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO MAKATI",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO MAKATI",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Approved",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO MAKATI",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-  ];
-
-  const ongoingRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO CEBU",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO CEBU",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO CEBU",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-  ];
-
-  const pastRequest: DoughnutChartDataProps[] = [
-    {
-      id: 1,
-      title: "TRIP TO BATANES",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO BATANES",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Approved",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 3,
-      title: "TRIP TO BATANES",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-  ];
-
   const handleOnClick = (key: string) => {
-    if (key == "total") setTableData(totalRequest);
-    else if (key == "approved") setTableData(approvedRequest);
-    else if (key == "declined") setTableData(declinedRequest);
-    else if (key == "upcoming") setTableData(upcomingRequest);
-    else if (key == "ongoing") setTableData(ongoingRequest);
-    else if (key == "past") setTableData(pastRequest);
-    else setTableData(totalRequest);
+    if (key == "total")
+      setTableData(
+        allTripData.map((trip: TripProps) => ({
+          id: trip.id,
+          title: trip.title,
+          date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+          destination: trip.destination,
+          driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+          vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+          requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+          tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+        }))
+      );
+    else if (key == "approved")
+      setTableData(
+        allTripData
+          .filter((trip) => trip.status === "Approved")
+          .map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+          }))
+      );
+    else if (key == "declined")
+      setTableData(
+        allTripData
+          .filter((trip) => trip.status === "Declined")
+          .map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+          }))
+      );
+    else if (key == "upcoming")
+      setTableData(
+        allTripData
+          .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
+          .map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+          }))
+      );
+    else if (key == "ongoing")
+      setTableData(
+        allTripData
+          .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
+          .map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+          }))
+      );
+    else if (key == "past")
+      setTableData(
+        allTripData
+          .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
+          .map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+          }))
+      );
+    else
+      setTableData(
+        allTripData.map((trip: TripProps) => ({
+          id: trip.id,
+          title: trip.title,
+          date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+          destination: trip.destination,
+          driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+          vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+          requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+          tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+        }))
+      );
     // You can do something with `data`, like navigate or open a modal
   };
+
+  useEffect(() => {
+    (async () => {
+      const allTrips = await getAllTrips({ id: undefined, type: userData.userType, withDeleted: false }, access_token);
+      setAllTripData(allTrips.data);
+      const formattedTableData = allTrips.data.map((trip: TripProps) => ({
+        id: trip.id,
+        title: trip.title,
+        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+        destination: trip.destination,
+        driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+        vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+      }));
+      console.log(formattedTableData);
+      const requestCounts = formattedTableData.reduce(
+        (acc, item) => {
+          acc[item.requestStatus]++;
+          return acc;
+        },
+        { Approved: 0, Declined: 0, Pending: 0 }
+      );
+
+      const tripCounts = formattedTableData.reduce(
+        (acc, item) => {
+          if (item.tripStatus === "Upcoming" && item.requestStatus === "Declined") {
+            return acc; // skip counting this item
+          }
+
+          acc[item.tripStatus as "Past" | "Ongoing" | "Upcoming"]++;
+          return acc;
+        },
+        { Past: 0, Ongoing: 0, Upcoming: 0 }
+      );
+
+      setRequestStatusCounts(requestCounts);
+      setTripStatusCounts(tripCounts);
+      setTableData(formattedTableData);
+    })();
+  }, []);
 
   return (
     <Container fluid>
@@ -414,7 +279,7 @@ export default function Dashboard() {
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
                       <Row className="">
-                        <h1 className="text-primary text-end">100</h1>
+                        <h1 className="text-primary text-end">{allTripData.length ?? 0}</h1>
                       </Row>
                     </Card.Body>
                   </Card>
@@ -429,7 +294,7 @@ export default function Dashboard() {
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Approved</Card.Title>
                       <Row>
-                        <h1 className="text-primary thick-text text-end">75</h1>
+                        <h1 className="text-primary thick-text text-end">{requestStatusCounts.Approved ?? 0}</h1>
                       </Row>
                     </Card.Body>
                   </Card>
@@ -444,7 +309,7 @@ export default function Dashboard() {
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Declined</Card.Title>
                       <Row>
-                        <h1 className="text-secondary text-end">25</h1>
+                        <h1 className="text-secondary text-end">{requestStatusCounts.Declined ?? 0}</h1>
                       </Row>
                     </Card.Body>
                   </Card>
@@ -464,7 +329,7 @@ export default function Dashboard() {
                           <h4 className="text-secondary thin-text">Upcoming</h4>
                         </Col>
                         <Col sm={6}>
-                          <h1 className="text-primary  text-end">30</h1>
+                          <h1 className="text-primary  text-end">{tripStatusCounts.Upcoming ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>
@@ -483,7 +348,7 @@ export default function Dashboard() {
                           <h4 className="text-secondary thin-text">Ongoing</h4>
                         </Col>
                         <Col sm={6}>
-                          <h1 className="text-primary thick-text  text-end">20</h1>
+                          <h1 className="text-primary thick-text  text-end">{tripStatusCounts.Ongoing ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>
@@ -502,7 +367,7 @@ export default function Dashboard() {
                           <h4 className="text-secondary thin-text ">Past</h4>
                         </Col>
                         <Col sm={6}>
-                          <h1 className="text-secondary  text-end">20</h1>
+                          <h1 className="text-secondary  text-end">{tripStatusCounts.Past ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>

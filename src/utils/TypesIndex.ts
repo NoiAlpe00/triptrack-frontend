@@ -90,7 +90,7 @@ export interface CustomRadioButtonProps {
 }
 
 export interface DoughnutChartDataProps {
-  id: number;
+  id: string;
   title: string;
   date: string;
   destination: string;
@@ -99,3 +99,70 @@ export interface DoughnutChartDataProps {
   requestStatus: "Pending" | "Approved" | "Declined";
   tripStatus: string;
 }
+
+export interface LoginRequestProps {
+  email: string;
+  password: string;
+}
+
+export interface TripRequestProps {
+  id?: string;
+  type: string;
+  withDeleted?: boolean;
+}
+
+export interface TokenData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  userType: string;
+  sub: {
+    userId: string;
+  };
+}
+
+export interface TripChecklistIndividualProps {
+  id: string;
+  timing: string;
+  data: string;
+  isDeleted: boolean;
+}
+
+export interface TripProps {
+  id: string;
+  title: string;
+  tripStart: string; // ISO 8601 date-time string
+  tripEnd: string; // ISO 8601 date-time string
+  destination: string;
+  purpose: string;
+  status: string;
+  timeDeparture: string; // ISO 8601 date-time string
+  timeArrival: string | null;
+  remarks: string;
+  createdDate: string; // ISO 8601 date-time string
+  updatedDate: string; // ISO 8601 date-time string
+  isDeleted: boolean;
+  tripChecklists: TripChecklistIndividualProps[];
+  department: DepartmentProps;
+  driver: UserProps | null;
+  vehicle: VehicleProps | null;
+}
+
+export interface ResponsePropsArray<T> {
+  statusCode: number;
+  data: T[];
+  message?: string;
+}
+
+export interface ResponsePropsSolo<T> {
+  statusCode: number;
+  data: T;
+  message?: string;
+}
+
+export type TripItem = {
+  requestStatus: "Approved" | "Declined" | "Pending";
+  tripStatus: "Past" | "Ongoing" | "Upcoming";
+};
+
+export type StatusCounts<T extends string> = Record<T, number>;

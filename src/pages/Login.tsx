@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useSignIn } from "react-auth-kit";
 import { Button, Col, Container, FloatingLabel, Form, Row, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { LoginProps } from "../utils/TypesIndex";
+import { LoginProps, TokenData } from "../utils/TypesIndex";
+import { loginUser } from "../hooks/axios";
+import { decodeToken } from "../utils/utilities";
 
 export default function Login() {
   const signIn = useSignIn();
@@ -13,22 +15,22 @@ export default function Login() {
     password: "",
   });
 
-  const handleLogin = (role: string = "Admin") => {
-    const fakeToken = "fake-jwt-token"; // In real app, get from backend
-    
-    console.log(formData)
+  const handleLogin = async (role: string = "Admin") => {
+    const token = await loginUser({ email: formData.email, password: formData.password });
 
-    // TODO: Integrate to backend!
+    const decodedToken: TokenData = decodeToken(token.data);
 
-    const success = signIn({
-      token: fakeToken,
+    const success = token.status >= 200 && token.status < 400;
+
+    signIn({
+      token: token.data,
       expiresIn: 480,
       tokenType: "Bearer",
-      authState: { email: "user@example.com", role },
+      authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
     });
 
     if (success) {
-      navigate(`/${role.toLowerCase()}`);
+      navigate(`/dashboard`);
     } else {
       alert("Login failed!");
     }
