@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { ChecklistProps } from "../utils/TypesIndex";
+import { ChecklistProps, CreateUpdateChecklistProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
+import { addNewChecklist, updateExistingChecklist } from "../hooks/axios";
+import { requestGuard } from "../utils/utilities";
 
-export default function CreateUpdateChecklist(passedData: ChecklistProps) {
+export default function CreateUpdateChecklist({ passedData, access_token }: CreateUpdateChecklistProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -16,7 +18,6 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -25,11 +26,10 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value, // TODO: Add Name here
+      [name]: value === "true", // TODO: Add Name here
     }));
   };
 
@@ -43,13 +43,47 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log({ ...formData, typed: formData.typed?.toString() == "true" });
+    const isDataValid = requestGuard<ChecklistProps>(formData, ["id", "isDeleted"]);
+    if (isDataValid) {
+      const res = await addNewChecklist(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Checklist ${formData.title} was added successfully.`);
+        setFormData({
+          title: "",
+          typed: false,
+          isDeleted: false,
+        });
+
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log({ ...formData, typed: formData.typed?.toString() == "true" });
+    const isDataValid = requestGuard<ChecklistProps>(formData, []);
+    if (isDataValid) {
+      const res = await updateExistingChecklist(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Checklist ${formData.title} was updated successfully.`);
+        setFormData({
+          title: "",
+          typed: false,
+          isDeleted: false,
+        });
+
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   return (
@@ -66,15 +100,15 @@ export default function CreateUpdateChecklist(passedData: ChecklistProps) {
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{formData.id ? "Update Department" : "Create New Department"}</Modal.Title>
+          <Modal.Title>{formData.id ? "Update Checklist" : "Create New Checklist"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomHeader title={"Checklist Infomation"} subtitle={"Tell us more about the items to be checked."} />
           <FloatingLabel controlId="title" label="Checklist Title" className="mb-2 small-input">
             <Form.Control name="title" type="text" placeholder="" onChange={handleOnChange} value={formData.title ?? ""} />
           </FloatingLabel>
-          <FloatingLabel controlId="department" label="Is the data needs to be typed?" className="small-input mb-4">
-            <Form.Select name="department" onChange={handleSelectChange} value={formData.typed?.toString() ?? ""}>
+          <FloatingLabel controlId="typed" label="Is the data needs to be typed?" className="small-input mb-4">
+            <Form.Select name="typed" onChange={handleSelectChange} value={formData.typed?.toString() ?? ""}>
               <option value="true">Yes</option>
               <option value="false">No</option>
             </Form.Select>

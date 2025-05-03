@@ -6,7 +6,6 @@ import Login from "./pages/Login";
 import ProtectedRoutes from "./utils/Routes/ProtectedRoutes";
 import AdminPage from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
-import Reports from "./pages/Reports";
 import Trips from "./pages/Trips";
 
 export default function App() {
@@ -27,14 +26,6 @@ export default function App() {
           element={
             <ProtectedRoutes allowedRoles={["Admin"]}>
               <AdminPage />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <ProtectedRoutes allowedRoles={["Staff", "Admin"]}>
-              <Reports />
             </ProtectedRoutes>
           }
         />

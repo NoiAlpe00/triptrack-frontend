@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { DepartmentProps } from "../utils/TypesIndex";
+import { CreateUpdateDepartmentProps, DepartmentProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
+import { addNewDeparment, updateExistingDeparment } from "../hooks/axios";
+import { requestGuard } from "../utils/utilities";
 
-export default function CreateUpdateDepartment(passedData: DepartmentProps) {
+export default function CreateUpdateDepartment({ passedData, access_token }: CreateUpdateDepartmentProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -33,13 +35,45 @@ export default function CreateUpdateDepartment(passedData: DepartmentProps) {
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log(formData);
+    const isDataValid = requestGuard<DepartmentProps>(formData, ["id", "isDeleted"]);
+    if (isDataValid) {
+      const res = await addNewDeparment(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Department ${formData.name} was added successfully.`);
+        setFormData({
+          name: "",
+          isDeleted: false,
+        });
+
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log(formData);
+    const isDataValid = requestGuard<DepartmentProps>(formData, []);
+    if (isDataValid) {
+      const res = await updateExistingDeparment(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Department ${formData.name} was updated successfully.`);
+        setFormData({
+          name: "",
+          isDeleted: false,
+        });
+
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   return (

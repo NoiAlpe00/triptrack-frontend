@@ -46,6 +46,11 @@ export interface ChecklistProps {
   isDeleted?: boolean;
 }
 
+export interface CreateUpdateChecklistProps {
+  passedData: ChecklistProps;
+  access_token: string;
+}
+
 export interface TripSpecificChecklistProps {
   checklistId: string;
   title: string;
@@ -63,6 +68,7 @@ export interface UserProps {
   contactNumber: string;
   isActive: boolean;
   isDeleted: boolean;
+  password?: string;
 }
 
 export interface UserTableProps {
@@ -174,7 +180,7 @@ export interface TripProps {
 
 export interface ResponsePropsArray<T> {
   statusCode: number;
-  data: T[];
+  data?: T[];
   message?: string;
 }
 
@@ -190,3 +196,28 @@ export type TripItem = {
 };
 
 export type StatusCounts<T extends string> = Record<T, number>;
+
+export interface CreateUpdateUserProps {
+  passedData: UserProps;
+  departments: DepartmentProps[];
+  access_token: string;
+  setUserTableData: React.Dispatch<React.SetStateAction<UserTableProps[]>>;
+}
+
+export interface CreateUpdateUserRequestProps {
+  id?: string;
+  email: string;
+  department: string;
+  type: string;
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  password?: string;
+}
+
+export interface CreateUpdateDepartmentProps {
+  passedData: DepartmentProps;
+  access_token: string;
+}

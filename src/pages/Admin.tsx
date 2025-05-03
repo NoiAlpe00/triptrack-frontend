@@ -6,11 +6,9 @@ import CreateUpdateUser from "../modals/CreateUpdateUser";
 import CreateUpdateDepartment from "../modals/CreateUpdateDepartment";
 import CreateUpdateChecklist from "../modals/CreateUpdateChecklist";
 import CreateUpdateVehicle from "../modals/CreateUpdateVehicle";
-import { capitalize } from "@mui/material";
 import { useAuthHeader } from "react-auth-kit";
-import { getAllChecklist, getAllDeparment, getAllTrips, getAllUsers, getAllVehicle } from "../hooks/axios";
-import { ChecklistProps, DepartmentProps, TripProps, UserProps, UserTableProps, VehicleProps } from "../utils/TypesIndex";
-import { formatISOString } from "../utils/utilities";
+import { getAllChecklist, getAllDeparment, getAllUsers, getAllVehicle } from "../hooks/axios";
+import { ChecklistProps, DepartmentProps, UserProps, UserTableProps, VehicleProps } from "../utils/TypesIndex";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -38,29 +36,27 @@ export default function AdminPage() {
   useEffect(() => {
     (async () => {
       const allUsers = await getAllUsers(access_token);
-      setAllUserData(allUsers.data);
-      const formattedTableData = allUsers.data.map((user: UserProps) => ({
+      setAllUserData(allUsers.data ?? []);
+      const formattedTableData = allUsers.data?.map((user: UserProps) => ({
         ...user,
         name: `${user.lastName}, ${user.firstName}`,
       }));
-      setUserTableData(formattedTableData);
+      setUserTableData(formattedTableData ?? []);
 
       const allChecklist = await getAllChecklist(access_token);
-      setAllChecklistData(allChecklist.data);
+      setAllChecklistData(allChecklist.data ?? []);
       const formattedChecklistTableData = allChecklist.data;
-      setChecklistTableData(formattedChecklistTableData);
+      setChecklistTableData(formattedChecklistTableData ?? []);
 
       const allVehicle = await getAllVehicle(access_token);
-      setAllVehicleData(allVehicle.data);
+      setAllVehicleData(allVehicle.data ?? []);
       const formattedVehicleTableData = allVehicle.data;
-      setVehicleTableData(formattedVehicleTableData);
+      setVehicleTableData(formattedVehicleTableData ?? []);
 
       const allDeparment = await getAllDeparment(access_token);
-      setAllDepartmentData(allDeparment.data);
+      setAllDepartmentData(allDeparment.data ?? []);
       const formattedDepartmentTableData = allDeparment.data;
-      setDepartmentTableData(formattedDepartmentTableData);
-
-      console.log(allDeparment, formattedDepartmentTableData);
+      setDepartmentTableData(formattedDepartmentTableData ?? []);
     })();
   }, []);
 
@@ -72,23 +68,26 @@ export default function AdminPage() {
       minWidth: 45,
       maxWidth: 45,
       sortable: false,
-      renderCell: (params: any) => (
-        <>
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: DepartmentProps = {
+          id: row.id,
+          name: row.name,
+          isDeleted: row.isDeleted,
+        };
+
+        return (
           <Row className="d-flex">
             <Col className="px-1">
-              <CreateUpdateDepartment id={params.row.id} name={""} isDeleted={true} />
+              <CreateUpdateDepartment passedData={passedData} access_token={access_token} />
             </Col>
           </Row>
-        </>
-      ),
+        );
+      },
     },
     { field: "name", headerName: "Name", flex: 3 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
-  ];
-  const departmentRows = [
-    { id: 1, name: "Department 1", isDeleted: false },
-    { id: 2, name: "Department 2", isDeleted: true },
-    { id: 3, name: "Department 3", isDeleted: false },
   ];
   const userCols = [
     {
@@ -98,60 +97,61 @@ export default function AdminPage() {
       minWidth: 50,
       maxWidth: 50,
       sortable: false,
-      renderCell: (params: any) => (
-        <>
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: UserProps = {
+          id: row.id,
+          email: row.email !== "NULL" ? row.email : "",
+          department: row.department && row.department !== "NULL" ? { id: row.department.id, name: row.department.name } : { id: "", name: "" },
+          type: row.type !== "NULL" ? row.type : "",
+          firstName: row.firstName !== "NULL" ? row.firstName : "",
+          lastName: row.lastName !== "NULL" ? row.lastName : "",
+          contactNumber: row.contactNumber !== "NULL" ? row.contactNumber : "",
+          isActive: row.isActive !== "NULL" ? row.isActive : true,
+          isDeleted: row.isDeleted !== "NULL" ? row.isDeleted : false,
+        };
+
+        return (
           <Row className="d-flex">
             <Col className="px-1">
               <CreateUpdateUser
-                id={params.row.id}
-                email={""}
-                department={{ id: "", name: "string" }}
-                type={""}
-                firstName={""}
-                lastName={""}
-                contactNumber={""}
-                isActive={true}
-                isDeleted={false}
+                passedData={passedData}
+                departments={allDepartmentData}
+                access_token={access_token}
+                setUserTableData={setUserTableData}
               />
             </Col>
           </Row>
-        </>
-      ),
+        );
+      },
+
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 2 },
     { field: "type", headerName: "Type", flex: 1 },
-    { field: "contactNumber", headerName: "Contact No.", flex: 1 },
-    { field: "isActive", headerName: "Status", flex: 1 },
-  ];
-  const userRows = [
     {
-      id: 1,
-      name: "Emedu 1",
-      email: "email@emec.com",
-      userType: "staff",
-      contactNumber: "123456",
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: "Emedu 2",
-      email: "email2@emec.com",
-      userType: "staff",
-      contactNumber: "123456",
-      isActive: false,
-    },
-    {
-      id: 3,
-      name: "Emedu 3",
-      email: "email3@emec.com",
-      userType: "staff",
-      contactNumber: "123456",
-      isActive: true,
-    },
-  ];
+      field: "contactNumber",
+      headerName: "Contact No.",
+      flex: 1,
+      renderCell: (params: any) => {
+        const row = params.row;
 
+        return row.contactNumber !== "NULL" ? row.contactNumber : "";
+      },
+    },
+    {
+      field: "isActive",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return row.isActive ? "Active" : "Inactive";
+      },
+    },
+  ];
   const vehicleCols = [
     {
       field: "view",
@@ -176,11 +176,6 @@ export default function AdminPage() {
     { field: "seats", headerName: "Seats", flex: 0.5 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
   ];
-  const vehicleRows = [
-    { id: 1, model: "BMW EMEDU", plate: "B31267", seats: 6, isDeleted: false },
-    { id: 2, model: "BMW EMEDI", plate: "B31268", seats: 6, isDeleted: false },
-    { id: 3, model: "BMW EMEDE", plate: "B31269", seats: 6, isDeleted: false },
-  ];
   const checklistCols = [
     {
       field: "view",
@@ -189,24 +184,28 @@ export default function AdminPage() {
       minWidth: 45,
       maxWidth: 45,
       sortable: false,
-      renderCell: (params: any) => (
-        <>
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: ChecklistProps = {
+          id: row.id,
+          title: row.title,
+          typed: row.typed,
+          isDeleted: row.isDeleted,
+        };
+
+        return (
           <Row className="d-flex">
             <Col className="px-1">
-              <CreateUpdateChecklist id={params.row.id} title={""} isDeleted={true} typed={false} />
+              <CreateUpdateChecklist passedData={passedData} access_token={access_token} />
             </Col>
           </Row>
-        </>
-      ),
+        );
+      },
     },
     { field: "title", headerName: "Name", flex: 3 },
     { field: "typed", headerName: "Typed?", flex: 1 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
-  ];
-  const checklistRows = [
-    { id: 1, title: "Gas", isDeleted: false },
-    { id: 2, title: "Tires", isDeleted: true },
-    { id: 3, title: "Aircon", isDeleted: false },
   ];
 
   const [activeTab, setActiveTab] = useState("department");
@@ -232,14 +231,19 @@ export default function AdminPage() {
             </Col>
             <Col lg={2} className="">
               <CreateUpdateUser
-                email={""}
-                department={{ id: "", name: "" }}
-                type={"staff"}
-                firstName={""}
-                lastName={""}
-                contactNumber={""}
-                isActive={true}
-                isDeleted={false}
+                passedData={{
+                  email: "",
+                  department: { id: "", name: "" },
+                  type: "staff",
+                  firstName: "",
+                  lastName: "",
+                  contactNumber: "",
+                  isActive: true,
+                  isDeleted: false,
+                }}
+                departments={allDepartmentData}
+                access_token={access_token}
+                setUserTableData={setUserTableData}
               />
             </Col>
           </Row>
@@ -278,7 +282,7 @@ export default function AdminPage() {
                     </FloatingLabel>
                   </Col>
                   <Col lg={2} className="">
-                    <CreateUpdateDepartment name={""} />
+                    <CreateUpdateDepartment passedData={{ name: "" }} access_token={access_token} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "department" && <CustomTable rows={departmentTableData} columns={departmentCols} type="settings" />}</Row>
@@ -322,7 +326,7 @@ export default function AdminPage() {
                     </FloatingLabel>
                   </Col>
                   <Col lg={2} className="">
-                    <CreateUpdateChecklist title={""} typed={false} />
+                    <CreateUpdateChecklist passedData={{ title: "", typed: false }} access_token={access_token} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "checklist" && <CustomTable rows={checklistTableData} columns={checklistCols} type="settings" />}</Row>

@@ -1,11 +1,13 @@
 import { useState } from "react";
 // import { useAuthUser } from "react-auth-kit";
 import { Button, Modal, Row, Col, FloatingLabel, Form, Image } from "react-bootstrap";
-import { UserProps } from "../utils/TypesIndex";
+import { CreateUpdateUserProps, CreateUpdateUserRequestProps, UserProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 import CustomHeader from "../components/CustomHeader";
+import { requestGuard } from "../utils/utilities";
+import { addNewUser, updateExistingUser } from "../hooks/axios";
 
-export default function CreateUpdateUser(passedData: UserProps) {
+export default function CreateUpdateUser({ passedData, departments, access_token }: CreateUpdateUserProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -17,7 +19,6 @@ export default function CreateUpdateUser(passedData: UserProps) {
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -26,28 +27,101 @@ export default function CreateUpdateUser(passedData: UserProps) {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     if (name === "department") {
       setFormData((prevData) => ({
         ...prevData,
         [name]: { id: value, name: "" }, // TODO: Add name
       }));
+    } else if (name === "type") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value, // TODO: Add name
+      }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value, // TODO: Add Name here
+        [name]: value == "true", // TODO: Add Name here
       }));
     }
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log(formData);
+    const requestData: CreateUpdateUserRequestProps = {
+      email: formData.email,
+      department: formData.department.id!!,
+      type: formData.type,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      contactNumber: formData.contactNumber,
+      isActive: formData.isActive,
+      isDeleted: formData.isDeleted,
+      password: formData.password,
+    };
+    const isDataValid = requestGuard<CreateUpdateUserRequestProps>(requestData, []);
+    if (isDataValid) {
+      const res = await addNewUser(requestData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`User ${requestData.email} was added successfully.`);
+        setFormData({
+          email: "",
+          department: { id: "", name: "" },
+          type: "",
+          firstName: "",
+          lastName: "",
+          contactNumber: "",
+          isActive: true,
+          isDeleted: false,
+          password: "",
+        });
+        handleClose();
+        window.location.reload();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log(formData);
+    const requestData: CreateUpdateUserRequestProps = {
+      id: formData.id,
+      email: formData.email,
+      department: formData.department.id!!,
+      type: formData.type,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      contactNumber: formData.contactNumber,
+      isActive: formData.isActive,
+      isDeleted: formData.isDeleted,
+      password: formData.password,
+    };
+    console.log(requestData);
+    const isDataValid = requestGuard<CreateUpdateUserRequestProps>(requestData, ["password"]);
+    if (isDataValid) {
+      const res = await updateExistingUser(requestData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`User ${requestData.email} was updated successfully.`);
+
+        setFormData({
+          email: "",
+          department: { id: "", name: "" },
+          type: "",
+          firstName: "",
+          lastName: "",
+          contactNumber: "",
+          isActive: true,
+          isDeleted: false,
+          password: "",
+        });
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   return (
@@ -64,7 +138,7 @@ export default function CreateUpdateUser(passedData: UserProps) {
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{formData.id ?? "Create New User"}</Modal.Title>
+          <Modal.Title>{formData.id ? `Update User` : "Create New User"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomHeader title={"User Infomation"} subtitle={"We would like to know who will use the system."} />
@@ -79,11 +153,12 @@ export default function CreateUpdateUser(passedData: UserProps) {
           </FloatingLabel>
           <FloatingLabel controlId="department" label="Department" className="small-input mb-4">
             <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
-              <option>Open this select menu</option>
-              <option value="all">All</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="past">Past</option>
+              <option>Select Department</option>
+              {departments.map((deparment, index) => (
+                <option key={`${deparment}-${index}`} value={deparment.id}>
+                  {deparment.name}
+                </option>
+              ))}
             </Form.Select>
           </FloatingLabel>
           <CustomHeader title={"Account Details"} subtitle={"We would like to know the details of the account."} />
@@ -92,28 +167,25 @@ export default function CreateUpdateUser(passedData: UserProps) {
             <Form.Control name="email" type="text" placeholder="" onChange={handleOnChange} value={formData.email ?? ""} />
           </FloatingLabel>
           <FloatingLabel controlId="password" label="Password" className="mb-2 small-input">
-            <Form.Control name="password" type="password" placeholder="" onChange={handleOnChange} value={""} />{" "}
+            <Form.Control name="password" type="text" placeholder="" onChange={handleOnChange} value={formData.password ?? ""} />{" "}
             {/* TODO: Add password randomizer here*/}
           </FloatingLabel>
           <Row>
             <Col lg={6}>
               <FloatingLabel controlId="floatingSelect" label="User Type" className="small-input mb-4">
                 <Form.Select name="type" onChange={handleSelectChange} value={formData.type ?? ""}>
-                  <option value="admin">Admin</option>
-                  <option value="staff">Staff</option>
-                  <option value="driver">Driver</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Driver">Driver</option>
+                  <option value="Guard">Driver</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>
             <Col lg={6}>
               <FloatingLabel controlId="floatingSelect" label="Status" className="small-input mb-4">
-                <Form.Select
-                  name="status"
-                  onChange={handleSelectChange}
-                  value={formData.isDeleted === undefined ? "active" : formData.isDeleted == true ? "active" : "inactive"}
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                <Form.Select name="isActive" onChange={handleSelectChange} value={formData.isActive.toString() ?? "true"}>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>
@@ -226,7 +298,6 @@ export default function CreateUpdateUser(passedData: UserProps) {
             variant="primary"
             onClick={() => {
               formData.id ? handleUpdate() : handleSave();
-              handleClose();
             }}
           >
             {formData.id ? "Update" : "Create"}

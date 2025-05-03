@@ -27,3 +27,13 @@ export function decodeToken(token: string): TokenData {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+export function requestGuard<T extends Record<string, any>>(formData: T, excluded: string[]): boolean {
+  for (const [key, value] of Object.entries(formData)) {
+    if (excluded.includes(key)) continue;
+    if (value === undefined || value === null || value.toString().length === 0) {
+      return false;
+    }
+  }
+  return true;
+}

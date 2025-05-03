@@ -33,9 +33,6 @@ export default function CustomNavbar() {
           <Nav.Link className="px-3" as={Link} to="/trips" eventKey="/trips">
             Trips
           </Nav.Link>
-          <Nav.Link className="px-3" as={Link} to="/reports" eventKey="/reports">
-            Reports
-          </Nav.Link>
           <Nav.Link className="px-3" as={Link} to="/admin" eventKey="/admin">
             Admin
           </Nav.Link>

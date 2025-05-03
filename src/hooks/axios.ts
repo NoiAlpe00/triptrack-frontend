@@ -1,5 +1,15 @@
 import axios from "axios";
-import { ChecklistProps, DepartmentProps, LoginRequestProps, ResponsePropsArray, TripProps, TripRequestProps, UserProps, VehicleProps } from "../utils/TypesIndex";
+import {
+  ChecklistProps,
+  CreateUpdateUserRequestProps,
+  DepartmentProps,
+  LoginRequestProps,
+  ResponsePropsArray,
+  TripProps,
+  TripRequestProps,
+  UserProps,
+  VehicleProps,
+} from "../utils/TypesIndex";
 
 const URL = "http://localhost:8888";
 
@@ -51,6 +61,40 @@ export const getAllUsers = async (access_token: string): Promise<ResponsePropsAr
     });
     return res.data;
   } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
+
+export const addNewUser = async (data: CreateUpdateUserRequestProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/user/add`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    console.log(error);
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateExistingUser = async (data: CreateUpdateUserRequestProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/user/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    console.log(error);
     return { statusCode: error.response.statusCode, data: error.response.data.message };
   }
 };
@@ -63,7 +107,11 @@ export const getAllChecklist = async (access_token: string): Promise<ResponsePro
       headers: {
         authorization: access_token,
       },
+      params: {
+        withDeleted: true,
+      },
     });
+    console.log(res.data);
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };
@@ -93,6 +141,73 @@ export const getAllDeparment = async (access_token: string): Promise<ResponsePro
       headers: {
         authorization: access_token,
       },
+      params: {
+        withDeleted: true,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const addNewDeparment = async (data: DepartmentProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/department`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateExistingDeparment = async (data: DepartmentProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/department/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const addNewChecklist = async (data: ChecklistProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/checklist`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateExistingChecklist = async (data: ChecklistProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/checklist/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
     });
     return res.data;
   } catch (error: any) {
