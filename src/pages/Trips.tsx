@@ -12,15 +12,21 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { formatISOString } from "../utils/utilities";
-import { useAuthUser } from "react-auth-kit";
+import { capitalize, formatISOString } from "../utils/utilities";
+import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
-import { TripSpecificChecklistProps } from "../utils/TypesIndex";
+import { TripProps, TripSpecificChecklistProps, TripsTableProps } from "../utils/TypesIndex";
+import { getAllTrips } from "../hooks/axios";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [allTripData, setAllTripData] = useState<TripProps[]>([]);
+  const [tableData, setTableData] = useState<TripsTableProps[]>([]);
   const auth = useAuthUser();
-  const userRole = auth()?.role ?? "";
+  const userRole = auth()?.role ?? "Staff";
+
+  const authHeader = useAuthHeader();
+  const access_token = authHeader();
 
   const checklistSimulation: TripSpecificChecklistProps[] = [
     {
@@ -277,80 +283,24 @@ export default function Trips() {
         },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Past",
-    },
-    {
-      id: 3,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 4,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Pending",
-      tripStatus: "Upcoming",
-    },
-    {
-      id: 5,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Declined",
-      tripStatus: "Ongoing",
-    },
-    {
-      id: 6,
-      title: "TRIP TO JERUSALEM",
-      date: `${formatISOString("2025-04-16T14:30:00.000")} - ${formatISOString("2025-04-16T14:30:00.000")}`,
-      // departureTime: `${formatISOString("2025-04-16T14:30:00.000")}`,
-      // arrivalTime: `${formatISOString("2025-04-16T14:40:00.000")}`,
-      destination: "Jerusalem",
-      driver: "Kuya Dan",
-      vehicle: "Mitsubishi Mirage",
-      requestStatus: "Approved",
-      tripStatus: "Upcoming",
-    },
-  ];
+  useEffect(() => {
+    (async () => {
+      const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
+      setAllTripData(allTrips.data);
+      const formattedTableData = allTrips.data.map((trip: TripProps) => ({
+        id: trip.id,
+        title: trip.title,
+        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+        destination: trip.destination,
+        driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
+        vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+      }));
+      console.log(formattedTableData);
+      setTableData(formattedTableData);
+    })();
+  }, []);
 
   const finalCols =
     userRole.toLowerCase() === "guard"
@@ -369,6 +319,7 @@ export default function Trips() {
       sessionStorage.setItem("loginToastShow", "true");
     }
   }, []);
+
   return (
     <Container fluid>
       <Row className="pt-5 pb-3 px-1">
@@ -415,14 +366,15 @@ export default function Trips() {
                 dateEnd={""}
                 driverRequest={false}
                 vehicleRequest={false}
-                purpose={""}             />
+                purpose={""}
+              />
             </>
           )}
         </Col>
       </Row>
       <Row>
         <Col>
-          <CustomTable rows={rows} columns={finalCols} type={"trips"} />
+          <CustomTable rows={tableData} columns={finalCols} type={"trips"} />
         </Col>
       </Row>
       <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;

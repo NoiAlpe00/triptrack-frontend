@@ -6,9 +6,25 @@ import CreateUpdateUser from "../modals/CreateUpdateUser";
 import CreateUpdateDepartment from "../modals/CreateUpdateDepartment";
 import CreateUpdateChecklist from "../modals/CreateUpdateChecklist";
 import CreateUpdateVehicle from "../modals/CreateUpdateVehicle";
+import { capitalize } from "@mui/material";
+import { useAuthHeader } from "react-auth-kit";
+import { getAllChecklist, getAllDeparment, getAllTrips, getAllUsers, getAllVehicle } from "../hooks/axios";
+import { ChecklistProps, DepartmentProps, TripProps, UserProps, UserTableProps, VehicleProps } from "../utils/TypesIndex";
+import { formatISOString } from "../utils/utilities";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [allUserData, setAllUserData] = useState<UserProps[]>([]);
+  const [userTableData, setUserTableData] = useState<UserTableProps[]>([]);
+  const [allChecklistData, setAllChecklistData] = useState<ChecklistProps[]>([]);
+  const [checklistTableData, setChecklistTableData] = useState<ChecklistProps[]>([]);
+  const [allVehicleData, setAllVehicleData] = useState<VehicleProps[]>([]);
+  const [vehicleTableData, setVehicleTableData] = useState<VehicleProps[]>([]);
+  const [allDepartmentData, setAllDepartmentData] = useState<DepartmentProps[]>([]);
+  const [departmentTableData, setDepartmentTableData] = useState<DepartmentProps[]>([]);
+
+  const authHeader = useAuthHeader();
+  const access_token = authHeader();
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
@@ -17,6 +33,35 @@ export default function AdminPage() {
       setShowToast(true);
       sessionStorage.setItem("loginToastShow", "true");
     }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const allUsers = await getAllUsers(access_token);
+      setAllUserData(allUsers.data);
+      const formattedTableData = allUsers.data.map((user: UserProps) => ({
+        ...user,
+        name: `${user.lastName}, ${user.firstName}`,
+      }));
+      setUserTableData(formattedTableData);
+
+      const allChecklist = await getAllChecklist(access_token);
+      setAllChecklistData(allChecklist.data);
+      const formattedChecklistTableData = allChecklist.data;
+      setChecklistTableData(formattedChecklistTableData);
+
+      const allVehicle = await getAllVehicle(access_token);
+      setAllVehicleData(allVehicle.data);
+      const formattedVehicleTableData = allVehicle.data;
+      setVehicleTableData(formattedVehicleTableData);
+
+      const allDeparment = await getAllDeparment(access_token);
+      setAllDepartmentData(allDeparment.data);
+      const formattedDepartmentTableData = allDeparment.data;
+      setDepartmentTableData(formattedDepartmentTableData);
+
+      console.log(allDeparment, formattedDepartmentTableData);
+    })();
   }, []);
 
   const departmentCols = [
@@ -76,7 +121,7 @@ export default function AdminPage() {
     },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "email", headerName: "Email", flex: 2 },
-    { field: "userType", headerName: "Type", flex: 1 },
+    { field: "type", headerName: "Type", flex: 1 },
     { field: "contactNumber", headerName: "Contact No.", flex: 1 },
     { field: "isActive", headerName: "Status", flex: 1 },
   ];
@@ -127,7 +172,7 @@ export default function AdminPage() {
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "model", headerName: "Model", flex: 2 },
-    { field: "plate", headerName: "Plate", flex: 1.5 },
+    { field: "plateNumber", headerName: "Plate Number", flex: 1.5 },
     { field: "seats", headerName: "Seats", flex: 0.5 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
   ];
@@ -155,6 +200,7 @@ export default function AdminPage() {
       ),
     },
     { field: "title", headerName: "Name", flex: 3 },
+    { field: "typed", headerName: "Typed?", flex: 1 },
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
   ];
   const checklistRows = [
@@ -198,7 +244,7 @@ export default function AdminPage() {
             </Col>
           </Row>
           <Row>
-            <CustomTable rows={userRows} columns={userCols} type="admin" />
+            <CustomTable rows={userTableData} columns={userCols} type="admin" />
           </Row>
         </Col>
         <Col lg={6} className="px-4">
@@ -235,11 +281,7 @@ export default function AdminPage() {
                     <CreateUpdateDepartment name={""} />
                   </Col>
                 </Row>
-                <Row>
-                  {activeTab === "department" && (
-                    <CustomTable rows={departmentRows} columns={departmentCols} type="settings"  />
-                  )}
-                </Row>
+                <Row>{activeTab === "department" && <CustomTable rows={departmentTableData} columns={departmentCols} type="settings" />}</Row>
               </Tab.Pane>
               <Tab.Pane eventKey="vehicle">
                 <Row className="d-flex align-items-center mb-2">
@@ -261,9 +303,7 @@ export default function AdminPage() {
                     <CreateUpdateVehicle model={""} plateNumber={""} isDeleted={false} />
                   </Col>
                 </Row>
-                <Row>
-                  {activeTab === "vehicle" && <CustomTable rows={vehicleRows} columns={vehicleCols} type="settings"  />}
-                </Row>
+                <Row>{activeTab === "vehicle" && <CustomTable rows={vehicleTableData} columns={vehicleCols} type="settings" />}</Row>
               </Tab.Pane>
               <Tab.Pane eventKey="checklist">
                 <Row className="d-flex align-items-center mb-2">
@@ -285,9 +325,7 @@ export default function AdminPage() {
                     <CreateUpdateChecklist title={""} typed={false} />
                   </Col>
                 </Row>
-                <Row>
-                  {activeTab === "checklist" && <CustomTable rows={checklistRows} columns={checklistCols} type="settings" />}
-                </Row>
+                <Row>{activeTab === "checklist" && <CustomTable rows={checklistTableData} columns={checklistCols} type="settings" />}</Row>
               </Tab.Pane>
             </Tab.Content>
           </Tab.Container>

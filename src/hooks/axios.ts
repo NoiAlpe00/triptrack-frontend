@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoginRequestProps, ResponsePropsArray, TripProps, TripRequestProps } from "../utils/TypesIndex";
+import { ChecklistProps, DepartmentProps, LoginRequestProps, ResponsePropsArray, TripProps, TripRequestProps, UserProps, VehicleProps } from "../utils/TypesIndex";
 
 const URL = "http://localhost:8888";
 
@@ -30,6 +30,66 @@ export const getAllTrips = async ({ id, type, withDeleted }: TripRequestProps, a
         type,
         withDeleted,
       },
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const getAllUsers = async (access_token: string): Promise<ResponsePropsArray<UserProps>> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/auth/allAccounts`,
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const getAllChecklist = async (access_token: string): Promise<ResponsePropsArray<ChecklistProps>> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/checklist`,
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const getAllVehicle = async (access_token: string): Promise<ResponsePropsArray<VehicleProps>> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/vehicle`,
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const getAllDeparment = async (access_token: string): Promise<ResponsePropsArray<DepartmentProps>> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/department`,
       headers: {
         authorization: access_token,
       },

@@ -65,6 +65,19 @@ export interface UserProps {
   isDeleted: boolean;
 }
 
+export interface UserTableProps {
+  id?: string;
+  email: string;
+  department: DepartmentProps;
+  type: string;
+  firstName: string;
+  lastName: string;
+  name: string;
+  contactNumber: string;
+  isActive: boolean;
+  isDeleted: boolean;
+}
+
 export interface VehicleProps {
   id?: string;
   model: string;
@@ -90,6 +103,17 @@ export interface CustomRadioButtonProps {
 }
 
 export interface DoughnutChartDataProps {
+  id: string;
+  title: string;
+  date: string;
+  destination: string;
+  driver: string;
+  vehicle: string;
+  requestStatus: "Pending" | "Approved" | "Declined";
+  tripStatus: string;
+}
+
+export interface TripsTableProps {
   id: string;
   title: string;
   date: string;
