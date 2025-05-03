@@ -286,8 +286,8 @@ export default function Trips() {
   useEffect(() => {
     (async () => {
       const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
-      setAllTripData(allTrips.data);
-      const formattedTableData = allTrips.data.map((trip: TripProps) => ({
+      setAllTripData(allTrips.data ?? []);
+      const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
         id: trip.id,
         title: trip.title,
         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
