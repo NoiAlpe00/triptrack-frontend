@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button, Col, FloatingLabel, Form, Modal, Row, Image } from "react-bootstrap";
-import { TripsProps } from "../utils/TypesIndex";
+import { CreateUpdateTripProps, CreateUpdateTripRequestProps, TripProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
 import { useAuthUser } from "react-auth-kit";
+import { decodeToken, requestGuard } from "../utils/utilities";
+import { addNewTrip, updateExistingTrip } from "../hooks/axios";
 
-export default function CreateUpdateTrip(passedData: TripsProps) {
+export default function CreateUpdateTrip({ passedData, access_token, departments, vehicles, drivers }: CreateUpdateTripProps) {
   const [show, setShow] = useState(false);
 
   const auth = useAuthUser();
@@ -12,7 +14,9 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [formData, setFormData] = useState<TripsProps>(passedData);
+  const [formData, setFormData] = useState<TripProps>(passedData);
+
+  const decodedToken = decodeToken(access_token);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,10 +30,17 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     console.log(name, value);
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "vehicle" || name === "driver" || name === "department") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: { id: value },
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleRequestButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,13 +53,86 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log(formData);
+    const requestData: CreateUpdateTripRequestProps = {
+      departmentId: formData.department.id!!,
+      driverRequest: formData.driverRequest,
+      vehicleRequest: formData.vehicleRequest,
+      userId: decodedToken.sub.userId,
+      driverId: formData.driver?.id ?? null,
+      vehicleId: formData.vehicle?.id ?? null,
+      title: formData.title,
+      tripStart: formData.tripStart,
+      tripEnd: formData.tripEnd,
+      destination: formData.destination,
+      purpose: formData.purpose,
+      status: "Pending",
+    };
+    console.log(requestData);
+    const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["id", "authorizedBy", "driverId", "vehicleId"]);
+    if (isDataValid) {
+      const res = await addNewTrip(requestData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Trip ${requestData.title} is added successfully.`);
+        setFormData({
+          id: "",
+          title: "",
+          tripStart: "", // ISO 8601 date-time string
+          tripEnd: "", // ISO 8601 date-time string
+          destination: "",
+          purpose: "",
+          status: "",
+          timeDeparture: "", // ISO 8601 date-time string
+          timeArrival: "", // ISO 8601 date-time strin
+          remarks: "",
+          createdDate: "", // ISO 8601 date-time string
+          updatedDate: "", // ISO 8601 date-time string
+          isDeleted: false,
+          tripChecklists: [],
+          department: { id: "", name: "" },
+          driverRequest: true,
+          vehicleRequest: true,
+        });
+        handleClose();
+        window.location.reload();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log(formData);
+    const requestData: CreateUpdateTripRequestProps = {
+      id: formData.id,
+      departmentId: formData.department.id!!,
+      driverRequest: formData.driverRequest,
+      vehicleRequest: formData.vehicleRequest,
+      userId: decodedToken.sub.userId,
+      driverId: formData.driver?.id ?? null,
+      vehicleId: formData.vehicle?.id ?? null,
+      title: formData.title,
+      tripStart: formData.tripStart,
+      tripEnd: formData.tripEnd,
+      destination: formData.destination,
+      purpose: formData.purpose,
+      status: formData.status,
+    };
+    const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
+    if (isDataValid) {
+      const res = await updateExistingTrip(requestData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Trip ${requestData.title} was updated successfully.`);
+
+        setFormData(passedData);
+        window.location.reload();
+        handleClose();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   return (
@@ -74,12 +158,13 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
                 <Form.Control name="title" type="text" placeholder="" onChange={handleOnChange} value={formData.title ?? ""} />
               </FloatingLabel>
               <FloatingLabel controlId="floatingSelect" label="Department" className="small-input mb-2">
-                <Form.Select name="department" onChange={handleSelectChange} value={formData.department ?? ""}>
-                  <option>Open this select menu</option>
-                  <option value="all">All</option>
-                  <option value="ongoing">Ongoing</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="past">Past</option>
+                <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
+                  <option>Select Department</option>
+                  {departments.map((deparment, index) => (
+                    <option key={`${deparment}-${index}`} value={deparment.id}>
+                      {deparment.name}
+                    </option>
+                  ))}
                 </Form.Select>
               </FloatingLabel>
               <FloatingLabel controlId="floatingInput" label="Destination" className="mb-2 small-input">
@@ -97,17 +182,17 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
                 />
               </FloatingLabel>
               <FloatingLabel controlId="floatingInput" label="Date Start" className="small-input mb-2">
-                <Form.Control name="dateStart" type="datetime-local" placeholder="" onChange={handleOnChange} value={formData.dateStart ?? ""} />
+                <Form.Control name="tripStart" type="datetime-local" placeholder="" onChange={handleOnChange} value={formData.tripStart ?? ""} />
               </FloatingLabel>
               <FloatingLabel controlId="floatingInput" label="Date End" className="small-input mb-3">
                 <Form.Control
-                  name="dateEnd"
+                  name="tripEnd"
                   type="datetime-local"
                   placeholder=""
                   onChange={handleOnChange}
-                  disabled={formData.dateStart.length === 0}
-                  value={formData.dateEnd ?? ""}
-                  min={formData.dateStart}
+                  disabled={formData.tripStart.length === 0}
+                  value={formData.tripEnd ?? ""}
+                  min={formData.tripStart}
                 />
               </FloatingLabel>
               <Row className="d-flex">
@@ -126,12 +211,13 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
             {role.toLowerCase() === "admin" && (
               <Col md={8}>
                 <FloatingLabel controlId="floatingSelect" label="Driver" className="small-input mb-2">
-                  <Form.Select name="driver" onChange={handleSelectChange} value={formData.driver ?? ""}>
-                    <option>Open this select menu</option>
-                    <option value="all">All</option>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
+                  <Form.Select name="driver" onChange={handleSelectChange} value={formData.driver?.id ?? ""}>
+                    <option value={""}>Select Driver</option>
+                    {drivers.map((driver, index) => (
+                      <option key={`${driver}-${index}`} value={driver.id}>
+                        {driver.lastName}, {driver.firstName}
+                      </option>
+                    ))}
                   </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingTextarea2" label="Driver Schedule" className="no-resize small-input-textarea mb-2">
@@ -145,12 +231,13 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
                   />
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingSelect" label="Vehicle" className="small-input mb-2">
-                  <Form.Select name="vehicle" onChange={handleSelectChange} value={formData.vehicle ?? ""}>
-                    <option>Open this select menu</option>
-                    <option value="all">All</option>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
+                  <Form.Select name="vehicle" onChange={handleSelectChange} value={formData.vehicle?.id ?? ""}>
+                    <option value={""}>Select Vehicle</option>
+                    {vehicles.map((vehicle, index) => (
+                      <option key={`${vehicle}-${index}`} value={vehicle.id}>
+                        {vehicle.model} - {vehicle.plateNumber}
+                      </option>
+                    ))}
                   </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingTextarea2" label="Vehicle Schedule" className="no-resize small-input-textarea mb-2">
@@ -175,7 +262,6 @@ export default function CreateUpdateTrip(passedData: TripsProps) {
             variant="primary"
             onClick={() => {
               formData.id ? handleUpdate() : handleSave();
-              handleClose();
             }}
           >
             {formData.id ? "Update Trip" : "Create Trip"}

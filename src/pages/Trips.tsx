@@ -12,21 +12,40 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, formatISOString } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
-import { TripProps, TripSpecificChecklistProps, TripsTableProps } from "../utils/TypesIndex";
-import { getAllTrips } from "../hooks/axios";
+import {
+  DepartmentProps,
+  DriverProps,
+  TripProps,
+  TripSpecificChecklistProps,
+  TripsTableProps,
+  TripTableProps,
+  UserProps,
+  VehicleProps,
+} from "../utils/TypesIndex";
+import { approveExistingTrip, declineExistingTrip, getAllDeparment, getAllDrivers, getAllTrips, getAllVehicle } from "../hooks/axios";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
   const [allTripData, setAllTripData] = useState<TripProps[]>([]);
-  const [tableData, setTableData] = useState<TripsTableProps[]>([]);
+  const [tableData, setTableData] = useState<TripTableProps[]>([]);
+  const [allDepartmentData, setAllDepartmentData] = useState<DepartmentProps[]>([]);
+  const [allDriverData, setAllDriverData] = useState<DriverProps[]>([]);
+  const [allVehicleData, setAllVehicleData] = useState<VehicleProps[]>([]);
+
   const auth = useAuthUser();
   const userRole = auth()?.role ?? "Staff";
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
+
+  const decodedToken = decodeToken(access_token);
+
+  useEffect(() => {
+    (async () => {})();
+  }, []);
 
   const checklistSimulation: TripSpecificChecklistProps[] = [
     {
@@ -55,17 +74,32 @@ export default function Trips() {
     },
   ];
 
-  const columns = [
-    {
-      field: "view",
-      headerName: "",
-      width: 50,
-      minWidth: 50,
-      maxWidth: 50,
-      sortable: false,
-      renderCell: (params: any) => (
-        <>
+  {
+    /*
+      {
+        const row = params.row;
+
+        const passedData: ChecklistProps = {
+          id: row.id,
+          title: row.title,
+          typed: row.typed,
+          isDeleted: row.isDeleted,
+        };
+
+        return (
           <Row className="d-flex">
+            <Col className="px-1">
+              <CreateUpdateChecklist passedData={passedData} access_token={access_token} />
+            </Col>
+          </Row>
+        );
+      },
+    */
+  }
+
+  {
+    /*
+      <Row className="d-flex">
             <Col className="px-1">
               <CreateUpdateTrip
                 id={params.row.id}
@@ -80,8 +114,75 @@ export default function Trips() {
               />
             </Col>
           </Row>
-        </>
-      ),
+    */
+  }
+
+  const columns = [
+    {
+      field: "view",
+      headerName: "",
+      width: 50,
+      minWidth: 50,
+      maxWidth: 50,
+      sortable: false,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: TripTableProps = {
+          id: row.id,
+          title: row.title,
+          tripStart: row.tripStart.slice(0, -1),
+          tripEnd: row.tripEnd.slice(0, -1),
+          destination: row.destination,
+          purpose: row.purpose,
+          status: row.status,
+          timeDeparture: row.timeDeparture,
+          timeArrival: row.timeArrival,
+          remarks: row.remarks,
+          createdDate: row.createdDate,
+          updatedDate: row.updatedDate,
+          isDeleted: row.isDeleted,
+          tripChecklists: [], // To Be Implemented yet
+          department: { id: row.department.id, name: "" },
+          driver: {
+            id: row.driver?.id ?? "",
+            firstName: row.driver?.firstName ?? "",
+            lastName: row.driver?.lastName ?? "",
+            email: row.driver?.email ?? "",
+            department: { id: row.driver?.department.id ?? "", name: row.driver?.department.name ?? "" },
+            type: row.driver?.type ?? "",
+            contactNumber: row.driver?.contactNumber ?? "",
+            isActive: row.driver?.isActive ?? false,
+            isDeleted: row.driver?.isDeleted ?? false,
+          },
+          vehicle: {
+            id: row.vehicle?.id ?? "",
+            model: row.vehicle?.model ?? "",
+            plateNumber: row.vehicle?.plateNumber ?? "",
+            seats: row.vehicle?.seats ?? 0,
+            isDeleted: false,
+          },
+          driverRequest: false,
+          vehicleRequest: false,
+          requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
+          tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+          date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+        };
+
+        return (
+          <Row className="d-flex">
+            <Col className="px-1">
+              <CreateUpdateTrip
+                passedData={passedData}
+                access_token={access_token}
+                departments={allDepartmentData}
+                vehicles={allVehicleData}
+                drivers={allDriverData}
+              />
+            </Col>
+          </Row>
+        );
+      },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "id", headerName: "Trip Code", flex: 0.5 },
@@ -96,13 +197,21 @@ export default function Trips() {
       field: "driver",
       headerName: "Driver",
       flex: 1,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return <span>{row.driver !== null ? `${row.driver.lastName}, ${row.driver.firstName}` : "Self Drive"}</span>;
+      },
     },
     {
       field: "vehicle",
       headerName: "Vehicle",
       flex: 1,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return <span>{row.vehicle !== null ? `${row.vehicle.model} - ${row.vehicle.plateNumber}` : "Own Vehicle"}</span>;
+      },
     },
     !(userRole.toLowerCase() == "guard")
       ? {
@@ -239,12 +348,34 @@ export default function Trips() {
                 <>
                   <Row className="d-flex">
                     <Col xs={6} className="px-1">
-                      <Button size="sm" variant="success" className="w-100" onClick={() => console.log(params.row)}>
+                      <Button
+                        size="sm"
+                        variant="success"
+                        className="w-100"
+                        onClick={async () => {
+                          const res = confirm(`Confirm to approve the trip ${params.row.title}`);
+                          if (res) {
+                            await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                            window.location.reload();
+                          }
+                        }}
+                      >
                         <Image className="pe-2" src={Check} /> Approve
                       </Button>
                     </Col>
                     <Col xs={6} className="px-1">
-                      <Button size="sm" className="w-100 text-white" variant="danger" onClick={() => console.log(params.row)}>
+                      <Button
+                        size="sm"
+                        className="w-100 text-white"
+                        variant="danger"
+                        onClick={async () => {
+                          const res = confirm(`Confirm to decline the trip ${params.row.title}`);
+                          if (res) {
+                            await declineExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                            window.location.reload();
+                          }
+                        }}
+                      >
                         <Image className="pe-3" src={X} /> Decline
                       </Button>
                     </Col>
@@ -287,18 +418,40 @@ export default function Trips() {
     (async () => {
       const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
       setAllTripData(allTrips.data ?? []);
-      const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
+      const formattedTableData: TripTableProps[] = allTrips.data!!.map((trip: TripProps) => ({
         id: trip.id,
         title: trip.title,
-        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+        tripStart: trip.tripStart,
+        tripEnd: trip.tripEnd,
         destination: trip.destination,
-        driver: trip.driver !== null ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "Self Drive",
-        vehicle: trip.vehicle !== null ? trip.vehicle.model : "Own Vehicle",
+        purpose: trip.purpose,
+        status: trip.status,
+        timeDeparture: trip.timeDeparture,
+        timeArrival: trip.timeArrival,
+        remarks: trip.remarks,
+        createdDate: trip.createdDate,
+        updatedDate: trip.updatedDate,
+        isDeleted: trip.isDeleted,
+        tripChecklists: [], // To Be Implemented yet
+        department: { id: trip.department.id, name: "" },
+        driver: trip.driver,
+        vehicle: trip.vehicle,
+        driverRequest: false,
+        vehicleRequest: false,
         requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
         tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
       }));
-      console.log(formattedTableData);
       setTableData(formattedTableData);
+
+      const allDeparment = await getAllDeparment(access_token);
+      setAllDepartmentData(allDeparment.data ?? []);
+
+      const allVehicle = await getAllVehicle(access_token);
+      setAllVehicleData(allVehicle.data ?? []);
+
+      const allDriver = await getAllDrivers(access_token);
+      setAllDriverData(allDriver.data ?? []);
     })();
   }, []);
 
@@ -359,14 +512,29 @@ export default function Trips() {
           {userRole.toLowerCase() === "guard" ? null : (
             <>
               <CreateUpdateTrip
-                title={""}
-                department={""}
-                destination={""}
-                dateStart={""}
-                dateEnd={""}
-                driverRequest={false}
-                vehicleRequest={false}
-                purpose={""}
+                passedData={{
+                  id: "",
+                  title: "",
+                  tripStart: "", // ISO 8601 date-time string
+                  tripEnd: "", // ISO 8601 date-time string
+                  destination: "",
+                  purpose: "",
+                  status: "",
+                  timeDeparture: "", // ISO 8601 date-time string
+                  timeArrival: "", // ISO 8601 date-time strin
+                  remarks: "",
+                  createdDate: "", // ISO 8601 date-time string
+                  updatedDate: "", // ISO 8601 date-time string
+                  isDeleted: false,
+                  tripChecklists: [],
+                  department: { id: "", name: "" },
+                  driverRequest: true,
+                  vehicleRequest: true,
+                }}
+                departments={allDepartmentData}
+                access_token={access_token}
+                vehicles={allVehicleData}
+                drivers={allDriverData}
               />
             </>
           )}

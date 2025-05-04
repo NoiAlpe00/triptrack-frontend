@@ -30,17 +30,17 @@ export default function CreateUpdateUser({ passedData, departments, access_token
     if (name === "department") {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: { id: value, name: "" }, // TODO: Add name
+        [name]: { id: value, name: "" },
       }));
     } else if (name === "type") {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value, // TODO: Add name
+        [name]: value,
       }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value == "true", // TODO: Add Name here
+        [name]: value == "true",
       }));
     }
   };
@@ -176,7 +176,7 @@ export default function CreateUpdateUser({ passedData, departments, access_token
                   <option value="Admin">Admin</option>
                   <option value="Staff">Staff</option>
                   <option value="Driver">Driver</option>
-                  <option value="Guard">Driver</option>
+                  <option value="Guard">Guard</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>

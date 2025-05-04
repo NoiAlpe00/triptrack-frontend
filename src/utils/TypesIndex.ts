@@ -133,6 +133,10 @@ export interface TripsTableProps {
   vehicle: string;
   requestStatus: "Pending" | "Approved" | "Declined";
   tripStatus: string;
+  tripStart: string;
+  tripEnd: string;
+  timeDeparture: string | null | undefined;
+  timeArrival: string | null | undefined;
 }
 
 export interface LoginRequestProps {
@@ -171,16 +175,34 @@ export interface TripProps {
   destination: string;
   purpose: string;
   status: string;
-  timeDeparture: string; // ISO 8601 date-time string
-  timeArrival: string | null;
+  timeDeparture: string | null; // ISO 8601 date-time string
+  timeArrival: string | null; // ISO 8601 date-time strin
   remarks: string;
   createdDate: string; // ISO 8601 date-time string
   updatedDate: string; // ISO 8601 date-time string
   isDeleted: boolean;
   tripChecklists: TripChecklistIndividualProps[];
   department: DepartmentProps;
-  driver: UserProps | null;
-  vehicle: VehicleProps | null;
+  driver?: UserProps | null;
+  vehicle?: VehicleProps | null;
+  driverRequest: boolean;
+  vehicleRequest: boolean;
+  authorizedBy?: UserProps;
+  user?: UserProps;
+}
+
+export interface TripTableProps extends TripProps {
+  date: string;
+  requestStatus: "Pending" | "Approved" | "Declined";
+  tripStatus: string;
+}
+
+export interface CreateUpdateTripProps {
+  passedData: TripProps;
+  access_token: string;
+  departments: DepartmentProps[];
+  vehicles: VehicleProps[];
+  drivers: DriverProps[];
 }
 
 export interface ResponsePropsArray<T> {
@@ -225,4 +247,25 @@ export interface CreateUpdateUserRequestProps {
 export interface CreateUpdateDepartmentProps {
   passedData: DepartmentProps;
   access_token: string;
+}
+
+export interface DriverProps extends UserProps {
+  drivenTrips: TripProps;
+}
+
+export interface CreateUpdateTripRequestProps {
+  id?: string;
+  departmentId: string;
+  driverRequest: boolean;
+  vehicleRequest: boolean;
+  authorizedBy?: string;
+  userId: string;
+  driverId: string | null;
+  vehicleId: string | null;
+  title: string;
+  tripStart: string;
+  tripEnd: string;
+  destination: string;
+  purpose: string;
+  status: string;
 }

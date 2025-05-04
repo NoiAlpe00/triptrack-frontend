@@ -1,8 +1,10 @@
 import axios from "axios";
 import {
   ChecklistProps,
+  CreateUpdateTripRequestProps,
   CreateUpdateUserRequestProps,
   DepartmentProps,
+  DriverProps,
   LoginRequestProps,
   ResponsePropsArray,
   TripProps,
@@ -242,6 +244,86 @@ export const updateExistingVehicle = async (data: VehicleProps, access_token: st
         authorization: access_token,
       },
       data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const getAllDrivers = async (access_token: string): Promise<ResponsePropsArray<DriverProps>> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/user/getAllDriver`,
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
+
+export const addNewTrip = async (data: CreateUpdateTripRequestProps, access_token: string) => {
+  console.log(data);
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/trip`,
+      headers: {
+        authorization: access_token,
+      },
+      data: { ...data, driverId: data.driverId?.length == 0 ? null : data.driverId, vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateExistingTrip = async (data: CreateUpdateTripRequestProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/trip/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data: { ...data, driverId: data.driverId?.length == 0 ? null : data.driverId, vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const approveExistingTrip = async (id: string, userId: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/trip/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data: { id, status: "Approved", authorizedById: userId },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const declineExistingTrip = async (id: string, userId: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/trip/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data: { id, status: "Declined", authorizedById: userId },
     });
     return res.data;
   } catch (error: any) {
