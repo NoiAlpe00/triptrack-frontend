@@ -160,15 +160,25 @@ export default function AdminPage() {
       minWidth: 45,
       maxWidth: 45,
       sortable: false,
-      renderCell: (params: any) => (
-        <>
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: VehicleProps = {
+          id: row.id,
+          model: row.model,
+          plateNumber: row.plateNumber,
+          seats: row.seats,
+          isDeleted: row.isDeleted,
+        };
+
+        return (
           <Row className="d-flex">
             <Col className="px-1">
-              <CreateUpdateVehicle id={params.row.id} isDeleted={false} model={""} plateNumber={""} />
+              <CreateUpdateVehicle passedData={passedData} access_token={access_token} />
             </Col>
           </Row>
-        </>
-      ),
+        );
+      },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     { field: "model", headerName: "Model", flex: 2 },
@@ -304,7 +314,7 @@ export default function AdminPage() {
                     </FloatingLabel>
                   </Col>
                   <Col lg={2} className="">
-                    <CreateUpdateVehicle model={""} plateNumber={""} isDeleted={false} />
+                    <CreateUpdateVehicle passedData={{ model: "", plateNumber: "", isDeleted: false }} access_token={access_token} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "vehicle" && <CustomTable rows={vehicleTableData} columns={vehicleCols} type="settings" />}</Row>

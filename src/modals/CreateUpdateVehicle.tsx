@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { VehicleProps } from "../utils/TypesIndex";
+import { CreateUpdateVehicleProps, VehicleProps } from "../utils/TypesIndex";
 import Edit from "../assets/svgs/edit.svg";
+import { addNewVehicle, updateExistingVehicle } from "../hooks/axios";
+import { requestGuard } from "../utils/utilities";
 
-export default function CreateUpdateVehicle(passedData: VehicleProps) {
+export default function CreateUpdateVehicle({ passedData, access_token }: CreateUpdateVehicleProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -33,14 +35,54 @@ export default function CreateUpdateVehicle(passedData: VehicleProps) {
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log(formData);
+    const isDataValid = requestGuard<VehicleProps>(formData, ["id", "seats", "isDeleted"]);
+    if (isDataValid) {
+      const res = await addNewVehicle(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Vehicle ${formData.model} - ${formData.plateNumber} was added successfully.`);
+        setFormData({
+          model: "",
+          plateNumber: "",
+          seats: 0,
+          isDeleted: false,
+        });
+
+        window.location.reload();
+        handleClose();
+      } else {
+        setFormData(passedData);
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log(formData);
+    const isDataValid = requestGuard<VehicleProps>(formData, ["seats"]);
+    if (isDataValid) {
+      const res = await updateExistingVehicle(formData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(`Vehicle ${formData.model} - ${formData.plateNumber} was updated successfully.`);
+        setFormData({
+          id: "",
+          model: "",
+          plateNumber: "",
+          seats: 0,
+          isDeleted: false,
+        });
+        window.location.reload();
+        handleClose();
+      } else {
+        setFormData(passedData);
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      alert("Fill out all the fields.");
+    }
   };
+
+  console.log(formData);
 
   return (
     <>

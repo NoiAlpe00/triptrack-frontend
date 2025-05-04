@@ -126,6 +126,9 @@ export const getAllVehicle = async (access_token: string): Promise<ResponseProps
       headers: {
         authorization: access_token,
       },
+      params: {
+        withDeleted: true,
+      },
     });
     return res.data;
   } catch (error: any) {
@@ -204,6 +207,38 @@ export const updateExistingChecklist = async (data: ChecklistProps, access_token
     const res = await axios({
       method: "PATCH",
       url: `${URL}/checklist/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const addNewVehicle = async (data: VehicleProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/vehicle`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateExistingVehicle = async (data: VehicleProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/vehicle/update`,
       headers: {
         authorization: access_token,
       },

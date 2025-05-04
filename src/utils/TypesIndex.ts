@@ -92,6 +92,11 @@ export interface VehicleProps {
   isDeleted: boolean;
 }
 
+export interface CreateUpdateVehicleProps {
+  passedData: VehicleProps;
+  access_token: string;
+}
+
 export interface TripChecklistProps {
   id?: string;
   tripId: string;
