@@ -78,12 +78,11 @@ export default function AdminPage() {
       setUserTableData(formattedTableData);
     } else {
       const formattedTableData = allUserData
-        .filter((user) => {
-          return (
+        .filter(
+          (user) =>
             (userRoleFilter == "all" ? true : user.type === userRoleFilter) &&
             (userStatusFilter == "all" ? true : user.isActive == (userStatusFilter === "true"))
-          );
-        })
+        )
         .map((user: UserProps) => ({
           ...user,
           name: `${user.lastName}, ${user.firstName}`,
