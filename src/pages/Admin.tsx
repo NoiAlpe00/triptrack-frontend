@@ -21,6 +21,12 @@ export default function AdminPage() {
   const [allDepartmentData, setAllDepartmentData] = useState<DepartmentProps[]>([]);
   const [departmentTableData, setDepartmentTableData] = useState<DepartmentProps[]>([]);
 
+  const [departmentFilter, setDepartmentFilter] = useState<string>("all");
+  const [vehicleFilter, setVehicleFilter] = useState<string>("all");
+  const [checklistFilter, setChecklistFilter] = useState<string>("all");
+  const [userRoleFilter, setUserRoleFilter] = useState<string>("all");
+  const [userStatusFilter, setUserStatusFilter] = useState<string>("all");
+
   const authHeader = useAuthHeader();
   const access_token = authHeader();
 
@@ -32,6 +38,59 @@ export default function AdminPage() {
       sessionStorage.setItem("loginToastShow", "true");
     }
   }, []);
+
+  useEffect(() => {
+    if (departmentFilter == "all") {
+      setDepartmentTableData(allDepartmentData);
+    } else if (departmentFilter === "true") {
+      setDepartmentTableData(allDepartmentData.filter((departmentFilter) => departmentFilter.isDeleted == true));
+    } else {
+      setDepartmentTableData(allDepartmentData.filter((departmentFilter) => departmentFilter.isDeleted == false));
+    }
+  }, [departmentFilter]);
+
+  useEffect(() => {
+    if (vehicleFilter == "all") {
+      setVehicleTableData(allVehicleData);
+    } else if (vehicleFilter === "true") {
+      setVehicleTableData(allVehicleData.filter((vehicleData) => vehicleData.isDeleted == true));
+    } else {
+      setVehicleTableData(allVehicleData.filter((vehicleData) => vehicleData.isDeleted == false));
+    }
+  }, [vehicleFilter]);
+
+  useEffect(() => {
+    if (checklistFilter == "all") {
+      setChecklistTableData(allChecklistData);
+    } else if (checklistFilter === "true") {
+      setChecklistTableData(allChecklistData.filter((checklistData) => checklistData.isDeleted == true));
+    } else {
+      setChecklistTableData(allChecklistData.filter((checklistData) => checklistData.isDeleted == false));
+    }
+  }, [checklistFilter]);
+
+  useEffect(() => {
+    if (userRoleFilter == "all" && userStatusFilter == "all") {
+      const formattedTableData = allUserData.map((user: UserProps) => ({
+        ...user,
+        name: `${user.lastName}, ${user.firstName}`,
+      }));
+      setUserTableData(formattedTableData);
+    } else {
+      const formattedTableData = allUserData
+        .filter((user) => {
+          return (
+            (userRoleFilter == "all" ? true : user.type === userRoleFilter) &&
+            (userStatusFilter == "all" ? true : user.isActive == (userStatusFilter === "true"))
+          );
+        })
+        .map((user: UserProps) => ({
+          ...user,
+          name: `${user.lastName}, ${user.firstName}`,
+        }));
+      setUserTableData(formattedTableData);
+    }
+  }, [userRoleFilter, userStatusFilter]);
 
   useEffect(() => {
     (async () => {
@@ -218,6 +277,21 @@ export default function AdminPage() {
     { field: "isDeleted", headerName: "Deleted?", flex: 1 },
   ];
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (name === "departmentFilter") {
+      setDepartmentFilter(value);
+    } else if (name === "vehicleFilter") {
+      setVehicleFilter(value);
+    } else if (name === "checklistFilter") {
+      setChecklistFilter(value);
+    } else if (name === "userRoleFilter") {
+      setUserRoleFilter(value);
+    } else if (name === "userStatusFilter") {
+      setUserStatusFilter(value);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState("department");
 
   return (
@@ -228,17 +302,31 @@ export default function AdminPage() {
             <Col lg={6} className="">
               <h2 className="text-primary thin-text text-start">All Users</h2>
             </Col>
-            <Col lg={4} className="">
-              <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                <Form.Select name="statusFilter" aria-label="Floating label select example">
-                  <option>Open this select menu</option>
+            <Col lg={2} className="">
+              <FloatingLabel controlId="floatingSelect" label="Role" className="small-input">
+                <Form.Select name="userRoleFilter" aria-label="Floating label select example" value={userRoleFilter} onChange={handleSelectChange}>
                   <option value="all">All</option>
-                  <option value="ongoing">Ongoing</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="past">Past</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Guard">Guard</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>
+            <Col lg={2} className="">
+              <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
+                <Form.Select
+                  name="userStatusFilter"
+                  aria-label="Floating label select example"
+                  value={userStatusFilter}
+                  onChange={handleSelectChange}
+                >
+                  <option value="all">All</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </Form.Select>
+              </FloatingLabel>
+            </Col>
+
             <Col lg={2} className="">
               <CreateUpdateUser
                 passedData={{
@@ -281,13 +369,16 @@ export default function AdminPage() {
                     <h2 className="text-primary thin-text text-start">All Department</h2>
                   </Col>
                   <Col lg={4} className="">
-                    <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                      <Form.Select name="statusFilter" aria-label="Floating label select example">
-                        <option>Open this select menu</option>
+                    <FloatingLabel controlId="floatingSelect" label="Filter" className="small-input">
+                      <Form.Select
+                        name="departmentFilter"
+                        aria-label="Floating label select example"
+                        value={departmentFilter}
+                        onChange={handleSelectChange}
+                      >
                         <option value="all">All</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
+                        <option value="true">Deleted</option>
+                        <option value="false">Not Deleted</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
@@ -303,13 +394,16 @@ export default function AdminPage() {
                     <h2 className="text-primary thin-text text-start">All Vehicle</h2>
                   </Col>
                   <Col lg={4} className="">
-                    <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                      <Form.Select name="statusFilter" aria-label="Floating label select example">
-                        <option>Open this select menu</option>
+                    <FloatingLabel controlId="floatingSelect" label="Filter" className="small-input">
+                      <Form.Select
+                        name="vehicleFilter"
+                        aria-label="Floating label select example"
+                        value={vehicleFilter}
+                        onChange={handleSelectChange}
+                      >
                         <option value="all">All</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
+                        <option value="true">Deleted</option>
+                        <option value="false">Not Deleted</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
@@ -325,13 +419,16 @@ export default function AdminPage() {
                     <h2 className="text-primary thin-text text-start">All Checklist</h2>
                   </Col>
                   <Col lg={4} className="">
-                    <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                      <Form.Select name="statusFilter" aria-label="Floating label select example">
-                        <option>Open this select menu</option>
+                    <FloatingLabel controlId="floatingSelect" label="Filter" className="small-input">
+                      <Form.Select
+                        name="checklistFilter"
+                        aria-label="Floating label select example"
+                        value={checklistFilter}
+                        onChange={handleSelectChange}
+                      >
                         <option value="all">All</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="past">Past</option>
+                        <option value="true">Deleted</option>
+                        <option value="false">Not Deleted</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
