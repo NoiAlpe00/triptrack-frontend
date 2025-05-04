@@ -18,7 +18,6 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -27,7 +26,6 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
 
   const handleRequestButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = e.currentTarget;
-
     setFormData((prevData) => ({
       ...prevData,
       [name]: !prevData[name as keyof typeof prevData],
@@ -81,8 +79,6 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
       alert("Fill out all the fields.");
     }
   };
-
-  console.log(formData);
 
   return (
     <>

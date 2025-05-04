@@ -181,8 +181,8 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       const allTrips = await getAllTrips({ id: undefined, type: userData.userType, withDeleted: false }, access_token);
-      setAllTripData(allTrips.data);
-      const formattedTableData = allTrips.data.map((trip: TripProps) => ({
+      setAllTripData(allTrips.data ?? []);
+      const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
         id: trip.id,
         title: trip.title,
         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
@@ -192,7 +192,6 @@ export default function Dashboard() {
         requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
         tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
       }));
-      console.log(formattedTableData);
       const requestCounts = formattedTableData.reduce(
         (acc, item) => {
           acc[item.requestStatus]++;

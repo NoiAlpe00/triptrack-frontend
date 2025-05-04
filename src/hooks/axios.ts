@@ -111,7 +111,6 @@ export const getAllChecklist = async (access_token: string): Promise<ResponsePro
         withDeleted: true,
       },
     });
-    console.log(res.data);
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };

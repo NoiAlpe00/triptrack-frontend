@@ -96,7 +96,6 @@ export default function CreateUpdateUser({ passedData, departments, access_token
       isDeleted: formData.isDeleted,
       password: formData.password,
     };
-    console.log(requestData);
     const isDataValid = requestGuard<CreateUpdateUserRequestProps>(requestData, ["password"]);
     if (isDataValid) {
       const res = await updateExistingUser(requestData, access_token);
