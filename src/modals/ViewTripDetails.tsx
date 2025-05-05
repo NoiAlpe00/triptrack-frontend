@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Modal, Image, Col, Row } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { TripProps, TripTableProps, ViewTripProps } from "../utils/TypesIndex";
+import { ViewTripProps } from "../utils/TypesIndex";
 import Eye from "../assets/svgs/eye.svg";
 import CheckPurple from "../assets/svgs/check-purple.svg";
 import XRed from "../assets/svgs/x-red.svg";
