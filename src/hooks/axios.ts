@@ -7,6 +7,7 @@ import {
   DriverProps,
   LoginRequestProps,
   ResponsePropsArray,
+  TripChecklistProps,
   TripProps,
   TripRequestProps,
   UserProps,
@@ -46,6 +47,7 @@ export const getAllTrips = async ({ id, type, withDeleted }: TripRequestProps, a
         authorization: access_token,
       },
     });
+    console.log(res.data.data)
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };
@@ -324,6 +326,38 @@ export const declineExistingTrip = async (id: string, userId: string, access_tok
         authorization: access_token,
       },
       data: { id, status: "Declined", authorizedById: userId },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const addNewTripChecklist = async (data: TripChecklistProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/trip-checklist`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const updateTripChecklist = async (data: TripChecklistProps, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/trip-checklist`,
+      headers: {
+        authorization: access_token,
+      },
+      data: data.checklist,
     });
     return res.data;
   } catch (error: any) {

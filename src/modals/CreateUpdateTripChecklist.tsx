@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Button, Modal, FloatingLabel, Form } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
-import { TripChecklistProps } from "../utils/TypesIndex";
+import { CreateUpdateTripChecklistProps, TripChecklistProps } from "../utils/TypesIndex";
 import CustomRadioButton from "../components/CustomRadioButton";
+import { addNewTripChecklist } from "../hooks/axios";
+import { formatISOString, requestGuard } from "../utils/utilities";
 
-export default function CreateUpdateTripChecklist(passedData: TripChecklistProps) {
+export default function CreateUpdateTripChecklist({ passedData, type, phase, access_token }: CreateUpdateTripChecklistProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -14,8 +16,11 @@ export default function CreateUpdateTripChecklist(passedData: TripChecklistProps
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState<TripChecklistProps>(passedData);
 
+  console.log(passedData);
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(type, phase);
     console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
@@ -25,6 +30,7 @@ export default function CreateUpdateTripChecklist(passedData: TripChecklistProps
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    // console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       checklist: prevData.checklist.map((checklist) => (checklist.checklistId === name ? { ...checklist, data: value } : checklist)),
@@ -40,53 +46,105 @@ export default function CreateUpdateTripChecklist(passedData: TripChecklistProps
   };
 
   const handleSave = async () => {
-    console.log("Create");
-    console.log(formData);
+    const requestData: TripChecklistProps = {
+      tripId: formData.tripId,
+      ...(type === "operation" && phase === "departure" ? { timeDeparture: formData.timeDeparture } : { timeArrival: formData.timeArrival }),
+      checklist: formData.checklist,
+      timing: passedData.timing,
+    };
+    const isDataValid = requestGuard<TripChecklistProps>(requestData, []);
+    const doubleCheck = confirm("This step is final and uneditable, are you sure the data is correct?");
+    if (isDataValid && doubleCheck) {
+      const res = await addNewTripChecklist(requestData, access_token);
+      if (res.statusCode >= 200 && res.statusCode < 400) {
+        alert(` ${phase === "departure" ? "Departure" : "Arrival"} Trip Checklist for trip ${requestData.tripId} was added successfully.`);
+        setFormData({
+          tripId: "",
+          checklist: passedData.checklist,
+          timing: "",
+        });
+        handleClose();
+        window.location.reload();
+      } else {
+        alert(`Somthing went wrong - ${res.data}`);
+      }
+    } else {
+      if (!doubleCheck) {
+      } else alert("Fill out all the fields.");
+    }
   };
 
   const handleUpdate = async () => {
-    console.log("Update");
-    console.log({ formData });
+    // const requestData: CreateUpdateUserRequestProps = {
+    //   id: formData.id,
+    //   email: formData.email,
+    //   department: formData.department.id!!,
+    //   type: formData.type,
+    //   firstName: formData.firstName,
+    //   lastName: formData.lastName,
+    //   contactNumber: formData.contactNumber,
+    //   isActive: formData.isActive,
+    //   isDeleted: formData.isDeleted,
+    //   password: formData.password,
+    // };
+    // const isDataValid = requestGuard<CreateUpdateUserRequestProps>(requestData, ["password"]);
+    // if (isDataValid) {
+    //   const res = await updateExistingUser(requestData, access_token);
+    //   if (res.statusCode >= 200 && res.statusCode < 400) {
+    //     alert(`User ${requestData.email} was updated successfully.`);
+    //     setFormData({
+    //       email: "",
+    //       department: { id: "", name: "" },
+    //       type: "",
+    //       firstName: "",
+    //       lastName: "",
+    //       contactNumber: "",
+    //       isActive: true,
+    //       isDeleted: false,
+    //       password: "",
+    //     });
+    //     window.location.reload();
+    //     handleClose();
+    //   } else {
+    //     alert(`Somthing went wrong - ${res.data}`);
+    //   }
+    // } else {
+    //   alert("Fill out all the fields.");
+    // }
   };
-
-  console.log(formData);
 
   return (
     <>
-      {formData.type.split(" ")[0] == "table" ? (
-        formData.type.split(" ")[1] == "departure" ? (
-          formData.departureTime ? (
-            <Button variant="outline-primary w-100" size="sm" onClick={handleShow}>
-              {formData.departureTime}
-            </Button>
+      {type == "table" ? (
+        phase == "departure" ? (
+          formData.timeDeparture ? (
+            formatISOString(passedData.timeDeparture!!)
           ) : (
             "-"
           )
-        ) : formData.type.split(" ")[1] == "arrival" ? (
-          formData.arrivalTime ? (
-            <Button variant="outline-primary w-100" size="sm" onClick={handleShow}>
-              {formData.arrivalTime}
-            </Button>
+        ) : phase == "arrival" ? (
+          formData.timeArrival ? (
+            formatISOString(passedData.timeArrival!!)
           ) : (
             "-"
           )
         ) : null
-      ) : formData.type == "operation" && (!formData.departureTime || !formData.arrivalTime) ? (
-        !formData.departureTime ? (
-          <Button variant="primary w-100" size="sm" onClick={handleShow}>
-            Departure Create Checklist
-          </Button>
-        ) : (
-          <Button variant="primary w-100" size="sm" onClick={handleShow}>
-            Arrival Create Checklist
-          </Button>
-        )
-      ) : null}
+      ) : type == "operation" && phase == "departure" ? (
+        <Button variant="primary w-100" size="sm" onClick={handleShow}>
+          Departure Create Checklist
+        </Button>
+      ) : phase !== "done" ? (
+        <Button variant="primary w-100" size="sm" onClick={handleShow}>
+          Arrival Create Checklist
+        </Button>
+      ) : (
+        "-"
+      )}
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            {formData.type == "operation" && (!formData.departureTime || !formData.arrivalTime) ? "Create New Checklist" : "Update Checklist"}
+            {type == "operation" && (phase == "departure" || phase == "arrival") ? "Create New Checklist" : "Update Checklist"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -94,19 +152,19 @@ export default function CreateUpdateTripChecklist(passedData: TripChecklistProps
           <FloatingLabel controlId="tripCode" label="Trip Code" className="mb-2 small-input">
             <Form.Control name="tripId" type="text" placeholder="" onChange={handleOnChange} value={formData.tripId ?? ""} disabled />
           </FloatingLabel>
-          {!formData.departureTime ? (
-            <FloatingLabel controlId="departureTime" label="Departure Time" className="mb-2 small-input">
+          {phase == "departure" && type == "operation" ? (
+            <FloatingLabel controlId="timeDeparture" label="Departure Time" className="mb-2 small-input">
               <Form.Control
-                name="departureTime"
+                name="timeDeparture"
                 type="datetime-local"
                 placeholder=""
                 onChange={handleOnChange}
-                value={formData.departureTime ?? ""}
+                value={formData.timeDeparture ?? ""}
               />
             </FloatingLabel>
           ) : (
-            <FloatingLabel controlId="arrivalTime" label="Arrival Time" className="mb-2 small-input">
-              <Form.Control name="arrivalTime" type="datetime-local" placeholder="" onChange={handleOnChange} value={formData.arrivalTime ?? ""} />
+            <FloatingLabel controlId="timeArrival" label="Arrival Time" className="mb-2 small-input">
+              <Form.Control name="timeArrival" type="datetime-local" placeholder="" onChange={handleOnChange} value={formData.timeArrival ?? ""} />
             </FloatingLabel>
           )}
           {formData.checklist.map((checklist, index) =>
@@ -144,7 +202,6 @@ export default function CreateUpdateTripChecklist(passedData: TripChecklistProps
             variant="primary"
             onClick={() => {
               formData.id ? handleUpdate() : handleSave();
-              handleClose();
             }}
           >
             {formData.id ? "Update" : "Create"}

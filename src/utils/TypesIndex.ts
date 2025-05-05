@@ -100,10 +100,17 @@ export interface CreateUpdateVehicleProps {
 export interface TripChecklistProps {
   id?: string;
   tripId: string;
-  departureTime?: string;
-  arrivalTime?: string;
+  timeDeparture?: string;
+  timeArrival?: string;
+  timing: string;
   checklist: TripSpecificChecklistProps[];
+}
+
+export interface CreateUpdateTripChecklistProps {
+  passedData: TripChecklistProps;
   type: string;
+  phase: string;
+  access_token: string;
 }
 
 export interface CustomRadioButtonProps {

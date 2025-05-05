@@ -116,8 +116,9 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       tripEnd: formData.tripEnd,
       destination: formData.destination,
       purpose: formData.purpose,
-      status: formData.status,
+      status: (formData.status === "Approved" || formData.status === "Declined") && decodedToken.userType !== "Admin" ? "Pending" : formData.status,
     };
+    console.log(requestData);
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
     if (isDataValid) {
       const res = await updateExistingTrip(requestData, access_token);

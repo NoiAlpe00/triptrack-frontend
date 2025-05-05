@@ -16,16 +16,23 @@ import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
+  ChecklistProps,
   DepartmentProps,
   DriverProps,
   TripProps,
   TripSpecificChecklistProps,
-  TripsTableProps,
   TripTableProps,
-  UserProps,
   VehicleProps,
 } from "../utils/TypesIndex";
-import { approveExistingTrip, declineExistingTrip, getAllDeparment, getAllDrivers, getAllTrips, getAllVehicle } from "../hooks/axios";
+import {
+  approveExistingTrip,
+  declineExistingTrip,
+  getAllChecklist,
+  getAllDeparment,
+  getAllDrivers,
+  getAllTrips,
+  getAllVehicle,
+} from "../hooks/axios";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -34,6 +41,8 @@ export default function Trips() {
   const [allDepartmentData, setAllDepartmentData] = useState<DepartmentProps[]>([]);
   const [allDriverData, setAllDriverData] = useState<DriverProps[]>([]);
   const [allVehicleData, setAllVehicleData] = useState<VehicleProps[]>([]);
+  const [allChecklistData, setAllChecklistData] = useState<ChecklistProps[]>([]);
+  const [allTripSpecificChecklistData, setAllTripSpecificChecklistData] = useState<TripSpecificChecklistProps[]>([]);
 
   const auth = useAuthUser();
   const userRole = auth()?.role ?? "Staff";
@@ -259,20 +268,28 @@ export default function Trips() {
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         }
       : {
-          field: "departureTime",
+          field: "timeDeparture",
           headerName: "Departure Time",
           flex: 1,
-          renderCell: (params: any) => (
-            <>
-              <CreateUpdateTripChecklist
-                tripId={params.row.id}
-                departureTime={params.row.departureTime}
-                arrivalTime={params.row.arrivalTime}
-                checklist={checklistSimulation}
-                type={"table departure"}
-              />
-            </>
-          ),
+          renderCell: (params: any) => {
+            console.log(params.row);
+            return (
+              <>
+                <CreateUpdateTripChecklist
+                  passedData={{
+                    tripId: params.row.id,
+                    timeDeparture: params.row.timeDeparture,
+                    timeArrival: params.row.timeArrival,
+                    timing: params.row.timeDeparture == undefined ? "Before" : "After",
+                    checklist: allTripSpecificChecklistData,
+                  }}
+                  type={"table"}
+                  phase={"departure"}
+                  access_token={access_token}
+                />
+              </>
+            );
+          },
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         },
     ,
@@ -327,11 +344,16 @@ export default function Trips() {
           renderCell: (params: any) => (
             <>
               <CreateUpdateTripChecklist
-                tripId={params.row.id}
-                departureTime={params.row.departureTime}
-                arrivalTime={params.row.arrivalTime}
-                checklist={checklistSimulation}
-                type={"table arrival"}
+                passedData={{
+                  tripId: params.row.id,
+                  timeDeparture: params.row.timeDeparture,
+                  timeArrival: params.row.timeArrival,
+                  timing: params.row.timeDeparture == undefined ? "Before" : "After",
+                  checklist: allTripSpecificChecklistData,
+                }}
+                type={"table"}
+                phase={"arrival"}
+                access_token={access_token}
               />
             </>
           ),
@@ -344,7 +366,7 @@ export default function Trips() {
           flex: 1.5,
           renderCell: (params: any) => (
             <>
-              {params.row.requestStatus?.toLowerCase() !== "approved" ? (
+              {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
                 <>
                   <Row className="d-flex">
                     <Col xs={6} className="px-1">
@@ -403,11 +425,16 @@ export default function Trips() {
           renderCell: (params: any) => (
             <>
               <CreateUpdateTripChecklist
-                tripId={params.row.id}
-                departureTime={params.row.departureTime}
-                arrivalTime={params.row.arrivalTime}
-                checklist={checklistSimulation}
+                passedData={{
+                  tripId: params.row.id,
+                  timeDeparture: params.row.timeDeparture,
+                  timeArrival: params.row.timeArrival,
+                  timing: params.row.timeDeparture == undefined ? "Before" : "After",
+                  checklist: allTripSpecificChecklistData,
+                }}
                 type={"operation"}
+                phase={params.row.timeDeparture && params.row.timeArrival ? "done" : params.row.timeDeparture == undefined ? "departure" : "arrival"}
+                access_token={access_token}
               />
             </>
           ),
@@ -416,42 +443,54 @@ export default function Trips() {
 
   useEffect(() => {
     (async () => {
-      const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
-      setAllTripData(allTrips.data ?? []);
-      const formattedTableData: TripTableProps[] = allTrips.data!!.map((trip: TripProps) => ({
-        id: trip.id,
-        title: trip.title,
-        tripStart: trip.tripStart,
-        tripEnd: trip.tripEnd,
-        destination: trip.destination,
-        purpose: trip.purpose,
-        status: trip.status,
-        timeDeparture: trip.timeDeparture,
-        timeArrival: trip.timeArrival,
-        remarks: trip.remarks,
-        createdDate: trip.createdDate,
-        updatedDate: trip.updatedDate,
-        isDeleted: trip.isDeleted,
-        tripChecklists: [], // To Be Implemented yet
-        department: { id: trip.department.id, name: "" },
-        driver: trip.driver,
-        vehicle: trip.vehicle,
-        driverRequest: false,
-        vehicleRequest: false,
-        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-      }));
-      setTableData(formattedTableData);
-
       const allDeparment = await getAllDeparment(access_token);
       setAllDepartmentData(allDeparment.data ?? []);
+
+      const allChecklist = await getAllChecklist(access_token);
+      setAllChecklistData(allChecklist.data ?? []);
+      const formattedChecklistTableData = allChecklist.data?.map((checklist) => ({
+        checklistId: checklist.id!!,
+        title: checklist.title,
+        typed: checklist.typed ?? false,
+        data: checklist.typed ? "" : "passed",
+      }));
+      setAllTripSpecificChecklistData(formattedChecklistTableData ?? []);
 
       const allVehicle = await getAllVehicle(access_token);
       setAllVehicleData(allVehicle.data ?? []);
 
       const allDriver = await getAllDrivers(access_token);
       setAllDriverData(allDriver.data ?? []);
+
+      const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
+      setAllTripData(allTrips.data ?? []);
+      const formattedTableData: TripTableProps[] = allTrips.data
+        ? allTrips.data!!.map((trip: TripProps) => ({
+            id: trip.id,
+            title: trip.title,
+            tripStart: trip.tripStart,
+            tripEnd: trip.tripEnd,
+            destination: trip.destination,
+            purpose: trip.purpose,
+            status: trip.status,
+            timeDeparture: trip.timeDeparture,
+            timeArrival: trip.timeArrival,
+            remarks: trip.remarks,
+            createdDate: trip.createdDate,
+            updatedDate: trip.updatedDate,
+            isDeleted: trip.isDeleted,
+            tripChecklists: [], // To Be Implemented yet
+            department: { id: trip.department.id, name: "" },
+            driver: trip.driver,
+            vehicle: trip.vehicle,
+            driverRequest: false,
+            vehicleRequest: false,
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+          }))
+        : [];
+      setTableData(formattedTableData);
     })();
   }, []);
 
