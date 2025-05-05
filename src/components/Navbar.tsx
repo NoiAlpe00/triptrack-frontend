@@ -1,11 +1,17 @@
-import { useSignOut } from "react-auth-kit";
-import { Navbar, Nav, Button } from "react-bootstrap";
+import { useAuthHeader, useSignOut } from "react-auth-kit";
+import { Navbar, Nav, Button, Col, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { decodeToken } from "../utils/utilities";
 
 export default function CustomNavbar() {
   const location = useLocation();
   const signOut = useSignOut();
   const navigate = useNavigate();
+
+  const authHeader = useAuthHeader();
+  const access_token = authHeader();
+
+  const decodedToken = decodeToken(access_token);
 
   const handleLogout = () => {
     signOut();
@@ -38,6 +44,16 @@ export default function CustomNavbar() {
           </Nav.Link>
         </Nav>
         <Nav className="ms-auto">
+          <div className="d-flex align-items-center px-2">
+            {decodedToken.lastName}, {decodedToken.firstName} ({decodedToken.userType})
+          </div>
+
+          <div className="d-flex align-items-center px-2">
+            <Button size="sm" variant="outline-secondary">
+              Change Password
+            </Button>
+          </div>
+
           <Button variant="danger text-white" onClick={handleLogout}>
             Logout
           </Button>

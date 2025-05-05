@@ -20,8 +20,6 @@ export default function ViewTripDetails({ passedData }: ViewTripProps) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  console.log(passedData);
-
   return (
     <>
       <Button size="sm" className="w-100" onClick={handleShow}>
