@@ -16,6 +16,7 @@
     "@mui/x-data-grid": "^7.28.3",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
+    "bootstrap-icons": "^1.12.1",
     "chart.js": "^4.4.9",
     "react": "^19.0.0",
     "react-auth-kit": "^2.12.7",
