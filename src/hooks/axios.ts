@@ -47,7 +47,7 @@ export const getAllTrips = async ({ id, type, withDeleted }: TripRequestProps, a
         authorization: access_token,
       },
     });
-    console.log(res.data.data)
+    console.log(res.data.data);
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };
@@ -362,5 +362,32 @@ export const updateTripChecklist = async (data: TripChecklistProps, access_token
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const changePassword = async (
+  email: string,
+  currentPassword: string,
+  NewPassword: string,
+  ConfirmNewPassword: string,
+  access_token: string
+): Promise<ResponsePropsArray<UserProps>> => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/auth/changePassword`,
+      headers: {
+        authorization: access_token,
+      },
+      data: {
+        email,
+        currentPassword,
+        NewPassword,
+        ConfirmNewPassword,
+      },
+    });
+    return { statusCode: res.data.statusCode, message: res.data.messge };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
   }
 };

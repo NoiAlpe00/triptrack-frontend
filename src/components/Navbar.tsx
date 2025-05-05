@@ -1,7 +1,8 @@
 import { useAuthHeader, useSignOut } from "react-auth-kit";
-import { Navbar, Nav, Button} from "react-bootstrap";
+import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { decodeToken } from "../utils/utilities";
+import ChangePassword from "../modals/ChangePassword";
 
 export default function CustomNavbar() {
   const location = useLocation();
@@ -49,9 +50,7 @@ export default function CustomNavbar() {
           </div>
 
           <div className="d-flex align-items-center px-2">
-            <Button size="sm" variant="outline-secondary">
-              Change Password
-            </Button>
+            <ChangePassword email={decodedToken.email} access_token={access_token} />
           </div>
 
           <Button variant="danger text-white" onClick={handleLogout}>
