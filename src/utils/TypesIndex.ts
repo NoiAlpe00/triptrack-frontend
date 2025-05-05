@@ -172,6 +172,7 @@ export interface TripChecklistIndividualProps {
   timing: string;
   data: string;
   isDeleted: boolean;
+  checklist: ChecklistProps;
 }
 
 export interface TripProps {
@@ -202,6 +203,10 @@ export interface TripTableProps extends TripProps {
   date: string;
   requestStatus: "Pending" | "Approved" | "Declined";
   tripStatus: string;
+}
+
+export interface ViewTripProps {
+  passedData: TripTableProps;
 }
 
 export interface CreateUpdateTripProps {

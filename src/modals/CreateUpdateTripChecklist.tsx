@@ -48,7 +48,9 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
   const handleSave = async () => {
     const requestData: TripChecklistProps = {
       tripId: formData.tripId,
-      ...(type === "operation" && phase === "departure" ? { timeDeparture: formData.timeDeparture } : { timeArrival: formData.timeArrival }),
+      ...(type === "operation" && phase === "departure"
+        ? { timeDeparture: `${formData.timeDeparture}Z` }
+        : { timeArrival: `${formData.timeArrival}Z` }),
       checklist: formData.checklist,
       timing: passedData.timing,
     };

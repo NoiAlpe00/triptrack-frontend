@@ -161,11 +161,13 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
               <FloatingLabel controlId="floatingSelect" label="Department" className="small-input mb-2">
                 <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
                   <option>Select Department</option>
-                  {departments.map((deparment, index) => (
-                    <option key={`${deparment}-${index}`} value={deparment.id}>
-                      {deparment.name}
-                    </option>
-                  ))}
+                  {departments.length > 0 && departments
+                    ? departments.map((deparment, index) => (
+                        <option key={`${deparment}-${index}`} value={deparment.id}>
+                          {deparment.name}
+                        </option>
+                      ))
+                    : null}
                 </Form.Select>
               </FloatingLabel>
               <FloatingLabel controlId="floatingInput" label="Destination" className="mb-2 small-input">

@@ -33,6 +33,7 @@ import {
   getAllTrips,
   getAllVehicle,
 } from "../hooks/axios";
+import ViewTripDetails from "../modals/ViewTripDetails";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -55,33 +56,6 @@ export default function Trips() {
   useEffect(() => {
     (async () => {})();
   }, []);
-
-  const checklistSimulation: TripSpecificChecklistProps[] = [
-    {
-      checklistId: "Eme1",
-      title: "Eme1 Title",
-      data: "passed",
-      typed: false,
-    },
-    {
-      checklistId: "Eme2",
-      title: "Eme2 Title",
-      data: "passed",
-      typed: false,
-    },
-    {
-      checklistId: "Eme3",
-      title: "Eme3 Title",
-      data: "",
-      typed: true,
-    },
-    {
-      checklistId: "Eme4",
-      title: "Eme4 Title",
-      data: "",
-      typed: true,
-    },
-  ];
 
   {
     /*
@@ -151,7 +125,7 @@ export default function Trips() {
           createdDate: row.createdDate,
           updatedDate: row.updatedDate,
           isDeleted: row.isDeleted,
-          tripChecklists: [], // To Be Implemented yet
+          tripChecklists: row.tripChecklists,
           department: { id: row.department.id, name: "" },
           driver: {
             id: row.driver?.id ?? "",
@@ -364,58 +338,88 @@ export default function Trips() {
           field: "operations",
           headerName: "",
           flex: 1.5,
-          renderCell: (params: any) => (
-            <>
-              {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
-                <>
-                  <Row className="d-flex">
-                    <Col xs={6} className="px-1">
-                      <Button
-                        size="sm"
-                        variant="success"
-                        className="w-100"
-                        onClick={async () => {
-                          const res = confirm(`Confirm to approve the trip ${params.row.title}`);
-                          if (res) {
-                            await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
-                            window.location.reload();
-                          }
-                        }}
-                      >
-                        <Image className="pe-2" src={Check} /> Approve
-                      </Button>
-                    </Col>
-                    <Col xs={6} className="px-1">
-                      <Button
-                        size="sm"
-                        className="w-100 text-white"
-                        variant="danger"
-                        onClick={async () => {
-                          const res = confirm(`Confirm to decline the trip ${params.row.title}`);
-                          if (res) {
-                            await declineExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
-                            window.location.reload();
-                          }
-                        }}
-                      >
-                        <Image className="pe-3" src={X} /> Decline
-                      </Button>
-                    </Col>
-                  </Row>
-                </>
-              ) : (
-                <>
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <Button size="sm" className="w-100" onClick={() => console.log(params.row)}>
-                        <Image className="pe-2" src={Eye} /> View Details
-                      </Button>
-                    </Col>
-                  </Row>
-                </>
-              )}
-            </>
-          ),
+          renderCell: (params: any) => {
+            const row = params.row;
+
+            console.log(row);
+
+            const passedData: TripTableProps = {
+              id: row.id,
+              title: row.title,
+              tripStart: row.tripStart.slice(0, -1),
+              tripEnd: row.tripEnd.slice(0, -1),
+              destination: row.destination,
+              purpose: row.purpose,
+              status: row.status,
+              timeDeparture: row.timeDeparture,
+              timeArrival: row.timeArrival,
+              remarks: row.remarks,
+              createdDate: row.createdDate,
+              updatedDate: row.updatedDate,
+              isDeleted: row.isDeleted,
+              tripChecklists: row.tripChecklists, // To Be Implemented yet
+              department: row.department,
+              driver: row.driver,
+              vehicle: row.vehicle,
+              user: row.user,
+              driverRequest: row.driverRequest,
+              vehicleRequest: row.vehicleRequest,
+              requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+              date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+            };
+
+            return (
+              <>
+                {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col xs={6} className="px-1">
+                        <Button
+                          size="sm"
+                          variant="success"
+                          className="w-100"
+                          onClick={async () => {
+                            const res = confirm(`Confirm to approve the trip ${params.row.title}`);
+                            if (res) {
+                              await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              window.location.reload();
+                            }
+                          }}
+                        >
+                          <Image className="pe-2" src={Check} /> Approve
+                        </Button>
+                      </Col>
+                      <Col xs={6} className="px-1">
+                        <Button
+                          size="sm"
+                          className="w-100 text-white"
+                          variant="danger"
+                          onClick={async () => {
+                            const res = confirm(`Confirm to decline the trip ${params.row.title}`);
+                            if (res) {
+                              await declineExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              window.location.reload();
+                            }
+                          }}
+                        >
+                          <Image className="pe-3" src={X} /> Decline
+                        </Button>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <ViewTripDetails passedData={passedData} />
+                      </Col>
+                    </Row>
+                  </>
+                )}
+              </>
+            );
+          },
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         }
       : {
@@ -447,14 +451,16 @@ export default function Trips() {
       setAllDepartmentData(allDeparment.data ?? []);
 
       const allChecklist = await getAllChecklist(access_token);
-      setAllChecklistData(allChecklist.data ?? []);
-      const formattedChecklistTableData = allChecklist.data?.map((checklist) => ({
-        checklistId: checklist.id!!,
-        title: checklist.title,
-        typed: checklist.typed ?? false,
-        data: checklist.typed ? "" : "passed",
-      }));
-      setAllTripSpecificChecklistData(formattedChecklistTableData ?? []);
+      if (allChecklist.statusCode >= 200 && allChecklist.statusCode < 400) {
+        setAllChecklistData(allChecklist.data ?? []);
+        const formattedChecklistTableData = allChecklist.data?.map((checklist) => ({
+          checklistId: checklist.id!!,
+          title: checklist.title,
+          typed: checklist.typed ?? false,
+          data: checklist.typed ? "" : "passed",
+        }));
+        setAllTripSpecificChecklistData(formattedChecklistTableData ?? []);
+      }
 
       const allVehicle = await getAllVehicle(access_token);
       setAllVehicleData(allVehicle.data ?? []);
@@ -463,34 +469,39 @@ export default function Trips() {
       setAllDriverData(allDriver.data ?? []);
 
       const allTrips = await getAllTrips({ id: undefined, type: userRole, withDeleted: false }, access_token);
-      setAllTripData(allTrips.data ?? []);
-      const formattedTableData: TripTableProps[] = allTrips.data
-        ? allTrips.data!!.map((trip: TripProps) => ({
-            id: trip.id,
-            title: trip.title,
-            tripStart: trip.tripStart,
-            tripEnd: trip.tripEnd,
-            destination: trip.destination,
-            purpose: trip.purpose,
-            status: trip.status,
-            timeDeparture: trip.timeDeparture,
-            timeArrival: trip.timeArrival,
-            remarks: trip.remarks,
-            createdDate: trip.createdDate,
-            updatedDate: trip.updatedDate,
-            isDeleted: trip.isDeleted,
-            tripChecklists: [], // To Be Implemented yet
-            department: { id: trip.department.id, name: "" },
-            driver: trip.driver,
-            vehicle: trip.vehicle,
-            driverRequest: false,
-            vehicleRequest: false,
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-          }))
-        : [];
-      setTableData(formattedTableData);
+      if (allTrips.statusCode >= 200 && allTrips.statusCode < 400) {
+        setAllTripData(allTrips.data ?? []);
+        const formattedTableData: TripTableProps[] = allTrips.data
+          ? allTrips.data.map((trip: TripProps) => {
+              return {
+                id: trip.id,
+                title: trip.title,
+                tripStart: trip.tripStart,
+                tripEnd: trip.tripEnd,
+                destination: trip.destination,
+                purpose: trip.purpose,
+                status: trip.status,
+                timeDeparture: trip.timeDeparture,
+                timeArrival: trip.timeArrival,
+                remarks: trip.remarks,
+                createdDate: trip.createdDate,
+                updatedDate: trip.updatedDate,
+                isDeleted: trip.isDeleted,
+                tripChecklists: trip.tripChecklists, // To Be Implemented yet
+                department: { id: trip.department.id, name: trip.department.name },
+                driver: trip.driver,
+                vehicle: trip.vehicle,
+                driverRequest: false,
+                vehicleRequest: false,
+                requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+                tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+                date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+                user: trip.user,
+              };
+            })
+          : [];
+        setTableData(formattedTableData);
+      }
     })();
   }, []);
 
