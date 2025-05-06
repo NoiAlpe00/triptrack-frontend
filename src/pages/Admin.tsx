@@ -9,6 +9,8 @@ import CreateUpdateVehicle from "../modals/CreateUpdateVehicle";
 import { useAuthHeader } from "react-auth-kit";
 import { getAllChecklist, getAllDeparment, getAllUsers, getAllVehicle } from "../hooks/axios";
 import { ChecklistProps, DepartmentProps, UserProps, UserTableProps, VehicleProps } from "../utils/TypesIndex";
+import PreventiveMaintenance from "../modals/PreventiveMaintenance";
+import { decodeToken } from "../utils/utilities";
 
 export default function AdminPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -29,6 +31,8 @@ export default function AdminPage() {
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
+
+  const decodedToken = decodeToken(access_token);
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
@@ -233,6 +237,34 @@ export default function AdminPage() {
           <Row className="d-flex">
             <Col className="px-1">
               <CreateUpdateVehicle passedData={passedData} access_token={access_token} />
+            </Col>
+          </Row>
+        );
+      },
+      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    },
+    {
+      field: "maintenance",
+      headerName: "",
+      width: 45,
+      minWidth: 45,
+      maxWidth: 45,
+      sortable: false,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData: VehicleProps = {
+          id: row.id,
+          model: row.model,
+          plateNumber: row.plateNumber,
+          seats: row.seats,
+          isDeleted: row.isDeleted,
+        };
+
+        return (
+          <Row className="d-flex align-items-center">
+            <Col className="d-flex justify-content-center px-1">
+              <PreventiveMaintenance userId={decodedToken.sub.userId} vehicleId={passedData.id!!} access_token={access_token} />
             </Col>
           </Row>
         );

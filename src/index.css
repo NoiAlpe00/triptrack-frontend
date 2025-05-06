@@ -3,9 +3,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  /* color-scheme: light dark; */
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -141,6 +141,12 @@ button:focus-visible {
 .card-hover-effect:hover {
   cursor: pointer;
   box-shadow: 0 0 10px rgba(75, 16, 119, 0.5); /* Primary glow */
+}
+
+input[type="date"],
+input[type="datetime-local"] {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
 }
 
 @media (prefers-color-scheme: light) {

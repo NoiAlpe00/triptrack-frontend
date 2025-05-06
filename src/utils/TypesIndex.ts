@@ -281,3 +281,15 @@ export interface CreateUpdateTripRequestProps {
   purpose: string;
   status: string;
 }
+
+export interface CreatePreventiveMaintenanceProps {
+  userId: string;
+  vehicleId: string;
+  access_token: string;
+}
+
+export interface CreatePreventiveMaintenanceRequestProps extends CreatePreventiveMaintenanceProps {
+  date: string;
+  details: string;
+  remarks: string;
+}
