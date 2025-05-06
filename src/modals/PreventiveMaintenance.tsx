@@ -8,9 +8,6 @@ import { requestGuard } from "../utils/utilities";
 export default function PreventiveMaintenance(passedData: CreatePreventiveMaintenanceProps) {
   const [show, setShow] = useState(false);
 
-  // const auth = useAuthUser();
-  // const role = auth()?.role ?? "Staff";
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState({
