@@ -69,7 +69,6 @@ export default function PreventiveMaintenance(passedData: CreatePreventiveMainte
         </Modal.Header>
         <Modal.Body>
           <CustomHeader title={"Preventive Maintenance"} subtitle={"Tell us more about the vehicle details."} />
-          <input type="datetime-local" onChange={(e) => console.log(e.target.value)} />
           <FloatingLabel controlId="date" label="Date" className="mb-2 small-input">
             <Form.Control name="date" type="date" placeholder="" onChange={handleOnChange} value={formData.date ?? ""} />
           </FloatingLabel>
