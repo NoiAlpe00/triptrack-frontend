@@ -7,6 +7,7 @@ import ProtectedRoutes from "./utils/Routes/ProtectedRoutes";
 import AdminPage from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Trips from "./pages/Trips";
+import Reports from "./pages/Reports";
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
@@ -26,6 +27,14 @@ export default function App() {
           element={
             <ProtectedRoutes allowedRoles={["Admin"]}>
               <AdminPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoutes allowedRoles={["Admin"]}>
+              <Reports />
             </ProtectedRoutes>
           }
         />
