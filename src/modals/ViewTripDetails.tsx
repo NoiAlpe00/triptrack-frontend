@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button, Modal, Image, Col, Row } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
 import { ViewTripProps } from "../utils/TypesIndex";
-import Eye from "../assets/svgs/eye.svg";
 import CheckPurple from "../assets/svgs/check-purple.svg";
 import XRed from "../assets/svgs/x-red.svg";
 import Pending from "../assets/svgs/pending.svg";
@@ -11,7 +10,7 @@ import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
 import { formatISOString } from "../utils/utilities";
 
-export default function ViewTripDetails({ passedData }: ViewTripProps) {
+export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
@@ -22,9 +21,15 @@ export default function ViewTripDetails({ passedData }: ViewTripProps) {
 
   return (
     <>
-      <Button size="sm" className="w-100" onClick={handleShow}>
-        <Image className="pe-2" src={Eye} /> View Details
-      </Button>
+      {type == "pending" ? (
+        <Button size="sm" className="w-100" onClick={handleShow}>
+          <i className="bi bi-eye-fill" /> View
+        </Button>
+      ) : (
+        <Button size="sm" className="w-100" onClick={handleShow}>
+          <i className="bi bi-eye-fill" /> View Details
+        </Button>
+      )}
 
       <Modal show={show} onHide={handleClose} centered size="xl">
         <Modal.Header closeButton>

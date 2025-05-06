@@ -197,6 +197,7 @@ export interface TripProps {
   vehicleRequest: boolean;
   authorizedBy?: UserProps;
   user?: UserProps;
+  feedback?: FeedbackProps[];
 }
 
 export interface TripTableProps extends TripProps {
@@ -207,6 +208,7 @@ export interface TripTableProps extends TripProps {
 
 export interface ViewTripProps {
   passedData: TripTableProps;
+  type: string;
 }
 
 export interface CreateUpdateTripProps {
@@ -292,4 +294,28 @@ export interface CreatePreventiveMaintenanceRequestProps extends CreatePreventiv
   date: string;
   details: string;
   remarks: string;
+}
+
+export interface CreateTripFeedbackProps {
+  userId: string;
+  tripId: string;
+  vehicleId: string;
+  driverId: string;
+  access_token: string;
+}
+
+export interface CreateTripFeedbackRequestProps extends Omit<CreateTripFeedbackProps, "vehicleId" | "driverId"> {
+  vehicleRating: number;
+  serviceRating: number;
+  driverRating: number;
+  remarks: string;
+}
+
+export interface FeedbackProps {
+  id: string;
+  vehicleRating: number;
+  serviceRating: number;
+  driverRating: number;
+  remarks: string;
+  user: UserProps;
 }

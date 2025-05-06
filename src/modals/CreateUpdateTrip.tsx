@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button, Col, FloatingLabel, Form, Modal, Row, Image } from "react-bootstrap";
+import { Button, Col, FloatingLabel, Form, Modal, Row } from "react-bootstrap";
 import { CreateUpdateTripProps, CreateUpdateTripRequestProps, TripProps } from "../utils/TypesIndex";
-import Edit from "../assets/svgs/edit.svg";
 import { useAuthUser } from "react-auth-kit";
 import { decodeToken, requestGuard } from "../utils/utilities";
 import { addNewTrip, updateExistingTrip } from "../hooks/axios";
@@ -139,8 +138,8 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
   return (
     <>
       {formData.id ? (
-        <Button variant="primary" size="sm" onClick={handleShow}>
-          <Image src={Edit} />
+        <Button className="w-100" variant="primary" size="sm" onClick={handleShow}>
+          <i className="bi bi-pencil-square" />
         </Button>
       ) : (
         <Button variant="primary" onClick={handleShow}>

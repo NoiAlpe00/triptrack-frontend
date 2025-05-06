@@ -11,7 +11,7 @@ export default function PreventiveMaintenance(passedData: CreatePreventiveMainte
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState({
-    date: "",
+    date: new Date().toISOString().split("T")[0],
     details: "",
     remarks: "",
   });

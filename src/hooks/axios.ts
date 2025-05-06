@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   ChecklistProps,
   CreatePreventiveMaintenanceRequestProps,
+  CreateTripFeedbackRequestProps,
   CreateUpdateTripRequestProps,
   CreateUpdateUserRequestProps,
   DepartmentProps,
@@ -413,6 +414,22 @@ export const addNewPreventiveMaintenance = async (data: Omit<CreatePreventiveMai
     const res = await axios({
       method: "POST",
       url: `${URL}/preventive-maintenance`,
+      headers: {
+        authorization: access_token,
+      },
+      data,
+    });
+    return { statusCode: res.data.statusCode, message: res.data.messge, data: res.data.data };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
+
+export const addNewTripFeedback = async (data: Omit<CreateTripFeedbackRequestProps, "access_token">, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/feedback`,
       headers: {
         authorization: access_token,
       },

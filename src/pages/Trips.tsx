@@ -18,6 +18,7 @@ import {
   ChecklistProps,
   DepartmentProps,
   DriverProps,
+  FeedbackProps,
   TripProps,
   TripSpecificChecklistProps,
   TripTableProps,
@@ -33,6 +34,7 @@ import {
   getAllVehicle,
 } from "../hooks/axios";
 import ViewTripDetails from "../modals/ViewTripDetails";
+import Feedback from "../modals/Feedback";
 
 export default function Trips() {
   const [showToast, setShowToast] = useState<boolean>(false);
@@ -332,6 +334,7 @@ export default function Trips() {
           ),
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         },
+
     !(userRole.toLowerCase() == "guard")
       ? {
           field: "operations",
@@ -339,8 +342,6 @@ export default function Trips() {
           flex: 1.5,
           renderCell: (params: any) => {
             const row = params.row;
-
-            console.log(row);
 
             const passedData: TripTableProps = {
               id: row.id,
@@ -368,12 +369,16 @@ export default function Trips() {
               date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
             };
 
+            const feedback: FeedbackProps[] = row.feedback ?? [];
+
+            const hasFeedback = feedback.filter((feedback) => feedback.user.id === decodedToken.sub.userId);
+
             return (
               <>
-                {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
+                {params.row.tripStatus?.toLowerCase() == "upcoming" && userRole.toLowerCase() === "admin" ? (
                   <>
                     <Row className="d-flex">
-                      <Col xs={6} className="px-1">
+                      <Col xs={4} className="px-1">
                         <Button
                           size="sm"
                           variant="success"
@@ -386,10 +391,10 @@ export default function Trips() {
                             }
                           }}
                         >
-                          <Image className="pe-2" src={Check} /> Approve
+                          <i className="bi bi-check2" /> Approve
                         </Button>
                       </Col>
-                      <Col xs={6} className="px-1">
+                      <Col xs={4} className="px-1">
                         <Button
                           size="sm"
                           className="w-100 text-white"
@@ -402,8 +407,11 @@ export default function Trips() {
                             }
                           }}
                         >
-                          <Image className="pe-3" src={X} /> Decline
+                          <i className="bi bi-x-circle" /> Decline
                         </Button>
+                      </Col>
+                      <Col xs={4} className="px-1">
+                        <ViewTripDetails passedData={passedData} type={"pending"} />
                       </Col>
                     </Row>
                   </>
@@ -411,8 +419,19 @@ export default function Trips() {
                   <>
                     <Row className="d-flex">
                       <Col className="px-1">
-                        <ViewTripDetails passedData={passedData} />
+                        <ViewTripDetails passedData={passedData} type={"operation"} />
                       </Col>
+                      {row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && hasFeedback == undefined && (
+                        <Col>
+                          <Feedback
+                            userId={decodedToken.sub.userId}
+                            access_token={access_token}
+                            tripId={row.id}
+                            vehicleId={row.vehicle?.id ?? ""}
+                            driverId={row.driver?.id ?? ""}
+                          />
+                        </Col>
+                      )}
                     </Row>
                   </>
                 )}
@@ -496,6 +515,7 @@ export default function Trips() {
                 tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
                 date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
                 user: trip.user,
+                feedback: trip.feedback,
               };
             })
           : [];
@@ -507,9 +527,7 @@ export default function Trips() {
   const finalCols =
     userRole.toLowerCase() === "guard"
       ? columns.slice(1)
-      : userRole.toLowerCase() === "staff"
-      ? columns.slice(0, -1)
-      : userRole.toLowerCase() === "admin"
+      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "staff"
       ? columns
       : columns.slice(1, -1);
 
