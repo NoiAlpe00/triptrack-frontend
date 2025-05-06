@@ -3,6 +3,7 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { decodeToken } from "../utils/utilities";
 import ChangePassword from "../modals/ChangePassword";
+import { logOut } from "../hooks/axios";
 
 export default function CustomNavbar() {
   const location = useLocation();
@@ -14,7 +15,8 @@ export default function CustomNavbar() {
 
   const decodedToken = decodeToken(access_token);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logOut(access_token);
     signOut();
     navigate("/login");
   };

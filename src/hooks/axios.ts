@@ -391,3 +391,18 @@ export const changePassword = async (
     return { statusCode: error.response.statusCode, message: error.response.data.message };
   }
 };
+
+export const logOut = async (access_token: string): Promise<ResponsePropsArray<UserProps>> => {
+  try {
+    const res = await axios({
+      method: "POST",
+      url: `${URL}/auth/logout`,
+      headers: {
+        authorization: access_token,
+      },
+    });
+    return { statusCode: res.data.statusCode, message: res.data.messge };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
