@@ -551,7 +551,6 @@ export default function Trips() {
             <Col md={4} className="">
               <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                 <Form.Select name="statusFilter" aria-label="Floating label select example">
-                  <option>Open this select menu</option>
                   <option value="all">All</option>
                   <option value="ongoing">Ongoing</option>
                   <option value="upcoming">Upcoming</option>
