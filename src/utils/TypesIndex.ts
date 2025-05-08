@@ -326,13 +326,13 @@ interface Vehicle {
   plateNumber: string;
 }
 
-interface VehicleUsage {
+export interface VehicleUsage {
   vehicle: Vehicle;
   howManyUsed: number;
   lastMaintenance: string | null;
 }
 
-interface SummaryVehicle extends Vehicle {
+export interface SummaryVehicle extends Vehicle {
   howManyUsed: number;
 }
 
@@ -388,16 +388,6 @@ interface Vehicle {
   plateNumber: string;
 }
 
-interface VehicleUsage {
-  vehicle: Vehicle;
-  howManyUsed: number;
-  lastMaintenance: string | null;
-}
-
-interface SummaryVehicle extends Vehicle {
-  howManyUsed: number;
-}
-
 interface MonthlyData {
   data: VehicleUsage[];
   mostUsedVehicle: SummaryVehicle | null;
@@ -429,7 +419,7 @@ interface Driver {
   lastName: string;
 }
 
-interface DriverUsage {
+export interface DriverUsage {
   driver: Driver;
   howManyTrips: number;
   ratings: number[];

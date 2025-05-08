@@ -149,6 +149,11 @@ input[type="datetime-local"] {
   -webkit-appearance: auto !important;
 }
 
+.custom-modal-90w.modal-dialog {
+  width: 90vw !important;
+  max-width: none !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
