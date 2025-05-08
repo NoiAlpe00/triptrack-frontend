@@ -440,3 +440,57 @@ export const addNewTripFeedback = async (data: Omit<CreateTripFeedbackRequestPro
     return { statusCode: error.response.statusCode, message: error.response.data.message };
   }
 };
+
+export const getYearlyTripReport = async (year: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/trip/report`,
+      headers: {
+        authorization: access_token,
+      },
+      params: {
+        year,
+      },
+    });
+    return { statusCode: res.status, data: res.data };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
+
+export const getYearlyVehicleReport = async (year: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/trip/report-vehicle`,
+      headers: {
+        authorization: access_token,
+      },
+      params: {
+        year,
+      },
+    });
+    return { statusCode: res.status, data: res.data };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};
+
+export const getYearlyDriverReport = async (year: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: `${URL}/trip/report-driver`,
+      headers: {
+        authorization: access_token,
+      },
+      params: {
+        year,
+      },
+    });
+    return { statusCode: res.status, data: res.data };
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, message: error.response.data.message };
+  }
+};

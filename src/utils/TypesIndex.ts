@@ -227,7 +227,7 @@ export interface ResponsePropsArray<T> {
 
 export interface ResponsePropsSolo<T> {
   statusCode: number;
-  data: T;
+  data?: T;
   message?: string;
 }
 
@@ -318,4 +318,180 @@ export interface FeedbackProps {
   driverRating: number;
   remarks: string;
   user: UserProps;
+}
+
+interface Vehicle {
+  id: string;
+  model: string;
+  plateNumber: string;
+}
+
+interface VehicleUsage {
+  vehicle: Vehicle;
+  howManyUsed: number;
+  lastMaintenance: string | null;
+}
+
+interface SummaryVehicle extends Vehicle {
+  howManyUsed: number;
+}
+
+interface MonthlyData {
+  data: VehicleUsage[];
+  mostUsedVehicle: SummaryVehicle | null;
+  leastUsedVehicle: SummaryVehicle | null;
+}
+
+export interface YearlyVehicleReport {
+  year: number;
+  january: MonthlyData;
+  february: MonthlyData;
+  march: MonthlyData;
+  april: MonthlyData;
+  may: MonthlyData;
+  june: MonthlyData;
+  july: MonthlyData;
+  august: MonthlyData;
+  september: MonthlyData;
+  october: MonthlyData;
+  november: MonthlyData;
+  december: MonthlyData;
+  highestRatedVehicle: SummaryVehicle | null;
+  mostAssignedVehicle: SummaryVehicle | null;
+}
+
+export interface YearlyTripReport {
+  year: number;
+  january: MonthlySegregatedData;
+  february: MonthlySegregatedData;
+  march: MonthlySegregatedData;
+  april: MonthlySegregatedData;
+  may: MonthlySegregatedData;
+  june: MonthlySegregatedData;
+  july: MonthlySegregatedData;
+  august: MonthlySegregatedData;
+  september: MonthlySegregatedData;
+  october: MonthlySegregatedData;
+  november: MonthlySegregatedData;
+  december: MonthlySegregatedData;
+}
+
+interface MonthlySegregatedData {
+  internalTrips: TripProps[];
+  outsourcedTrips: TripProps[];
+  rejectedTrips: TripProps[];
+}
+
+interface Vehicle {
+  id: string;
+  model: string;
+  plateNumber: string;
+}
+
+interface VehicleUsage {
+  vehicle: Vehicle;
+  howManyUsed: number;
+  lastMaintenance: string | null;
+}
+
+interface SummaryVehicle extends Vehicle {
+  howManyUsed: number;
+}
+
+interface MonthlyData {
+  data: VehicleUsage[];
+  mostUsedVehicle: SummaryVehicle | null;
+  leastUsedVehicle: SummaryVehicle | null;
+  totalAssignedTrips: number;
+}
+
+export interface YearlyVehicleReport {
+  year: number;
+  january: MonthlyData;
+  february: MonthlyData;
+  march: MonthlyData;
+  april: MonthlyData;
+  may: MonthlyData;
+  june: MonthlyData;
+  july: MonthlyData;
+  august: MonthlyData;
+  september: MonthlyData;
+  october: MonthlyData;
+  november: MonthlyData;
+  december: MonthlyData;
+  highestRatedVehicle: SummaryVehicle | null;
+  mostAssignedVehicle: SummaryVehicle | null;
+}
+
+interface Driver {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface DriverUsage {
+  driver: Driver;
+  howManyTrips: number;
+  ratings: number[];
+  averageRating: number | null;
+}
+
+interface SummaryDriver extends Driver {
+  howManyTrips?: number;
+  averageRating?: number;
+}
+
+interface MonthlyDriverData {
+  data: DriverUsage[];
+  highestRatedDriver: SummaryDriver | null;
+  mostAssignedDriver: SummaryDriver | null;
+  totalAssignedTrips: number;
+}
+
+export interface YearlyDriverReport {
+  year: number;
+  january: MonthlyDriverData;
+  february: MonthlyDriverData;
+  march: MonthlyDriverData;
+  april: MonthlyDriverData;
+  may: MonthlyDriverData;
+  june: MonthlyDriverData;
+  july: MonthlyDriverData;
+  august: MonthlyDriverData;
+  september: MonthlyDriverData;
+  october: MonthlyDriverData;
+  november: MonthlyDriverData;
+  december: MonthlyDriverData;
+  highestRatedDriver: SummaryDriver | null;
+  mostAssignedDriver: SummaryDriver | null;
+}
+
+export interface YearlyTripTableProps {
+  id: string;
+  month: string;
+  noOfTrips: string;
+  approved: string;
+  approvedOutsourced: string;
+  rejected: string;
+  internalTrips: TripProps[];
+  outsourcedTrips: TripProps[];
+  rejectedTrips: TripProps[];
+}
+
+export interface YearlyVehicleTableProps {
+  id: string;
+  month: string;
+  totalAssigned: number;
+  mostUsed: string | null;
+  leastUsed: string | null;
+  data: Vehicle[];
+}
+
+export interface YearlyDriverTableProps {
+  id: string;
+  month: string;
+  totalAssigned: number;
+  highRating: string | null;
+  mostActive: string | null;
+  data: Driver[];
 }
