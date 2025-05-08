@@ -3,8 +3,6 @@ import { Container, Row, Col, FloatingLabel, Form, Button, Image } from "react-b
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import CreateUpdateTrip from "../modals/CreateUpdateTrip";
-import Check from "../assets/svgs/check.svg";
-import X from "../assets/svgs/x.svg";
 import CheckPurple from "../assets/svgs/check-purple.svg";
 import XRed from "../assets/svgs/x-red.svg";
 import Pending from "../assets/svgs/pending.svg";

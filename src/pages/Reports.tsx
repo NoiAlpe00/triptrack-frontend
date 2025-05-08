@@ -4,15 +4,7 @@ import { useEffect, useState } from "react";
 import CustomTable from "../components/Table";
 import { getYearlyDriverReport, getYearlyTripReport, getYearlyVehicleReport } from "../hooks/axios";
 import { useAuthHeader } from "react-auth-kit";
-import {
-  DriverUsage,
-  TripProps,
-  VehicleProps,
-  VehicleUsage,
-  YearlyDriverTableProps,
-  YearlyTripTableProps,
-  YearlyVehicleTableProps,
-} from "../utils/TypesIndex";
+import { DriverUsage, TripProps, VehicleUsage, YearlyDriverTableProps, YearlyTripTableProps, YearlyVehicleTableProps } from "../utils/TypesIndex";
 import ViewMontlyReport from "../modals/ViewMonthlyReport";
 import { formatISOString } from "../utils/utilities";
 
@@ -135,6 +127,81 @@ export default function Reports() {
     })();
   }, [year]);
 
+  const handleTripExport = () => {
+    // Prepare CSV headers
+    const headers = ["Month", "Total Trips", "Approved", "Approved (Outsourced)", "Rejected"];
+
+    // Map the data to CSV rows
+    const rows = tripTableData.map((trip) => [trip.month, trip.noOfTrips, trip.approvedOutsourced, trip.rejected]);
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a temporary <a> element to trigger the download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `trips_summary_${year}.csv`);
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleVehicleExport = () => {
+    // Prepare CSV headers
+    const headers = ["Month", "Total Assigned Trips", "Most Used Vehicle", "Least Used"];
+
+    // Map the data to CSV rows
+    const rows = vehicleTableData.map((vehicle) => [vehicle.month, vehicle.totalAssigned, vehicle.mostUsed, vehicle.leastUsed]);
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a temporary <a> element to trigger the download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `vehicle_summary_${year}.csv`);
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDriverExport = () => {
+    // Prepare CSV headers
+    const headers = ["Month", "Total Assigned Trips", "Highest Rating Driver", "Most Active Driver"];
+
+    // Map the data to CSV rows
+    const rows = driverTableData.map((driver) => [driver.month, driver.totalAssigned, driver.highRating, driver.mostActive]);
+
+    // Combine headers and rows
+    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create a temporary <a> element to trigger the download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `driver_summary_${year}.csv`);
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const tripCols = [
     {
       field: "month",
@@ -151,6 +218,7 @@ export default function Reports() {
 
         const rows = allMonthlyTripData
           .sort((a, b) => new Date(a.tripStart).getTime() - new Date(b.tripStart).getTime())
+          .sort((a, b) => a.status.localeCompare(b.status))
           .map((trip) => ({
             id: trip.id,
             title: trip.title,
@@ -164,7 +232,7 @@ export default function Reports() {
             contactNo: trip.driver ? trip.driver.contactNumber : "-",
           }));
 
-        return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} /> : row.month;
+        return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} type={"trips"} /> : row.month;
       },
     },
     { field: "noOfTrips", headerName: "Total Trips", flex: 1 },
@@ -190,10 +258,14 @@ export default function Reports() {
           lastMaintenance: vehicle.lastMaintenance ? formatISOString(vehicle.lastMaintenance) : "-",
         }));
 
-        return row.totalAssigned != 0 ? <ViewMontlyReport month={row.month} rows={formattedRows} cols={monthlyReportVehicleCols} /> : row.month;
+        return row.totalAssigned != 0 ? (
+          <ViewMontlyReport month={row.month} rows={formattedRows} cols={monthlyReportVehicleCols} type={"vehicle"} />
+        ) : (
+          row.month
+        );
       },
     },
-    { field: "totalAssigned", headerName: "Total Assign trips", flex: 1 },
+    { field: "totalAssigned", headerName: "Total Assigned trips", flex: 1 },
     { field: "mostUsed", headerName: "Most Used Vehicle", flex: 1 },
     { field: "leastUsed", headerName: "Least Used", flex: 1 },
   ];
@@ -214,7 +286,7 @@ export default function Reports() {
           averageRating: data.averageRating ?? "-",
         }));
 
-        return row.totalAssigned != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportDriverCols} /> : row.month;
+        return row.totalAssigned != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportDriverCols} type={"driver"} /> : row.month;
       },
     },
     { field: "totalAssigned", headerName: "Total Assigned Trips", flex: 1 },
@@ -272,7 +344,7 @@ export default function Reports() {
         </Col>
       </Row>
       <Row>
-        <Tab.Container activeKey={activeTab} onSelect={(k: any) => setActiveTab(k || "department")}>
+        <Tab.Container activeKey={activeTab} onSelect={(k: any) => setActiveTab(k || "trip")}>
           <Nav variant="pills" className="mb-3 justify-content-start">
             <Nav.Item>
               <Nav.Link eventKey="trip">Trip</Nav.Link>
@@ -285,8 +357,19 @@ export default function Reports() {
             </Nav.Item>
             <Nav className="ms-auto ">
               <div className="d-flex align-items-center">
-                <Button className="primary">
-                  Export Data <i className="bi bi-box-arrow-right" />
+                <Button
+                  className="primary"
+                  onClick={() => {
+                    if (activeTab === "trip") {
+                      handleTripExport();
+                    } else if (activeTab === "vehicle") {
+                      handleVehicleExport();
+                    } else {
+                      handleDriverExport();
+                    }
+                  }}
+                >
+                  Export Data <i className="bi bi-box-arrow-up" />
                 </Button>
               </div>
             </Nav>
