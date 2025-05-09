@@ -148,11 +148,11 @@ export default function AdminPage() {
         );
       },
     },
-    { field: "name", headerName: "Name", flex: 3 },
+    { field: "name", headerName: "Name", width: 700},
     {
       field: "isDeleted",
       headerName: "Status",
-      flex: 1,
+       width: 150,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -199,13 +199,13 @@ export default function AdminPage() {
 
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "email", headerName: "Email", flex: 2 },
-    { field: "type", headerName: "Type", flex: 1 },
+    { field: "name", headerName: "Name", width: 200 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "type", headerName: "Type", width: 150 },
     {
       field: "contactNumber",
       headerName: "Contact No.",
-      flex: 1,
+      width: 150,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -215,7 +215,7 @@ export default function AdminPage() {
     {
       field: "isActive",
       headerName: "Status",
-      flex: 1,
+      width: 150,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -280,13 +280,13 @@ export default function AdminPage() {
       },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    { field: "model", headerName: "Model", flex: 2 },
-    { field: "plateNumber", headerName: "Plate Number", flex: 1.5 },
-    { field: "seats", headerName: "Seats", flex: 0.5 },
+    { field: "model", headerName: "Model", width: 400 },
+    { field: "plateNumber", headerName: "Plate Number", width: 180 },
+    { field: "seats", headerName: "Seats", width: 100 },
     {
       field: "isDeleted",
       headerName: "Status",
-      flex: 1,
+      width: 100,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -321,12 +321,12 @@ export default function AdminPage() {
         );
       },
     },
-    { field: "title", headerName: "Name", flex: 3 },
-    { field: "typed", headerName: "Typed?", flex: 1 },
+    { field: "title", headerName: "Name", width: 650 },
+    { field: "typed", headerName: "Typed?", width: 100 },
     {
       field: "isDeleted",
       headerName: "Status",
-      flex: 1,
+      width: 100,
       renderCell: (params: any) => {
         const row = params.row;
 
