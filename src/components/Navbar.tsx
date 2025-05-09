@@ -16,9 +16,9 @@ export default function CustomNavbar() {
   const decodedToken = decodeToken(access_token);
 
   const handleLogout = async () => {
-    await logOut(access_token);
     signOut();
     navigate("/login");
+    await logOut(access_token);
   };
 
   return (
