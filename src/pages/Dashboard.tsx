@@ -363,7 +363,7 @@ export default function Dashboard() {
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
                       <Row className="">
-                        <h1 className="text-primary text-end">{tableData.length ?? 0}</h1>
+                        <h1 className="text-primary text-end">{yearFilter == "all" ? allTripData.length : tableData.length}</h1>
                       </Row>
                     </Card.Body>
                   </Card>

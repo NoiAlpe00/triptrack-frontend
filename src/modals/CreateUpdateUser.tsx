@@ -148,7 +148,14 @@ export default function CreateUpdateUser({ passedData, departments, access_token
             <Form.Control name="lastName" type="text" placeholder="" onChange={handleOnChange} value={formData.lastName ?? ""} />
           </FloatingLabel>
           <FloatingLabel controlId="contactNumber" label="Contact Number" className="mb-2 small-input">
-            <Form.Control name="contactNumber" type="text" placeholder="" onChange={handleOnChange} value={formData.contactNumber ?? ""} />
+            <Form.Control
+              name="contactNumber"
+              type="text"
+              placeholder=""
+              onChange={handleOnChange}
+              maxLength={11}
+              value={formData.contactNumber ?? ""}
+            />
           </FloatingLabel>
           <FloatingLabel controlId="department" label="Department" className="small-input mb-4">
             <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
@@ -174,7 +181,8 @@ export default function CreateUpdateUser({ passedData, departments, access_token
               <FloatingLabel controlId="floatingSelect" label="User Type" className="small-input mb-4">
                 <Form.Select name="type" onChange={handleSelectChange} value={formData.type ?? ""}>
                   <option value="Admin">Admin</option>
-                  <option value="Staff">Staff</option>
+                  <option value="Head">Head</option>
+                  <option value="Requisitioner">Requisitioner</option>
                   <option value="Driver">Driver</option>
                   <option value="Guard">Guard</option>
                 </Form.Select>

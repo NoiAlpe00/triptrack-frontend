@@ -319,6 +319,22 @@ export const approveExistingTrip = async (id: string, userId: string, access_tok
   }
 };
 
+export const endorseExistingTrip = async (id: string, userId: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/trip/update`,
+      headers: {
+        authorization: access_token,
+      },
+      data: { id, status: "Endorsed", authorizedById: userId },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
 export const declineExistingTrip = async (id: string, userId: string, access_token: string) => {
   try {
     const res = await axios({

@@ -24,6 +24,7 @@ import {
 import {
   approveExistingTrip,
   declineExistingTrip,
+  endorseExistingTrip,
   getAllChecklist,
   getAllDeparment,
   getAllDrivers,
@@ -54,7 +55,7 @@ export default function Trips() {
   useEffect(() => {
     (async () => {
       const formattedTableData: TripTableProps[] = allTripData
-        .filter((trip) => (trip.status == "all" ? true : trip.status.toLowerCase() === statusFilter))
+        .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
         .map((trip: TripProps) => {
           return {
             id: trip.id,
@@ -226,6 +227,17 @@ export default function Trips() {
                     </Col>
                   </Row>
                 </>
+              ) : params.row.requestStatus?.toLowerCase() == "endorsed" ? (
+                <>
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <i className="bi bi-file-earmark-arrow-up" />{" "}
+                      <span className="text-primary">
+                        <strong>Endorsed</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                </>
               ) : (
                 <>
                   <Row className="d-flex">
@@ -377,7 +389,7 @@ export default function Trips() {
 
             return (
               <>
-                {params.row.tripStatus?.toLowerCase() == "upcoming" && userRole.toLowerCase() === "admin" ? (
+                {params.row.tripStatus?.toLowerCase() == "upcoming" && (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head") ? (
                   <>
                     <Row className="d-flex">
                       <Col xs={4} className="px-1">
@@ -386,9 +398,13 @@ export default function Trips() {
                           variant="success"
                           className="w-100"
                           onClick={async () => {
-                            const res = confirm(`Confirm to approve the trip ${params.row.title}`);
+                            const res = confirm(
+                              `Confirm to ${userRole.toLowerCase() === "head" ? "endorse" : "approve"} the trip ${params.row.title}`
+                            );
                             if (res) {
-                              await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              if (decodedToken.userType.toLowerCase() === "admin")
+                                await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              else await endorseExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
                               window.location.reload();
                             }
                           }}
@@ -530,9 +546,11 @@ export default function Trips() {
   const finalCols =
     userRole.toLowerCase() === "guard"
       ? columns.slice(1)
-      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "staff"
+      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "staff"
       ? columns
       : columns.slice(1, -1);
+
+  console.log(finalCols);
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");
@@ -556,6 +574,7 @@ export default function Trips() {
                 <Form.Select name="statusFilter" aria-label="Floating label select example" value={statusFilter} onChange={handleSelectChange}>
                   <option value="all">All</option>
                   <option value="approved">Approved</option>
+                  <option value="endorsed">Endorsed</option>
                   <option value="pending">Pending</option>
                   <option value="declined">Declined</option>
                 </Form.Select>

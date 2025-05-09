@@ -41,7 +41,7 @@ export default function App() {
         <Route
           path="/trips"
           element={
-            <ProtectedRoutes allowedRoles={["Staff", "Admin", "Guard"]}>
+            <ProtectedRoutes allowedRoles={["Requisitioner", "Admin", "Guard", "Head", "Driver"]}>
               <Trips />
             </ProtectedRoutes>
           }
@@ -49,7 +49,7 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoutes allowedRoles={["Admin", "Guard", "Staff"]}>
+            <ProtectedRoutes allowedRoles={["Admin", "Requisitioner", "Head"]}>
               <Dashboard />
             </ProtectedRoutes>
           }
