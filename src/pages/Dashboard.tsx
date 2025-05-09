@@ -311,7 +311,7 @@ export default function Dashboard() {
             <h2 className="text-primary thin-text text-start">Trips Overview</h2>
           </Col>
           <Col lg={4}>
-            <Row className="pe-0">
+            <Row className="pe-0 d-flex justify-content-end">
               <Col lg={4}>
                 <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input">
                   <Form.Select name="yearFilter" value={yearFilter} onChange={handleSelectChange}>
@@ -341,11 +341,13 @@ export default function Dashboard() {
                   </Form.Select>
                 </FloatingLabel>
               </Col>
-              <Col lg={4}>
-                <Button className="w-100 h-100" onClick={handleExport}>
-                  Export Results <i className="bi bi-box-arrow-up" />
-                </Button>
-              </Col>
+              {userData.userType.toLowerCase() === "admin" && (
+                <Col lg={4}>
+                  <Button className="w-100 h-100" onClick={handleExport}>
+                    Export Results <i className="bi bi-box-arrow-up" />
+                  </Button>
+                </Col>
+              )}
             </Row>
           </Col>
         </Row>

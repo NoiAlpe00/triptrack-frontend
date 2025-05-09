@@ -466,7 +466,7 @@ export default function Trips() {
       : {
           field: "operations",
           headerName: "",
-          flex: 1.5,
+          width: 250,
           renderCell: (params: any) => (
             <>
               <CreateUpdateTripChecklist
