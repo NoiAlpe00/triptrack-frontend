@@ -204,6 +204,8 @@ export interface TripTableProps extends TripProps {
   date: string;
   requestStatus: "Pending" | "Approved" | "Declined";
   tripStatus: string;
+  requisitioner: string;
+  dateRequested: string;
 }
 
 export interface ViewTripProps {

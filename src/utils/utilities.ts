@@ -20,6 +20,21 @@ export function formatISOString(isoString: string): string {
   return `${mm}/${dd}/${yyyy} (${hh}:${minutes} ${ampm})`;
 }
 
+export function formatISOStringDateOnly(isoString: string): string {
+  const date = new Date(isoString);
+
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  const yyyy = date.getUTCFullYear();
+
+  let hours = date.getUTCHours();
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // hour 0 should be 12
+
+  return `${mm}/${dd}/${yyyy}`;
+}
+
 export function decodeToken(token: string): TokenData {
   return jwt(token);
 }

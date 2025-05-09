@@ -9,7 +9,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -67,9 +67,10 @@ export default function Trips() {
             timeDeparture: trip.timeDeparture,
             timeArrival: trip.timeArrival,
             remarks: trip.remarks,
-            createdDate: trip.createdDate,  
+            createdDate: trip.createdDate,
             updatedDate: trip.updatedDate,
             isDeleted: trip.isDeleted,
+            requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
             tripChecklists: trip.tripChecklists, // To Be Implemented yet
             department: { id: trip.department.id, name: trip.department.name },
             driver: trip.driver,
@@ -81,6 +82,7 @@ export default function Trips() {
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
             user: trip.user,
             feedback: trip.feedback,
+            dateRequested: formatISOStringDateOnly(trip.createdDate),
           };
         });
       setTableData(formattedTableData);
@@ -91,49 +93,6 @@ export default function Trips() {
     const { value } = e.target;
     setStatusFilter(value);
   };
-
-  {
-    /*
-      {
-        const row = params.row;
-
-        const passedData: ChecklistProps = {
-          id: row.id,
-          title: row.title,
-          typed: row.typed,
-          isDeleted: row.isDeleted,
-        };
-
-        return (
-          <Row className="d-flex">
-            <Col className="px-1">
-              <CreateUpdateChecklist passedData={passedData} access_token={access_token} />
-            </Col>
-          </Row>
-        );
-      },
-    */
-  }
-
-  {
-    /*
-      <Row className="d-flex">
-            <Col className="px-1">
-              <CreateUpdateTrip
-                id={params.row.id}
-                title={""}
-                department={""}
-                destination={""}
-                purpose={""}
-                dateStart={""}
-                dateEnd={""}
-                driverRequest={false}
-                vehicleRequest={false}
-              />
-            </Col>
-          </Row>
-    */
-  }
 
   const columns = [
     {
@@ -162,6 +121,7 @@ export default function Trips() {
           isDeleted: row.isDeleted,
           tripChecklists: row.tripChecklists,
           department: { id: row.department.id, name: "" },
+          requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
           driver: {
             id: row.driver?.id ?? "",
             firstName: row.driver?.firstName ?? "",
@@ -185,6 +145,7 @@ export default function Trips() {
           requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
           tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
           date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+          dateRequested: formatISOString(row.createdDate),
         };
 
         return (
@@ -203,39 +164,44 @@ export default function Trips() {
       },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    { field: "id", headerName: "Trip Code", flex: 0.5 },
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "date", headerName: "Date", flex: 2 },
+    // { field: "id", headerName: "Trip Code", flex: 0.5 },
+    { field: "title", headerName: "Title", width: 320 },
+
     {
       field: "destination",
       headerName: "Destination",
-      flex: 1,
+      width: 250,
     },
-    {
-      field: "driver",
-      headerName: "Driver",
-      flex: 1,
-      renderCell: (params: any) => {
-        const row = params.row;
+    !(userRole.toLowerCase() == "guard")
+      ? { field: "dateRequested", headerName: "Date Requested", width: 150 }
+      : {
+          field: "driver",
+          headerName: "Driver",
+          flex: 1,
+          renderCell: (params: any) => {
+            const row = params.row;
 
-        return <span>{row.driver !== null ? `${row.driver.lastName}, ${row.driver.firstName}` : "Self Drive"}</span>;
-      },
-    },
-    {
-      field: "vehicle",
-      headerName: "Vehicle",
-      flex: 1,
-      renderCell: (params: any) => {
-        const row = params.row;
+            return <span>{row.driver !== null ? `${row.driver.lastName}, ${row.driver.firstName}` : "Self Drive"}</span>;
+          },
+        },
+    !(userRole.toLowerCase() == "guard")
+      ? { field: "requisitioner", headerName: "Requisitioner", width: 150 }
+      : {
+          field: "vehicle",
+          headerName: "Vehicle",
+          flex: 1,
+          renderCell: (params: any) => {
+            const row = params.row;
 
-        return <span>{row.vehicle !== null ? `${row.vehicle.model} - ${row.vehicle.plateNumber}` : "Own Vehicle"}</span>;
-      },
-    },
+            return <span>{row.vehicle !== null ? `${row.vehicle.model} - ${row.vehicle.plateNumber}` : "Own Vehicle"}</span>;
+          },
+        },
+    { field: "date", headerName: "Date Needed", width: 350 },
     !(userRole.toLowerCase() == "guard")
       ? {
           field: "requestStatus",
           headerName: "Request Status",
-          flex: 1,
+          width: 150,
           renderCell: (params: any) => (
             <>
               {params.row.requestStatus?.toLowerCase() == "approved" ? (
@@ -279,7 +245,7 @@ export default function Trips() {
       : {
           field: "timeDeparture",
           headerName: "Departure Time",
-          flex: 1,
+          width: 200,
           renderCell: (params: any) => {
             console.log(params.row);
             return (
@@ -306,7 +272,7 @@ export default function Trips() {
       ? {
           field: "tripStatus",
           headerName: "Trip Status",
-          flex: 1,
+          width: 150,
           renderCell: (params: any) => (
             <>
               {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
@@ -349,7 +315,7 @@ export default function Trips() {
       : {
           field: "arrivalTime",
           headerName: "Arrival Time",
-          flex: 1,
+          width: 200,
           renderCell: (params: any) => (
             <>
               <CreateUpdateTripChecklist
@@ -373,7 +339,7 @@ export default function Trips() {
       ? {
           field: "operations",
           headerName: "",
-          flex: 1.5,
+          width: 300,
           renderCell: (params: any) => {
             const row = params.row;
 
@@ -396,11 +362,13 @@ export default function Trips() {
               driver: row.driver,
               vehicle: row.vehicle,
               user: row.user,
+              requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
               driverRequest: row.driverRequest,
               vehicleRequest: row.vehicleRequest,
               requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
               tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
               date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+              dateRequested: formatISOStringDateOnly(row.createdDate),
             };
 
             const feedback: FeedbackProps[] = row.feedback ?? [];
@@ -540,6 +508,7 @@ export default function Trips() {
                 isDeleted: trip.isDeleted,
                 tripChecklists: trip.tripChecklists, // To Be Implemented yet
                 department: { id: trip.department.id, name: trip.department.name },
+                requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
                 driver: trip.driver,
                 vehicle: trip.vehicle,
                 driverRequest: false,
@@ -549,6 +518,7 @@ export default function Trips() {
                 date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
                 user: trip.user,
                 feedback: trip.feedback,
+                dateRequested: formatISOStringDateOnly(trip.createdDate),
               };
             })
           : [];
