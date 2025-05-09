@@ -45,7 +45,7 @@ export default function Trips() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const auth = useAuthUser();
-  const userRole = auth()?.role ?? "Staff";
+  const userRole = auth()?.role ?? "Requisitioner";
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
@@ -548,7 +548,7 @@ export default function Trips() {
   const finalCols =
     userRole.toLowerCase() === "guard"
       ? columns.slice(1)
-      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "staff"
+      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "requisitioner"
       ? columns
       : columns.slice(1, -1);
 

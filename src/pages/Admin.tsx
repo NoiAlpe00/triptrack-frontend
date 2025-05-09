@@ -365,8 +365,10 @@ export default function AdminPage() {
                 <Form.Select name="userRoleFilter" aria-label="Floating label select example" value={userRoleFilter} onChange={handleSelectChange}>
                   <option value="all">All</option>
                   <option value="Admin">Admin</option>
-                  <option value="Staff">Staff</option>
+                  <option value="Driver">Driver</option>
                   <option value="Guard">Guard</option>
+                  <option value="Head">Head</option>
+                  <option value="Requisitioner">Requisitioner</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>
@@ -390,7 +392,7 @@ export default function AdminPage() {
                 passedData={{
                   email: "",
                   department: { id: "", name: "" },
-                  type: "staff",
+                  type: "requisitioner",
                   firstName: "",
                   lastName: "",
                   contactNumber: "",

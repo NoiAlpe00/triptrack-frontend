@@ -97,7 +97,7 @@ export default function Login() {
         <h2>Login</h2>
         <button onClick={() => handleLogin("Admin")}>Login as Admin</button>
         <button onClick={() => handleLogin("Guard")}>Login as Guard</button>
-        <button onClick={() => handleLogin("Staff")}>Login as Staff</button>
+        <button onClick={() => handleLogin("Requisitioner")}>Login as Requisitioner</button>
       </div>
     </Container>
   );

@@ -10,7 +10,7 @@ export default function CreateUpdateChecklist({ passedData, access_token }: Crea
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
-  // const role = auth()?.role ?? "Staff";
+  // const role = auth()?.role ?? "Requisitioner";
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
