@@ -76,8 +76,8 @@ export default function Trips() {
             department: { id: trip.department.id, name: trip.department.name },
             driver: trip.driver,
             vehicle: trip.vehicle,
-            driverRequest: false,
-            vehicleRequest: false,
+            driverRequest: trip.driverRequest,
+            vehicleRequest: trip.vehicleRequest,
             requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
             tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
@@ -355,6 +355,8 @@ export default function Trips() {
           renderCell: (params: any) => {
             const row = params.row;
 
+            console.log(row);
+
             const passedData: TripTableProps = {
               id: row.id,
               title: row.title,
@@ -527,8 +529,8 @@ export default function Trips() {
                 requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
                 driver: trip.driver,
                 vehicle: trip.vehicle,
-                driverRequest: false,
-                vehicleRequest: false,
+                driverRequest: trip.driverRequest,
+                vehicleRequest: trip.vehicleRequest,
                 requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
                 tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
                 date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
