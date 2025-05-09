@@ -65,6 +65,17 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                         </Col>
                       </Row>
                     </>
+                  ) : passedData.requestStatus?.toLowerCase() == "endorsed" ? (
+                    <>
+                      <Row className="d-flex">
+                        <Col className="px-1">
+                          <i className="bi bi-file-earmark-arrow-up" />{" "}
+                          <span className="text-primary">
+                            <strong>Endorsed</strong>
+                          </span>
+                        </Col>
+                      </Row>
+                    </>
                   ) : (
                     <>
                       <Row className="d-flex">

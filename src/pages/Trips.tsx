@@ -414,7 +414,7 @@ export default function Trips() {
                             }
                           }}
                         >
-                          <i className="bi bi-check2" /> Approve
+                          <i className="bi bi-check2" /> {decodedToken.userType.toLowerCase() === "head" ? "Endorse" : "Approve"}
                         </Button>
                       </Col>
                       <Col xs={4} className="px-1">
