@@ -22,7 +22,7 @@ export default function CustomDoughnutChart({ requests }: { requests: DoughnutCh
     datasets: [
       {
         data: [statusCounts.Approved, statusCounts.Pending, statusCounts.Declined],
-        backgroundColor: ["#C9FFCC", "#D4D7DF", "#FFB9B5"],
+        backgroundColor: ["#C9FFCC", "#FFFCA1", "#FFB9B5"],
         hoverOffset: 4,
       },
     ],
