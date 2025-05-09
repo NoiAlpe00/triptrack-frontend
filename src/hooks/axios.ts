@@ -50,7 +50,6 @@ export const getAllTrips = async ({ id, type, withDeleted }: TripRequestProps, a
         authorization: access_token,
       },
     });
-    console.log(res.data.data);
     return res.data;
   } catch (error: any) {
     return { statusCode: error.response.statusCode, data: error.response.data.message };
