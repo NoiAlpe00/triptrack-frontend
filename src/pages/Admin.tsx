@@ -149,7 +149,16 @@ export default function AdminPage() {
       },
     },
     { field: "name", headerName: "Name", flex: 3 },
-    { field: "isDeleted", headerName: "Deleted?", flex: 1 },
+    {
+      field: "isDeleted",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return row.isDeleted ? "Inactive" : "Active";
+      },
+    },
   ];
   const userCols = [
     {
@@ -274,7 +283,16 @@ export default function AdminPage() {
     { field: "model", headerName: "Model", flex: 2 },
     { field: "plateNumber", headerName: "Plate Number", flex: 1.5 },
     { field: "seats", headerName: "Seats", flex: 0.5 },
-    { field: "isDeleted", headerName: "Deleted?", flex: 1 },
+    {
+      field: "isDeleted",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return row.isDeleted ? "Inactive" : "Active";
+      },
+    },
   ];
   const checklistCols = [
     {
@@ -305,7 +323,16 @@ export default function AdminPage() {
     },
     { field: "title", headerName: "Name", flex: 3 },
     { field: "typed", headerName: "Typed?", flex: 1 },
-    { field: "isDeleted", headerName: "Deleted?", flex: 1 },
+    {
+      field: "isDeleted",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        return row.isDeleted ? "Inactive" : "Active";
+      },
+    },
   ];
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -408,8 +435,8 @@ export default function AdminPage() {
                         onChange={handleSelectChange}
                       >
                         <option value="all">All</option>
-                        <option value="true">Deleted</option>
-                        <option value="false">Not Deleted</option>
+                        <option value="false">Active</option>
+                        <option value="true">Inactive</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
@@ -433,8 +460,8 @@ export default function AdminPage() {
                         onChange={handleSelectChange}
                       >
                         <option value="all">All</option>
-                        <option value="true">Deleted</option>
-                        <option value="false">Not Deleted</option>
+                        <option value="false">Active</option>
+                        <option value="true">Inactive</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
@@ -458,8 +485,8 @@ export default function AdminPage() {
                         onChange={handleSelectChange}
                       >
                         <option value="all">All</option>
-                        <option value="true">Deleted</option>
-                        <option value="false">Not Deleted</option>
+                        <option value="false">Active</option>
+                        <option value="true">Inactive</option>
                       </Form.Select>
                     </FloatingLabel>
                   </Col>
