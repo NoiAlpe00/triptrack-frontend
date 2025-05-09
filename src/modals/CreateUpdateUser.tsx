@@ -1,8 +1,7 @@
 import { useState } from "react";
 // import { useAuthUser } from "react-auth-kit";
-import { Button, Modal, Row, Col, FloatingLabel, Form, Image } from "react-bootstrap";
+import { Button, Modal, Row, Col, FloatingLabel, Form } from "react-bootstrap";
 import { CreateUpdateUserProps, CreateUpdateUserRequestProps, UserProps } from "../utils/TypesIndex";
-import Edit from "../assets/svgs/edit.svg";
 import CustomHeader from "../components/CustomHeader";
 import { requestGuard } from "../utils/utilities";
 import { addNewUser, updateExistingUser } from "../hooks/axios";
@@ -127,7 +126,7 @@ export default function CreateUpdateUser({ passedData, departments, access_token
     <>
       {formData.id ? (
         <Button variant="primary" size="sm" onClick={handleShow}>
-          <Image src={Edit} />
+          <i className="bi bi-pencil-square" />
         </Button>
       ) : (
         <Button variant="primary w-100" onClick={handleShow}>

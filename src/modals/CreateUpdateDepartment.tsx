@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Button, Modal, FloatingLabel, Form, Image } from "react-bootstrap";
+import { Button, Modal, FloatingLabel, Form } from "react-bootstrap";
 import CustomHeader from "../components/CustomHeader";
 import { CreateUpdateDepartmentProps, DepartmentProps } from "../utils/TypesIndex";
-import Edit from "../assets/svgs/edit.svg";
 import { addNewDeparment, updateExistingDeparment } from "../hooks/axios";
 import { requestGuard } from "../utils/utilities";
 
@@ -80,7 +79,7 @@ export default function CreateUpdateDepartment({ passedData, access_token }: Cre
     <>
       {formData.id ? (
         <Button variant="primary" size="sm" onClick={handleShow}>
-          <Image src={Edit} />
+          <i className="bi bi-pencil-square" />
         </Button>
       ) : (
         <Button variant="primary w-100" onClick={handleShow}>
