@@ -1,5 +1,4 @@
-import { Button, Card, Col, Container, Row, Image, FloatingLabel, Form } from "react-bootstrap";
-import Export from "../assets/svgs/export.svg";
+import { Button, Card, Col, Container, Row, FloatingLabel, Form } from "react-bootstrap";
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import { useState, useEffect } from "react";
@@ -25,6 +24,9 @@ export default function Dashboard() {
     Upcoming: 0,
   });
 
+  const [yearFilter, setYearFilter] = useState("all");
+  const [monthFilter, setMonthFilter] = useState("january");
+
   const authHeader = useAuthHeader();
   const access_token = authHeader();
 
@@ -39,30 +41,77 @@ export default function Dashboard() {
     }
   }, []);
 
+  useEffect(() => {
+    const formattedTableData = allTripData
+      .filter((trip) =>
+        yearFilter == "all"
+          ? true
+          : trip.createdDate.split("T")[0].split("-")[0] === yearFilter && trip.createdDate.split("T")[0].split("-")[1] === monthFilter
+      )
+      .map((trip: TripProps) => ({
+        id: trip.id,
+        title: trip.title,
+        dateRequested: formatISOString(trip.createdDate),
+        requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+        destination: trip.destination,
+        driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+        vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+      }));
+
+    const requestCounts = formattedTableData.reduce(
+      (acc, item) => {
+        acc[item.requestStatus]++;
+        return acc;
+      },
+      { Approved: 0, Declined: 0, Pending: 0 }
+    );
+
+    const tripCounts = formattedTableData.reduce(
+      (acc, item) => {
+        if (item.tripStatus === "Upcoming" && item.requestStatus === "Declined") {
+          return acc; // skip counting this item
+        }
+
+        acc[item.tripStatus as "Past" | "Ongoing" | "Upcoming"]++;
+        return acc;
+      },
+      { Past: 0, Ongoing: 0, Upcoming: 0 }
+    );
+
+    setRequestStatusCounts(requestCounts);
+    setTripStatusCounts(tripCounts);
+    setTableData(formattedTableData);
+  }, [yearFilter, monthFilter]);
+
   const columns = [
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "date", headerName: "Date", flex: 2 },
+    { field: "title", headerName: "Title", width: 200 },
+    { field: "dateRequested", headerName: "Date Requested", width: 200 },
+    { field: "requisitioner", headerName: "Requisitioner", width: 150 },
+    { field: "date", headerName: "Date Needed", width: 450 },
     {
       field: "destination",
       headerName: "Destination",
-      flex: 1,
+      width: 200,
     },
     {
       field: "driver",
       headerName: "Driver",
-      flex: 1,
+      width: 200,
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     {
       field: "vehicle",
       headerName: "Vehicle",
-      flex: 1,
+      width: 200,
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     {
       field: "requestStatus",
       headerName: "Request Status",
-      flex: 1,
+      width: 200,
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
     // {
@@ -74,24 +123,10 @@ export default function Dashboard() {
   ];
 
   const handleOnClick = (key: string) => {
-    if (key == "total")
-      setTableData(
-        allTripData.map((trip: TripProps) => ({
-          id: trip.id,
-          title: trip.title,
-          date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-          destination: trip.destination,
-          driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-          vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-          requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-          tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-        }))
-      );
-    else if (key == "approved")
-      setTableData(
-        allTripData
-          .filter((trip) => trip.status === "Approved")
-          .map((trip: TripProps) => ({
+    if (yearFilter == "all")
+      if (key == "total")
+        setTableData(
+          allTripData.map((trip: TripProps) => ({
             id: trip.id,
             title: trip.title,
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
@@ -101,12 +136,85 @@ export default function Dashboard() {
             requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
             tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
           }))
-      );
-    else if (key == "declined")
-      setTableData(
-        allTripData
-          .filter((trip) => trip.status === "Declined")
-          .map((trip: TripProps) => ({
+        );
+      else if (key == "approved")
+        setTableData(
+          allTripData
+            .filter((trip) => trip.status === "Approved")
+            .map((trip: TripProps) => ({
+              id: trip.id,
+              title: trip.title,
+              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+              destination: trip.destination,
+              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            }))
+        );
+      else if (key == "declined")
+        setTableData(
+          allTripData
+            .filter((trip) => trip.status === "Declined")
+            .map((trip: TripProps) => ({
+              id: trip.id,
+              title: trip.title,
+              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+              destination: trip.destination,
+              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            }))
+        );
+      else if (key == "upcoming")
+        setTableData(
+          allTripData
+            .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
+            .map((trip: TripProps) => ({
+              id: trip.id,
+              title: trip.title,
+              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+              destination: trip.destination,
+              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            }))
+        );
+      else if (key == "ongoing")
+        setTableData(
+          allTripData
+            .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
+            .map((trip: TripProps) => ({
+              id: trip.id,
+              title: trip.title,
+              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+              destination: trip.destination,
+              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            }))
+        );
+      else if (key == "past")
+        setTableData(
+          allTripData
+            .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
+            .map((trip: TripProps) => ({
+              id: trip.id,
+              title: trip.title,
+              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+              destination: trip.destination,
+              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            }))
+        );
+      else
+        setTableData(
+          allTripData.map((trip: TripProps) => ({
             id: trip.id,
             title: trip.title,
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
@@ -116,66 +224,17 @@ export default function Dashboard() {
             requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
             tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
           }))
-      );
-    else if (key == "upcoming")
-      setTableData(
-        allTripData
-          .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
-          .map((trip: TripProps) => ({
-            id: trip.id,
-            title: trip.title,
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-            destination: trip.destination,
-            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-          }))
-      );
-    else if (key == "ongoing")
-      setTableData(
-        allTripData
-          .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
-          .map((trip: TripProps) => ({
-            id: trip.id,
-            title: trip.title,
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-            destination: trip.destination,
-            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-          }))
-      );
-    else if (key == "past")
-      setTableData(
-        allTripData
-          .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
-          .map((trip: TripProps) => ({
-            id: trip.id,
-            title: trip.title,
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-            destination: trip.destination,
-            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-          }))
-      );
-    else
-      setTableData(
-        allTripData.map((trip: TripProps) => ({
-          id: trip.id,
-          title: trip.title,
-          date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-          destination: trip.destination,
-          driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-          vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-          requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-          tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-        }))
-      );
+        );
     // You can do something with `data`, like navigate or open a modal
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (name === "yearFilter") {
+      setYearFilter(value);
+    } else if (name === "monthFilter") {
+      setMonthFilter(value);
+    }
   };
 
   useEffect(() => {
@@ -185,6 +244,8 @@ export default function Dashboard() {
       const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
         id: trip.id,
         title: trip.title,
+        dateRequested: formatISOString(trip.createdDate),
+        requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
         destination: trip.destination,
         driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
@@ -218,6 +279,30 @@ export default function Dashboard() {
     })();
   }, []);
 
+  const handleExport = () => {
+    // 1. Extract headers from cols
+    const headers = columns.map((col: any) => col.headerName);
+
+    // 2. Map rows to values in the same order as cols
+    const dataRows = tableData.map((row: any) => columns.map((col: any) => row[col.field]));
+
+    // 3. Combine headers and rows into CSV format
+    const csvContent = [headers, ...dataRows]
+      .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    // 4. Create and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `${yearFilter}_monthly_report_${monthFilter}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Container fluid>
       <Row className="pt-5 mb-4">
@@ -229,18 +314,18 @@ export default function Dashboard() {
             <Row className="pe-0">
               <Col lg={4}>
                 <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input">
-                  <Form.Select name="yearFilter">
-                    <option>Open this select menu</option>
+                  <Form.Select name="yearFilter" value={yearFilter} onChange={handleSelectChange}>
                     <option value="all">All</option>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
                   </Form.Select>
                 </FloatingLabel>
               </Col>
               <Col lg={4}>
                 <FloatingLabel controlId="floatingSelectYear" label="Month" className="small-input">
-                  <Form.Select name="monthFilter">
+                  <Form.Select name="monthFilter" value={monthFilter} disabled={yearFilter === "all"} onChange={handleSelectChange}>
                     <option value="01">January</option>
                     <option value="02">February</option>
                     <option value="03">March</option>
@@ -257,8 +342,8 @@ export default function Dashboard() {
                 </FloatingLabel>
               </Col>
               <Col lg={4}>
-                <Button className="w-100 h-100">
-                  Export Results <Image src={Export} />
+                <Button className="w-100 h-100" onClick={handleExport}>
+                  Export Results <i className="bi bi-box-arrow-up" />
                 </Button>
               </Col>
             </Row>
@@ -278,7 +363,7 @@ export default function Dashboard() {
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
                       <Row className="">
-                        <h1 className="text-primary text-end">{allTripData.length ?? 0}</h1>
+                        <h1 className="text-primary text-end">{tableData.length ?? 0}</h1>
                       </Row>
                     </Card.Body>
                   </Card>
