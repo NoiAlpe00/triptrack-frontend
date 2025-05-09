@@ -54,9 +54,11 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
       checklist: formData.checklist,
       timing: passedData.timing,
     };
+
+    const isTimeValid = type === "operation" && phase === "departure" ? formData.timeDeparture !== null : formData.timeArrival !== null;
     const isDataValid = requestGuard<TripChecklistProps>(requestData, []);
     const doubleCheck = confirm("This step is final and uneditable, are you sure the data is correct?");
-    if (isDataValid && doubleCheck) {
+    if (isDataValid && doubleCheck && isTimeValid) {
       const res = await addNewTripChecklist(requestData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
         alert(` ${phase === "departure" ? "Departure" : "Arrival"} Trip Checklist for trip ${requestData.tripId} was added successfully.`);

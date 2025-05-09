@@ -29,9 +29,9 @@ export const loginUser = async ({ email, password }: LoginRequestProps) => {
       },
       withCredentials: true,
     });
-    return { status: res.status, data: res.data.access_token };
+    return { statusCode: res.status, data: res.data.access_token };
   } catch (error: any) {
-    return { status: error.response.status, data: error.response.data.message };
+    return { statusCode: error.response.status, data: error.response.data.message };
   }
 };
 

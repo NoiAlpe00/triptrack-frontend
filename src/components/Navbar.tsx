@@ -36,18 +36,24 @@ export default function CustomNavbar() {
           className="me-auto"
           activeKey={location.pathname} // 👈 Set active tab based on path
         >
-          <Nav.Link className="px-3" as={Link} to="/dashboard" eventKey="/dashboard">
-            Dashboard
-          </Nav.Link>
+          {!(decodedToken.userType.toLowerCase() === "guard") && (
+            <Nav.Link className="px-3" as={Link} to="/dashboard" eventKey="/dashboard">
+              Dashboard
+            </Nav.Link>
+          )}
           <Nav.Link className="px-3" as={Link} to="/trips" eventKey="/trips">
             Trips
           </Nav.Link>
-          <Nav.Link className="px-3" as={Link} to="/reports" eventKey="/reports">
-            Reports
-          </Nav.Link>
-          <Nav.Link className="px-3" as={Link} to="/admin" eventKey="/admin">
-            Admin
-          </Nav.Link>
+          {decodedToken.userType.toLowerCase() === "admin" && (
+            <>
+              <Nav.Link className="px-3" as={Link} to="/reports" eventKey="/reports">
+                Reports
+              </Nav.Link>
+              <Nav.Link className="px-3" as={Link} to="/admin" eventKey="/admin">
+                Admin
+              </Nav.Link>
+            </>
+          )}
         </Nav>
         <Nav className="ms-auto">
           <div className="d-flex align-items-center px-2">

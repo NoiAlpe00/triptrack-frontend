@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useSignIn } from "react-auth-kit";
+import { useAuthHeader, useIsAuthenticated, useSignIn } from "react-auth-kit";
 import { Button, Col, Container, FloatingLabel, Form, Row, Image } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { LoginProps, TokenData } from "../utils/TypesIndex";
 import { loginUser } from "../hooks/axios";
 import { decodeToken } from "../utils/utilities";
@@ -10,29 +10,43 @@ export default function Login() {
   const signIn = useSignIn();
   const navigate = useNavigate();
 
+  const isAuthenticated = useIsAuthenticated();
+
+  const authHeader = useAuthHeader();
+  const access_token = authHeader();
+
+  const [isSuccess, setIsSuccess] = useState(true);
+
+  if (isAuthenticated()) {
+    const decodedToken = decodeToken(access_token);
+    return decodedToken.userType.toLowerCase() === "guard" ? <Navigate to="/trips" replace /> : <Navigate to="/dashboard" replace />;
+  }
+
   const [formData, setFormData] = useState<LoginProps>({
     email: "",
     password: "",
   });
 
   const handleLogin = async (role: string = "Admin") => {
-    const token = await loginUser({ email: formData.email, password: formData.password });
+    try {
+      const token = await loginUser({ email: formData.email, password: formData.password });
+      const decodedToken: TokenData = decodeToken(token.data);
 
-    const decodedToken: TokenData = decodeToken(token.data);
+      const success = token.statusCode >= 200 && token.statusCode < 400;
 
-    const success = token.status >= 200 && token.status < 400;
-
-    signIn({
-      token: token.data,
-      expiresIn: 480,
-      tokenType: "Bearer",
-      authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
-    });
-
-    if (success) {
-      navigate(`/dashboard`);
-    } else {
-      alert("Login failed!");
+      if (success) {
+        signIn({
+          token: token.data,
+          expiresIn: 480,
+          tokenType: "Bearer",
+          authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
+        });
+        navigate(`${decodedToken.userType.toLowerCase() === "guard" ? "/trips" : "/dashboard"}`);
+      } else {
+        setIsSuccess(false);
+      }
+    } catch (error) {
+      setIsSuccess(false);
     }
   };
 
@@ -64,6 +78,11 @@ export default function Login() {
               <h5 className="text-secondary">We are glad to see you back</h5>
             </Row>
             <div className="px-1">
+              <div hidden={isSuccess}>
+                <span className="thin-text text-danger">
+                  <i className="bi bi-exclamation-circle" /> Incorrect Credentials
+                </span>
+              </div>
               <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3 small-input">
                 <Form.Control name="email" type="email" placeholder="name@example.com" onChange={handleOnChange} />
               </FloatingLabel>
@@ -92,13 +111,6 @@ export default function Login() {
           <Col lg={4}></Col>
         </Row>
       </Row>
-
-      <div style={{ padding: "2rem" }}>
-        <h2>Login</h2>
-        <button onClick={() => handleLogin("Admin")}>Login as Admin</button>
-        <button onClick={() => handleLogin("Guard")}>Login as Guard</button>
-        <button onClick={() => handleLogin("Requisitioner")}>Login as Requisitioner</button>
-      </div>
     </Container>
   );
 }

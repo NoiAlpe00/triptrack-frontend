@@ -150,17 +150,20 @@ export default function Trips() {
         };
 
         return (
-          <Row className="d-flex">
-            <Col className="px-1">
-              <CreateUpdateTrip
-                passedData={passedData}
-                access_token={access_token}
-                departments={allDepartmentData}
-                vehicles={allVehicleData}
-                drivers={allDriverData}
-              />
-            </Col>
-          </Row>
+          passedData.timeDeparture == null &&
+          passedData.timeArrival == null && (
+            <Row className="d-flex">
+              <Col className="px-1">
+                <CreateUpdateTrip
+                  passedData={passedData}
+                  access_token={access_token}
+                  departments={allDepartmentData}
+                  vehicles={allVehicleData}
+                  drivers={allDriverData}
+                />
+              </Col>
+            </Row>
+          )
         );
       },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
