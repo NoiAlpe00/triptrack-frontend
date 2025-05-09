@@ -13,7 +13,6 @@ import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
-  ChecklistProps,
   DepartmentProps,
   DriverProps,
   FeedbackProps,
@@ -41,8 +40,8 @@ export default function Trips() {
   const [allDepartmentData, setAllDepartmentData] = useState<DepartmentProps[]>([]);
   const [allDriverData, setAllDriverData] = useState<DriverProps[]>([]);
   const [allVehicleData, setAllVehicleData] = useState<VehicleProps[]>([]);
-  const [allChecklistData, setAllChecklistData] = useState<ChecklistProps[]>([]);
   const [allTripSpecificChecklistData, setAllTripSpecificChecklistData] = useState<TripSpecificChecklistProps[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const auth = useAuthUser();
   const userRole = auth()?.role ?? "Staff";
@@ -53,8 +52,45 @@ export default function Trips() {
   const decodedToken = decodeToken(access_token);
 
   useEffect(() => {
-    (async () => {})();
-  }, []);
+    (async () => {
+      const formattedTableData: TripTableProps[] = allTripData
+        .filter((trip) => (trip.status == "all" ? true : trip.status.toLowerCase() === statusFilter))
+        .map((trip: TripProps) => {
+          return {
+            id: trip.id,
+            title: trip.title,
+            tripStart: trip.tripStart,
+            tripEnd: trip.tripEnd,
+            destination: trip.destination,
+            purpose: trip.purpose,
+            status: trip.status,
+            timeDeparture: trip.timeDeparture,
+            timeArrival: trip.timeArrival,
+            remarks: trip.remarks,
+            createdDate: trip.createdDate,  
+            updatedDate: trip.updatedDate,
+            isDeleted: trip.isDeleted,
+            tripChecklists: trip.tripChecklists, // To Be Implemented yet
+            department: { id: trip.department.id, name: trip.department.name },
+            driver: trip.driver,
+            vehicle: trip.vehicle,
+            driverRequest: false,
+            vehicleRequest: false,
+            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            user: trip.user,
+            feedback: trip.feedback,
+          };
+        });
+      setTableData(formattedTableData);
+    })();
+  }, [statusFilter]);
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setStatusFilter(value);
+  };
 
   {
     /*
@@ -468,7 +504,6 @@ export default function Trips() {
 
       const allChecklist = await getAllChecklist(access_token);
       if (allChecklist.statusCode >= 200 && allChecklist.statusCode < 400) {
-        setAllChecklistData(allChecklist.data ?? []);
         const formattedChecklistTableData = allChecklist.data?.map((checklist) => ({
           checklistId: checklist.id!!,
           title: checklist.title,
@@ -548,11 +583,11 @@ export default function Trips() {
             </Col>
             <Col md={4} className="">
               <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                <Form.Select name="statusFilter" aria-label="Floating label select example">
+                <Form.Select name="statusFilter" aria-label="Floating label select example" value={statusFilter} onChange={handleSelectChange}>
                   <option value="all">All</option>
-                  <option value="ongoing">Ongoing</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="past">Past</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                  <option value="declined">Declined</option>
                 </Form.Select>
               </FloatingLabel>
             </Col>
