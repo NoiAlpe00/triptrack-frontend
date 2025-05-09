@@ -16,6 +16,7 @@ export default function Login() {
   const access_token = authHeader();
 
   const [isSuccess, setIsSuccess] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (isAuthenticated()) {
     const decodedToken = decodeToken(access_token);
@@ -86,9 +87,16 @@ export default function Login() {
               <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3 small-input">
                 <Form.Control name="email" type="email" placeholder="name@example.com" onChange={handleOnChange} />
               </FloatingLabel>
-              <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3 small-input">
-                <Form.Control name="password" type="password" placeholder="Password" onChange={handleOnChange} />
+              <FloatingLabel controlId="floatingPassword" label="Password" className="mb-1 small-input">
+                <Form.Control name="password" type={showPassword ? "text" : "password"} placeholder="Password" onChange={handleOnChange} />
               </FloatingLabel>
+              <Form.Check // prettier-ignore
+                className="text-start mb-3 text-secondary"
+                type="switch"
+                id="custom-switch"
+                label="Show Password"
+                onChange={(e) => setShowPassword(e.target.checked)}
+              />
             </div>
 
             <Row className="mx-1">

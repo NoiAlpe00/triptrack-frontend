@@ -17,6 +17,7 @@ import {
 } from "../utils/TypesIndex";
 
 const URL = "http://localhost:8888";
+// = "http://10.0.2.2:8888";
 
 export const loginUser = async ({ email, password }: LoginRequestProps) => {
   try {
@@ -389,7 +390,7 @@ export const changePassword = async (
   NewPassword: string,
   ConfirmNewPassword: string,
   access_token: string
-): Promise<ResponsePropsArray<UserProps>> => {
+) => {
   try {
     const res = await axios({
       method: "PATCH",
@@ -406,7 +407,7 @@ export const changePassword = async (
     });
     return { statusCode: res.data.statusCode, message: res.data.messge };
   } catch (error: any) {
-    return { statusCode: error.response.statusCode, message: error.response.data.message };
+    return { statusCode: error.response.status, message: error.response.data.message };
   }
 };
 

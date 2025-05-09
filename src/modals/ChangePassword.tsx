@@ -9,13 +9,22 @@ export default function ChangePassword({ email, access_token }: { email: string;
   // const auth = useAuthUser();
   // const role = auth()?.role ?? "Requisitioner";
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
+
+  const handleClose = () => {
+    setFormData({
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
+    setShow(false);
+  };
+  const handleShow = () => setShow(true);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -60,14 +69,39 @@ export default function ChangePassword({ email, access_token }: { email: string;
         <Modal.Body>
           <CustomHeader title={"Change Password"} subtitle={"Change your current password."} />
           <FloatingLabel controlId="currentPassword" label="Current Password" className="mb-2 small-input">
-            <Form.Control name="currentPassword" type="text" placeholder="" onChange={handleOnChange} value={formData.currentPassword ?? ""} />
+            <Form.Control
+              name="currentPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder=""
+              onChange={handleOnChange}
+              value={formData.currentPassword ?? ""}
+            />
           </FloatingLabel>
           <FloatingLabel controlId="newPassword" label="New Password" className="mb-2 small-input">
-            <Form.Control name="newPassword" type="text" placeholder="" onChange={handleOnChange} value={formData.newPassword ?? ""} />
+            <Form.Control
+              name="newPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder=""
+              onChange={handleOnChange}
+              value={formData.newPassword ?? ""}
+            />
           </FloatingLabel>
           <FloatingLabel controlId="confirmNewPassword" label="Confirm New Password" className="mb-2 small-input">
-            <Form.Control name="confirmNewPassword" type="text" placeholder="" onChange={handleOnChange} value={formData.confirmNewPassword ?? ""} />
+            <Form.Control
+              name="confirmNewPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder=""
+              onChange={handleOnChange}
+              value={formData.confirmNewPassword ?? ""}
+            />
           </FloatingLabel>
+          <Form.Check // prettier-ignore
+            className="text-start mb-3 text-secondary"
+            type="switch"
+            id="custom-switch"
+            label="Show Password"
+            onChange={(e) => setShowPassword(e.target.checked)}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
