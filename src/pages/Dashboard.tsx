@@ -305,7 +305,7 @@ export default function Dashboard() {
 
   return (
     <Container fluid>
-      <Row className="pt-5 mb-4">
+      <Row className="pt-5 mb-4 d-flex justify-content-center">
         <Row className="pb-3">
           <Col lg={8} className="align-items-start">
             <h2 className="text-primary thin-text text-start">Trips Overview</h2>

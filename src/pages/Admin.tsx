@@ -354,7 +354,7 @@ export default function AdminPage() {
 
   return (
     <Container fluid>
-      <Row className="pt-5 pb-3 px-1">
+      <Row className="pt-5 pb-3 px-1 d-flex justify-content-center">
         <Col lg={6} className="mb-2 px-4">
           <Row className="d-flex align-items-center mb-2">
             <Col lg={6} className="">

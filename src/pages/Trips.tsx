@@ -571,7 +571,7 @@ export default function Trips() {
 
   return (
     <Container fluid>
-      <Row className="pt-5 pb-3 px-1">
+      <Row className="pt-5 pb-3 px-1 d-flex justify-content-center">
         <Col md={6} className="mb-2">
           <Row className="d-flex align-items-center">
             <Col md={2} className="">

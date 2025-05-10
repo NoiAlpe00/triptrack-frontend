@@ -119,11 +119,11 @@ export default function Driver() {
 
   return (
     <Container>
-      <Row className="mt-5">
-        <Col className="text-start">
+      <Row className="mt-5 d-flex justify-content-center">
+        <Col lg={6} className="text-start">
           <CustomHeader title={"Vehicle Maintenace Log"} subtitle={"Logging of Maintenance"} />
         </Col>
-        <Col>
+        <Col lg={6}>
           <Row className="d-flex justify-content-end">
             <Col lg={4} className="">
               <FloatingLabel controlId="floatingSelect" label="Filter" className="small-input">

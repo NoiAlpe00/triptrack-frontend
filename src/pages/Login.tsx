@@ -61,7 +61,7 @@ export default function Login() {
 
   return (
     <Container>
-      <Row className="">
+      <Row className="d-flex justify-content-center">
         <Row>
           <Col lg={4}></Col>
           <Col lg={4} className="border border-tertiary rounded px-3 py-5 my-5">

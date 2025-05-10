@@ -325,7 +325,7 @@ export default function Reports() {
   };
   return (
     <Container>
-      <Row className="mt-5">
+      <Row className="mt-5 d-flex justify-content-center">
         <Col lg={6} className="d-flex justify-content-start text-start">
           <CustomHeader title={"Reports"} subtitle={"Everything about the trips"} />
         </Col>
