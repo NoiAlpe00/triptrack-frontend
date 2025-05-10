@@ -91,6 +91,12 @@ export interface VehicleProps {
   seats?: number;
   maintenance?: MaintenanceProps;
   isDeleted: boolean;
+  trips: VehicleTripsProps[];
+}
+
+export interface VehicleTripsProps {
+  tripStart: string;
+  tripEnd: string;
 }
 
 export interface CreateUpdateVehicleProps {

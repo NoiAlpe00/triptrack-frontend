@@ -140,6 +140,7 @@ export default function Trips() {
             plateNumber: row.vehicle?.plateNumber ?? "",
             seats: row.vehicle?.seats ?? 0,
             isDeleted: false,
+            trips: row.vehicle?.trips,
           },
           driverRequest: false,
           vehicleRequest: false,

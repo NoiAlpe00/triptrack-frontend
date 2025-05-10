@@ -262,7 +262,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                     ))}
                   </Form.Select>
                 </FloatingLabel>
-                <FloatingLabel controlId="floatingTextarea2" label="Vehicle Schedule" className="no-resize small-input-textarea mb-2">
+                {/* <FloatingLabel controlId="floatingTextarea2" label="Vehicle Schedule" className="no-resize small-input-textarea mb-2">
                   <Form.Control
                     name="vehicleSchedule"
                     type="text"
@@ -271,7 +271,28 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                     style={{ height: "160px", resize: "none" }}
                     disabled
                   />
-                </FloatingLabel>
+                </FloatingLabel> */}
+                <Row className="schedule d-flex align-items-start p-2">
+                  <div className="d-flex flex-column" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {formData.vehicle &&
+                      vehicles
+                        .filter((vehicle) => vehicle.id == formData.vehicle?.id)
+                        .map((vehicle) =>
+                          vehicle.trips.map((trips, index) => (
+                            <span
+                              key={`vehicle-drivenTrips-${index}-${trips.tripStart}-${trips.tripEnd}`}
+                              className={`mb-1 small-text thin-text ${
+                                isDateRangeOverlapping(trips.tripStart, trips.tripEnd, formData.tripStart + "Z", formData.tripEnd + "Z")
+                                  ? "text-danger"
+                                  : ""
+                              }`}
+                            >
+                              {formatISOString(trips.tripStart)} - {formatISOString(trips.tripEnd)}
+                            </span>
+                          ))
+                        )}
+                  </div>
+                </Row>
               </Col>
             )}
           </Row>
