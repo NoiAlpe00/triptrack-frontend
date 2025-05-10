@@ -504,7 +504,7 @@ export default function AdminPage() {
           </Tab.Container>
         </Col>
       </Row>
-      <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />
+      <CustomToast header={"Login"} body={"Login Successful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />
     </Container>
   );
 }

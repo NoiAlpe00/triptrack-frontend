@@ -3,7 +3,7 @@ import { CustomToastProps } from "../utils/TypesIndex";
 
 export default function CustomToast(toastProps: CustomToastProps) {
   return (
-    <ToastContainer className="p-3" position="bottom-end">
+    <ToastContainer className="p-3" position="bottom-start">
       <Toast
         className={toastProps.show ? "toast-animate" : ""}
         bg={toastProps.variant.toLowerCase()}
