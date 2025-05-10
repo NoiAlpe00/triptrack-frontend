@@ -359,9 +359,6 @@ export default function Trips() {
           width: 300,
           renderCell: (params: any) => {
             const row = params.row;
-
-            console.log(row);
-
             const passedData: TripTableProps = {
               id: row.id,
               title: row.title,
@@ -557,8 +554,6 @@ export default function Trips() {
       : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "requisitioner"
       ? columns
       : columns.slice(1, -1);
-
-  console.log(finalCols);
 
   useEffect(() => {
     const toastShown = sessionStorage.getItem("loginToastShow");

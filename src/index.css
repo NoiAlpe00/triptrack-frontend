@@ -154,6 +154,11 @@ input[type="datetime-local"] {
   max-width: none !important;
 }
 
+.schedule {
+  height: 10rem;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

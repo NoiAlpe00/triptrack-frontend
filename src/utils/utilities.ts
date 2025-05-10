@@ -52,3 +52,16 @@ export function requestGuard<T extends Record<string, any>>(formData: T, exclude
   }
   return true;
 }
+
+export function isDateRangeOverlapping(date1: string, date2: string, date3: string, date4: string): boolean {
+  if (date3.length == 0 || date4.length == 0) return false;
+
+  const start1 = new Date(date1);
+  const end1 = new Date(date2);
+  const start2 = new Date(date3);
+  const end2 = new Date(date4);
+
+  console.log(start1 <= end2 && start2 <= end1);
+
+  return start1 <= end2 && start2 <= end1;
+}

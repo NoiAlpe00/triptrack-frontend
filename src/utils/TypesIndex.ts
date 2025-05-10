@@ -277,8 +277,13 @@ export interface CreateUpdateDepartmentProps {
   access_token: string;
 }
 
+export interface DrivenTripsProps {
+  tripStart: string;
+  tripEnd: string;
+}
+
 export interface DriverProps extends UserProps {
-  drivenTrips: TripProps;
+  drivenTrips: DrivenTripsProps[];
 }
 
 export interface CreateUpdateTripRequestProps {

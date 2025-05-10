@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Col, FloatingLabel, Form, Modal, Row } from "react-bootstrap";
 import { CreateUpdateTripProps, CreateUpdateTripRequestProps, TripProps } from "../utils/TypesIndex";
 import { useAuthUser } from "react-auth-kit";
-import { decodeToken, requestGuard } from "../utils/utilities";
+import { decodeToken, formatISOString, isDateRangeOverlapping, requestGuard } from "../utils/utilities";
 import { addNewTrip, updateExistingTrip } from "../hooks/axios";
 
 export default function CreateUpdateTrip({ passedData, access_token, departments, vehicles, drivers }: CreateUpdateTripProps) {
@@ -222,7 +222,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                     ))}
                   </Form.Select>
                 </FloatingLabel>
-                <FloatingLabel controlId="floatingTextarea2" label="Driver Schedule" className="no-resize small-input-textarea mb-2">
+                {/* <FloatingLabel controlId="floatingTextarea2" label="Driver Schedule" className="no-resize small-input-textarea mb-2">
                   <Form.Control
                     name="driverSchedule"
                     type="text"
@@ -231,7 +231,27 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                     style={{ height: "160px", resize: "none" }}
                     disabled
                   />
-                </FloatingLabel>
+                </FloatingLabel> */}
+                <Row className="schedule d-flex align-items-start p-2">
+                  <div className="d-flex flex-column" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {formData.driver &&
+                      drivers
+                        .filter((driver) => driver.id == formData.driver?.id)
+                        .map((driver) =>
+                          driver.drivenTrips.map((trips, index) => (
+                            <span
+                              key={`driver-drivenTrips-${index}-${trips.tripStart}-${trips.tripEnd}`}
+                              className={`mb-1 small-text thin-text ${
+                                isDateRangeOverlapping(trips.tripStart, trips.tripEnd, formData.tripStart, formData.tripEnd) ? "text-danger" : ""
+                              }`}
+                            >
+                              {formatISOString(trips.tripStart)} - {formatISOString(trips.tripEnd)}
+                            </span>
+                          ))
+                        )}
+                  </div>
+                </Row>
+
                 <FloatingLabel controlId="floatingSelect" label="Vehicle" className="small-input mb-2">
                   <Form.Select name="vehicle" onChange={handleSelectChange} value={formData.vehicle?.id ?? ""}>
                     <option value={""}>Select Vehicle</option>
