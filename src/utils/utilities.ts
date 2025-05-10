@@ -61,7 +61,5 @@ export function isDateRangeOverlapping(date1: string, date2: string, date3: stri
   const start2 = new Date(date3);
   const end2 = new Date(date4);
 
-  console.log(start1 <= end2 && start2 <= end1);
-
   return start1 <= end2 && start2 <= end1;
 }
