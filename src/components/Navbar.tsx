@@ -47,7 +47,7 @@ export default function CustomNavbar() {
             </Nav.Link>
           )}
           {(decodedToken.userType.toLowerCase() === "driver" || decodedToken.userType.toLowerCase() === "admin") && (
-            <Nav.Link className="px-3" as={Link} to="/maintenanace" eventKey="/maintenanace">
+            <Nav.Link className="px-3" as={Link} to="/maintenance" eventKey="/maintenance">
               Maintenance
             </Nav.Link>
           )}

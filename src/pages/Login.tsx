@@ -20,7 +20,13 @@ export default function Login() {
 
   if (isAuthenticated()) {
     const decodedToken = decodeToken(access_token);
-    return decodedToken.userType.toLowerCase() === "guard" ? <Navigate to="/trips" replace /> : <Navigate to="/dashboard" replace />;
+    return decodedToken.userType.toLowerCase() === "guard" ? (
+      <Navigate to="/trips" replace />
+    ) : decodedToken.userType.toLowerCase() === "driver" ? (
+      <Navigate to="/maintenance" replace />
+    ) : (
+      <Navigate to="/dashboard" replace />
+    );
   }
 
   const [formData, setFormData] = useState<LoginProps>({
@@ -32,6 +38,7 @@ export default function Login() {
     try {
       const token = await loginUser({ email: formData.email, password: formData.password });
       const decodedToken: TokenData = decodeToken(token.data);
+      const userType = decodedToken.userType.trim().toLowerCase();
 
       const success = token.statusCode >= 200 && token.statusCode < 400;
 
@@ -42,15 +49,8 @@ export default function Login() {
           tokenType: "Bearer",
           authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
         });
-        navigate(
-          `${
-            decodedToken.userType.toLowerCase() === "guard"
-              ? "/trips"
-              : decodedToken.userType.toLowerCase() === "driver"
-              ? "/maintenance"
-              : "/dashboard"
-          }`
-        );
+        const path = `${userType == "guard" ? "/trips" : userType == "driver" ? "/maintenance" : "/dashboard"}`;
+        navigate(path);
       } else {
         setIsSuccess(false);
       }
