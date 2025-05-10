@@ -42,7 +42,15 @@ export default function Login() {
           tokenType: "Bearer",
           authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
         });
-        navigate(`${decodedToken.userType.toLowerCase() === "guard" ? "/trips" : "/dashboard"}`);
+        navigate(
+          `${
+            decodedToken.userType.toLowerCase() === "guard"
+              ? "/trips"
+              : decodedToken.userType.toLowerCase() === "driver"
+              ? "/maintenance"
+              : "/dashboard"
+          }`
+        );
       } else {
         setIsSuccess(false);
       }

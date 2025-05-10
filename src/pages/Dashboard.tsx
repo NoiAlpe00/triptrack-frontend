@@ -313,7 +313,7 @@ export default function Dashboard() {
           <Col lg={4}>
             <Row className="pe-0 d-flex justify-content-end">
               <Col lg={4}>
-                <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input">
+                <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input mb-2">
                   <Form.Select name="yearFilter" value={yearFilter} onChange={handleSelectChange}>
                     <option value="all">All</option>
                     <option value="2025">2025</option>
@@ -324,7 +324,7 @@ export default function Dashboard() {
                 </FloatingLabel>
               </Col>
               <Col lg={4}>
-                <FloatingLabel controlId="floatingSelectYear" label="Month" className="small-input">
+                <FloatingLabel controlId="floatingSelectYear" label="Month" className="small-input mb-2">
                   <Form.Select name="monthFilter" value={monthFilter} disabled={yearFilter === "all"} onChange={handleSelectChange}>
                     <option value="01">January</option>
                     <option value="02">February</option>

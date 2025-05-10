@@ -36,7 +36,7 @@ export default function CustomNavbar() {
           className="me-auto"
           activeKey={location.pathname} // 👈 Set active tab based on path
         >
-          {!(decodedToken.userType.toLowerCase() === "guard") && (
+          {!(decodedToken.userType.toLowerCase() === "guard") && !(decodedToken.userType.toLowerCase() === "driver") && (
             <Nav.Link className="px-3" as={Link} to="/dashboard" eventKey="/dashboard">
               Dashboard
             </Nav.Link>

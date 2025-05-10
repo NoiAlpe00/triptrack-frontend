@@ -76,6 +76,7 @@ export default function Driver() {
           plateNumber: row.plateNumber,
           seats: row.seats,
           isDeleted: row.isDeleted,
+          trips: row.trips,
         };
 
         return (

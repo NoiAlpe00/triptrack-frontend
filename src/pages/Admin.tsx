@@ -148,11 +148,11 @@ export default function AdminPage() {
         );
       },
     },
-    { field: "name", headerName: "Name", width: 700},
+    { field: "name", headerName: "Name", width: 700 },
     {
       field: "isDeleted",
       headerName: "Status",
-       width: 150,
+      width: 150,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -240,6 +240,7 @@ export default function AdminPage() {
           plateNumber: row.plateNumber,
           seats: row.seats,
           isDeleted: row.isDeleted,
+          trips: row.trips,
         };
 
         return (
@@ -268,6 +269,7 @@ export default function AdminPage() {
           plateNumber: row.plateNumber,
           seats: row.seats,
           isDeleted: row.isDeleted,
+          trips: row.trips,
         };
 
         return (
@@ -361,7 +363,7 @@ export default function AdminPage() {
               <h2 className="text-primary thin-text text-start">All Users</h2>
             </Col>
             <Col lg={2} className="">
-              <FloatingLabel controlId="floatingSelect" label="Role" className="small-input">
+              <FloatingLabel controlId="floatingSelect" label="Role" className="small-input mb-2">
                 <Form.Select name="userRoleFilter" aria-label="Floating label select example" value={userRoleFilter} onChange={handleSelectChange}>
                   <option value="all">All</option>
                   <option value="Admin">Admin</option>
@@ -373,7 +375,7 @@ export default function AdminPage() {
               </FloatingLabel>
             </Col>
             <Col lg={2} className="">
-              <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
+              <FloatingLabel controlId="floatingSelect" label="Status" className="small-input mb-2">
                 <Form.Select
                   name="userStatusFilter"
                   aria-label="Floating label select example"
@@ -387,7 +389,7 @@ export default function AdminPage() {
               </FloatingLabel>
             </Col>
 
-            <Col lg={2} className="">
+            <Col lg={2} className="mb-2">
               <CreateUpdateUser
                 passedData={{
                   email: "",
@@ -468,7 +470,7 @@ export default function AdminPage() {
                     </FloatingLabel>
                   </Col>
                   <Col lg={2} className="">
-                    <CreateUpdateVehicle passedData={{ model: "", plateNumber: "", isDeleted: false }} access_token={access_token} />
+                    <CreateUpdateVehicle passedData={{ model: "", plateNumber: "", isDeleted: false, trips: [] }} access_token={access_token} />
                   </Col>
                 </Row>
                 <Row>{activeTab === "vehicle" && <CustomTable rows={vehicleTableData} columns={vehicleCols} type="settings" />}</Row>

@@ -91,7 +91,7 @@ export interface VehicleProps {
   seats?: number;
   maintenance?: MaintenanceProps;
   isDeleted: boolean;
-  trips: VehicleTripsProps[];
+  trips?: VehicleTripsProps[];
 }
 
 export interface VehicleTripsProps {
@@ -120,7 +120,7 @@ export interface TripChecklistProps {
   timeArrival?: string;
   timing: string;
   checklist: TripSpecificChecklistProps[];
-  guard: UserProps;
+  guard?: UserProps;
 }
 
 export interface CreateUpdateTripChecklistProps {

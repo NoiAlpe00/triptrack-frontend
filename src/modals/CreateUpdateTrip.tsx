@@ -278,7 +278,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                       vehicles
                         .filter((vehicle) => vehicle.id == formData.vehicle?.id)
                         .map((vehicle) =>
-                          vehicle.trips.map((trips, index) => (
+                          vehicle.trips!!.map((trips, index) => (
                             <span
                               key={`vehicle-drivenTrips-${index}-${trips.tripStart}-${trips.tripEnd}`}
                               className={`mb-1 small-text thin-text ${
