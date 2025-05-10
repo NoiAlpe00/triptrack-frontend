@@ -272,6 +272,7 @@ export default function Trips() {
                     timeArrival: params.row.timeArrival,
                     timing: params.row.timeDeparture == undefined ? "Before" : "After",
                     checklist: allTripSpecificChecklistData,
+                    guard: params.row.guard,
                   }}
                   type={"table"}
                   phase={"departure"}
@@ -340,6 +341,7 @@ export default function Trips() {
                   timeArrival: params.row.timeArrival,
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
+                  guard: params.row.guard,
                 }}
                 type={"table"}
                 phase={"arrival"}
@@ -476,6 +478,7 @@ export default function Trips() {
                   timeArrival: params.row.timeArrival,
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
+                  guard: params.row.guard,
                 }}
                 type={"operation"}
                 phase={params.row.timeDeparture && params.row.timeArrival ? "done" : params.row.timeDeparture == undefined ? "departure" : "arrival"}

@@ -114,6 +114,7 @@ export interface TripChecklistProps {
   timeArrival?: string;
   timing: string;
   checklist: TripSpecificChecklistProps[];
+  guard: UserProps;
 }
 
 export interface CreateUpdateTripChecklistProps {
@@ -183,6 +184,7 @@ export interface TripChecklistIndividualProps {
   data: string;
   isDeleted: boolean;
   checklist: ChecklistProps;
+  guard: UserProps;
 }
 
 export interface TripProps {

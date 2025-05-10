@@ -206,7 +206,7 @@ export default function Reports() {
     {
       field: "month",
       headerName: "Month",
-      flex: 1,
+      width: 300,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -235,16 +235,16 @@ export default function Reports() {
         return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} type={"trips"} /> : row.month;
       },
     },
-    { field: "noOfTrips", headerName: "Total Trips", flex: 1 },
-    { field: "approved", headerName: "Approved", flex: 1 },
-    { field: "approvedOutsourced", headerName: "Approved (Outsourced)", flex: 1 },
-    { field: "rejected", headerName: "Rejected", flex: 1 },
+    { field: "noOfTrips", headerName: "Total Trips", width: 250 },
+    { field: "approved", headerName: "Approved", width: 250 },
+    { field: "approvedOutsourced", headerName: "Approved (Outsourced)", width: 250 },
+    { field: "rejected", headerName: "Rejected", width: 220 },
   ];
   const vehicleCols = [
     {
       field: "month",
       headerName: "Month",
-      flex: 1,
+      width: 300,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -265,15 +265,15 @@ export default function Reports() {
         );
       },
     },
-    { field: "totalAssigned", headerName: "Total Assigned trips", flex: 1 },
-    { field: "mostUsed", headerName: "Most Used Vehicle", flex: 1 },
-    { field: "leastUsed", headerName: "Least Used", flex: 1 },
+    { field: "totalAssigned", headerName: "Total Assigned trips", width: 250 },
+    { field: "mostUsed", headerName: "Most Used Vehicle", width: 250 },
+    { field: "leastUsed", headerName: "Least Used", width: 250 },
   ];
   const driverCols = [
     {
       field: "month",
       headerName: "Month",
-      flex: 1,
+      width: 300,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -289,34 +289,34 @@ export default function Reports() {
         return row.totalAssigned != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportDriverCols} type={"driver"} /> : row.month;
       },
     },
-    { field: "totalAssigned", headerName: "Total Assigned Trips", flex: 1 },
-    { field: "highRating", headerName: "Highest Rating Driver", flex: 1 },
-    { field: "mostActive", headerName: "Most Active Driver", flex: 1 },
+    { field: "totalAssigned", headerName: "Total Assigned Trips", width: 250 },
+    { field: "highRating", headerName: "Highest Rating Driver", width: 250 },
+    { field: "mostActive", headerName: "Most Active Driver", width: 250 },
   ];
 
   const monthlyReportTripCols = [
-    { field: "title", headerName: "Title", flex: 1 },
-    { field: "createdDate", headerName: "Date Requested", flex: 1 },
-    { field: "dateNeeded", headerName: "Date Needed", flex: 2 },
-    { field: "requisitioner", headerName: "Requisitioner", flex: 1 },
-    { field: "purpose", headerName: "Purpose", flex: 1 },
-    { field: "status", headerName: "Status  ", flex: 1 },
-    { field: "vehicle", headerName: "Vehicle", flex: 1 },
-    { field: "driver", headerName: "Driver", flex: 1 },
-    { field: "contactNo", headerName: "Contact No", flex: 1 },
+    { field: "title", headerName: "Title", width: 225 },
+    { field: "createdDate", headerName: "Date Requested", width: 180 },
+    { field: "dateNeeded", headerName: "Date Needed", width: 350 },
+    { field: "requisitioner", headerName: "Requisitioner", width: 120 },
+    { field: "purpose", headerName: "Purpose", width: 150 },
+    { field: "status", headerName: "Status  ", width: 120 },
+    { field: "vehicle", headerName: "Vehicle", width: 150 },
+    { field: "driver", headerName: "Driver", width: 150 },
+    { field: "contactNo", headerName: "Contact No", width: 150 },
   ];
 
   const monthlyReportVehicleCols = [
-    { field: "model", headerName: "Model", flex: 2 },
-    { field: "plateNumber", headerName: "Plate Number", flex: 1 },
-    { field: "howManyUsed", headerName: "Trips Taken", flex: 1 },
-    { field: "lastMaintenance", headerName: "Last Maintenance", flex: 1 },
+    { field: "model", headerName: "Model", width: 600 },
+    { field: "plateNumber", headerName: "Plate Number", width: 350 },
+    { field: "howManyUsed", headerName: "Trips Taken", width: 350 },
+    { field: "lastMaintenance", headerName: "Last Maintenance", width: 350 },
   ];
 
   const monthlyReportDriverCols = [
-    { field: "driver", headerName: "Driver", flex: 2 },
-    { field: "howManyTrips", headerName: "Trips Assigned", flex: 1 },
-    { field: "averageRating", headerName: "Averate Rating", flex: 1 },
+    { field: "driver", headerName: "Driver", width: 600 },
+    { field: "howManyTrips", headerName: "Trips Assigned", width: 350 },
+    { field: "averageRating", headerName: "Averate Rating", width: 350 },
   ];
 
   const handleYearSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

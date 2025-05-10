@@ -307,6 +307,20 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                   <Row>
                     <h5 className="text-primary thin-text">Departure Checklist</h5>
                   </Row>
+                  <Row>
+                    <Col lg={3}>
+                      <span className="thick-text">Guard</span>
+                    </Col>
+                    <Col lg={9}>
+                      <span className="">
+                        {passedData.tripChecklists.filter((check) => check.timing === "Before").length > 0
+                          ? `${passedData.tripChecklists.filter((check) => check.timing === "Before")[0].guard.lastName}, ${
+                              passedData.tripChecklists.filter((check) => check.timing === "Before")[0].guard.lastName
+                            }`
+                          : "-"}
+                      </span>
+                    </Col>
+                  </Row>
                   {passedData.tripChecklists
                     .filter((check) => check.timing === "Before")
                     .sort((a, b) => {
@@ -341,6 +355,20 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                 <Col lg={6} className="mt-2">
                   <Row>
                     <h5 className="text-primary thin-text">Arrival Checklist</h5>
+                  </Row>
+                  <Row>
+                    <Col lg={3}>
+                      <span className="thick-text">Guard</span>
+                    </Col>
+                    <Col lg={9}>
+                      <span className="">
+                        {passedData.tripChecklists.filter((check) => check.timing === "After").length > 0
+                          ? `${passedData.tripChecklists.filter((check) => check.timing === "After")[0].guard.lastName}, ${
+                              passedData.tripChecklists.filter((check) => check.timing === "After")[0].guard.lastName
+                            }`
+                          : "-"}
+                      </span>
+                    </Col>
                   </Row>
                   {passedData.tripChecklists
                     .filter((check) => check.timing === "After")
