@@ -89,12 +89,22 @@ export interface VehicleProps {
   model: string;
   plateNumber: string;
   seats?: number;
+  maintenance?: MaintenanceProps;
   isDeleted: boolean;
 }
 
 export interface CreateUpdateVehicleProps {
   passedData: VehicleProps;
   access_token: string;
+}
+
+export interface MaintenanceProps {
+  date: string;
+  details: string;
+  id: string;
+  remarks: string;
+  user: UserProps;
+  vehicle: VehicleProps;
 }
 
 export interface TripChecklistProps {

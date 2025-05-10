@@ -8,6 +8,7 @@ import AdminPage from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import Trips from "./pages/Trips";
 import Reports from "./pages/Reports";
+import Driver from "./pages/Driver";
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
@@ -35,6 +36,14 @@ export default function App() {
           element={
             <ProtectedRoutes allowedRoles={["Admin"]}>
               <Reports />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/maintenanace"
+          element={
+            <ProtectedRoutes allowedRoles={["Admin", "Driver"]}>
+              <Driver />
             </ProtectedRoutes>
           }
         />
