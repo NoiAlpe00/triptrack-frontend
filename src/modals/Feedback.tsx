@@ -12,7 +12,6 @@ export default function Feedback(passedData: CreateTripFeedbackProps) {
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState({
     date: "",
-    details: "",
     remarks: "",
     vehicleRating: "5",
     serviceRating: "5",
@@ -32,13 +31,13 @@ export default function Feedback(passedData: CreateTripFeedbackProps) {
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value == "true",
+      [name]: value,
     }));
   };
 
   const handleSave = async () => {
     const formattedData: CreateTripFeedbackRequestProps = {
-      remarks: formData.details,
+      remarks: formData.remarks,
       userId: passedData.userId,
       access_token: passedData.access_token,
       vehicleRating: parseInt(formData.vehicleRating),
@@ -55,7 +54,6 @@ export default function Feedback(passedData: CreateTripFeedbackProps) {
         alert(`Remarks added successfully.`);
         setFormData({
           date: "",
-          details: "",
           remarks: "",
           vehicleRating: "",
           serviceRating: "",

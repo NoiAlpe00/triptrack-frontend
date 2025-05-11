@@ -318,6 +318,16 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                             <span className="thick-text">{feedback.serviceRating}</span>
                           </Col>
                         </Row>
+                        {feedback.remarks.length > 0 && <Row>
+                          <Col lg={3}>
+                            <span className="">Remarks</span>
+                          </Col>
+                          <Col lg={9}>
+                            <span className="thick-text">{feedback.remarks}</span>
+                          </Col>
+                        </Row>
+
+                        }
                       </>
                     ))}
                   </Row>
