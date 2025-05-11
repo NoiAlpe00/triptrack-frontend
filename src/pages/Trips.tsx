@@ -390,7 +390,14 @@ export default function Trips() {
 
             const feedback: FeedbackProps[] = row.feedback ?? [];
 
-            const hasFeedback = feedback.filter((feedback) => feedback.user.id === decodedToken.sub.userId);
+            const hasFeedback = feedback.filter((feedback) => feedback.user.id === decodedToken.sub.userId).length > 0;
+
+            // console.log(
+            //   row.tripStatus.toLowerCase() === "past",
+            //   row.user.id === decodedToken.sub.userId,
+            //   hasFeedback.length != 0,
+            //   row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && hasFeedback.length != 0
+            // );
 
             return (
               <>
@@ -444,7 +451,8 @@ export default function Trips() {
                       <Col className="px-1">
                         <ViewTripDetails passedData={passedData} type={"operation"} />
                       </Col>
-                      {row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && hasFeedback == undefined && (
+
+                      {row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && !hasFeedback && (
                         <Col>
                           <Feedback
                             userId={decodedToken.sub.userId}
