@@ -172,7 +172,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
               <FloatingLabel controlId="floatingInput" label="Destination" className="mb-2 small-input">
                 <Form.Control name="destination" type="text" placeholder="" onChange={handleOnChange} value={formData.destination ?? ""} />
               </FloatingLabel>
-              <FloatingLabel controlId="floatingTextarea2" label="Purpose" className="small-input-textarea mb-2">
+              <FloatingLabel controlId="floatingTextarea2" label="Number of Passengers and Purpose" className="small-input-textarea mb-2">
                 <Form.Control
                   name="purpose"
                   type="text"
