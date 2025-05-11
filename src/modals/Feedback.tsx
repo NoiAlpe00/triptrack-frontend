@@ -62,6 +62,7 @@ export default function Feedback(passedData: CreateTripFeedbackProps) {
           driverRating: "",
         });
         handleClose();
+        window.location.reload();
       } else {
         alert(`Somthing went wrong - ${res.message}`);
       }

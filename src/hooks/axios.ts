@@ -303,15 +303,15 @@ export const updateExistingTrip = async (data: CreateUpdateTripRequestProps, acc
   }
 };
 
-export const approveExistingTrip = async (id: string, userId: string, access_token: string) => {
+export const approveExistingTrip = async (id: string, access_token: string) => {
   try {
     const res = await axios({
       method: "PATCH",
-      url: `${URL}/trip/update`,
+      url: `${URL}/trip/endorse-approve-trip`,
       headers: {
         authorization: access_token,
       },
-      data: { id, status: "Approved", authorizedById: userId },
+      params: { id, status: "Approved" },
     });
     return res.data;
   } catch (error: any) {
@@ -319,15 +319,15 @@ export const approveExistingTrip = async (id: string, userId: string, access_tok
   }
 };
 
-export const endorseExistingTrip = async (id: string, userId: string, access_token: string) => {
+export const endorseExistingTrip = async (id: string, access_token: string) => {
   try {
     const res = await axios({
       method: "PATCH",
-      url: `${URL}/trip/update`,
+      url: `${URL}/trip/endorse-approve-trip`,
       headers: {
         authorization: access_token,
       },
-      data: { id, status: "Endorsed", authorizedById: userId },
+      params: { id, status: "Endorsed" },
     });
     return res.data;
   } catch (error: any) {
@@ -335,15 +335,15 @@ export const endorseExistingTrip = async (id: string, userId: string, access_tok
   }
 };
 
-export const declineExistingTrip = async (id: string, userId: string, access_token: string) => {
+export const declineExistingTrip = async (id: string, access_token: string) => {
   try {
     const res = await axios({
       method: "PATCH",
-      url: `${URL}/trip/update`,
+      url: `${URL}/trip/endorse-approve-trip`,
       headers: {
         authorization: access_token,
       },
-      data: { id, status: "Declined", authorizedById: userId },
+      params: { id, status: "Declined" },
     });
     return res.data;
   } catch (error: any) {

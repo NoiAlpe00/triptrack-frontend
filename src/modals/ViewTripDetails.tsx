@@ -281,6 +281,48 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                   </Row>
                 </Row>
               )}
+
+              {passedData.feedbacks && passedData.feedbacks.length > 0 && (
+                <>
+                  <Row className="mt-3">
+                    <Row>
+                      <h5 className="text-primary thin-text">Feedback</h5>
+                    </Row>
+                    {passedData.feedbacks.map((feedback) => (
+                      <>
+                        {passedData.vehicle && (
+                          <Row>
+                            <Col lg={3}>
+                              <span className="">Vehicle Rating</span>
+                            </Col>
+                            <Col lg={9}>
+                              <span className="thick-text">{feedback.vehicleRating}</span>
+                            </Col>
+                          </Row>
+                        )}
+                        {passedData.driver && (
+                          <Row>
+                            <Col lg={3}>
+                              <span className="">Driver Rating</span>
+                            </Col>
+                            <Col lg={9}>
+                              <span className="thick-text">{feedback.driverRating}</span>
+                            </Col>
+                          </Row>
+                        )}
+                        <Row>
+                          <Col lg={3}>
+                            <span className="">Service Rating</span>
+                          </Col>
+                          <Col lg={9}>
+                            <span className="thick-text">{feedback.serviceRating}</span>
+                          </Col>
+                        </Row>
+                      </>
+                    ))}
+                  </Row>
+                </>
+              )}
             </Col>
             <Col lg={6}>
               <Row>

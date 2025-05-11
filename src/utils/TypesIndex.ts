@@ -215,7 +215,7 @@ export interface TripProps {
   vehicleRequest: boolean;
   authorizedBy?: UserProps;
   user?: UserProps;
-  feedback?: FeedbackProps[];
+  feedbacks?: FeedbackProps[];
 }
 
 export interface TripTableProps extends TripProps {

@@ -82,7 +82,7 @@ export default function Trips() {
             tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
             user: trip.user,
-            feedback: trip.feedback,
+            feedbacks: trip.feedbacks,
             dateRequested: formatISOStringDateOnly(trip.createdDate),
           };
         });
@@ -123,6 +123,7 @@ export default function Trips() {
           tripChecklists: row.tripChecklists,
           department: { id: row.department.id, name: "" },
           requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
+          feedbacks: row.feedbacks,
           driver: {
             id: row.driver?.id ?? "",
             firstName: row.driver?.firstName ?? "",
@@ -386,11 +387,12 @@ export default function Trips() {
               tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
               date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
               dateRequested: formatISOStringDateOnly(row.createdDate),
+              feedbacks: row.feedbacks,
             };
 
-            const feedback: FeedbackProps[] = row.feedback ?? [];
+            const feedbacks: FeedbackProps[] = row.feedbacks ?? [];
 
-            const hasFeedback = feedback.filter((feedback) => feedback.user.id === decodedToken.sub.userId).length > 0;
+            const hasFeedback = feedbacks.filter((feedback) => feedback.user.id === decodedToken.sub.userId).length > 0;
 
             // console.log(
             //   row.tripStatus.toLowerCase() === "past",
@@ -414,9 +416,8 @@ export default function Trips() {
                               `Confirm to ${userRole.toLowerCase() === "head" ? "endorse" : "approve"} the trip ${params.row.title}`
                             );
                             if (res) {
-                              if (decodedToken.userType.toLowerCase() === "admin")
-                                await approveExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
-                              else await endorseExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              if (decodedToken.userType.toLowerCase() === "admin") await approveExistingTrip(params.row.id, access_token);
+                              else await endorseExistingTrip(params.row.id, access_token);
                               window.location.reload();
                             }
                           }}
@@ -432,7 +433,7 @@ export default function Trips() {
                           onClick={async () => {
                             const res = confirm(`Confirm to decline the trip ${params.row.title}`);
                             if (res) {
-                              await declineExistingTrip(params.row.id, decodedToken.sub.userId, access_token);
+                              await declineExistingTrip(params.row.id, access_token);
                               window.location.reload();
                             }
                           }}
@@ -547,7 +548,7 @@ export default function Trips() {
                 tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
                 date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
                 user: trip.user,
-                feedback: trip.feedback,
+                feedbacks: trip.feedbacks,
                 dateRequested: formatISOStringDateOnly(trip.createdDate),
               };
             })
