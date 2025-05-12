@@ -328,7 +328,7 @@ export default function Reports() {
   const monthlyReportDriverCols = [
     { field: "driver", headerName: "Driver", width: 600 },
     { field: "howManyTrips", headerName: "Trips Assigned", width: 350 },
-    { field: "averageRating", headerName: "Averate Rating", width: 350 },
+    { field: "averageRating", headerName: "Average Rating", width: 350 },
   ];
 
   const handleYearSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

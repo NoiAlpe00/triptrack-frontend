@@ -97,7 +97,7 @@ export default function Trips() {
 
   const columns = [
     {
-      field: "view",
+      field: "edit",
       headerName: "",
       width: 50,
       minWidth: 50,
@@ -143,8 +143,8 @@ export default function Trips() {
             isDeleted: false,
             trips: row.vehicle?.trips,
           },
-          driverRequest: false,
-          vehicleRequest: false,
+          driverRequest: row.driverRequest,
+          vehicleRequest: row.vehicleRequest,
           requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
           tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
           date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
