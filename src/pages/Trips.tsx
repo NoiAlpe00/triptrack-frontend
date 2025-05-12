@@ -585,17 +585,19 @@ export default function Trips() {
             <Col md={2} className="">
               <h2 className="text-primary thin-text text-start">All Trips</h2>
             </Col>
-            <Col md={4} className="">
-              <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
-                <Form.Select name="statusFilter" aria-label="Floating label select example" value={statusFilter} onChange={handleSelectChange}>
-                  <option value="all">All</option>
-                  <option value="approved">Approved</option>
-                  <option value="endorsed">Endorsed</option>
-                  <option value="pending">Pending</option>
-                  <option value="declined">Declined</option>
-                </Form.Select>
-              </FloatingLabel>
-            </Col>
+            {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "driver") && (
+              <Col md={4} className="">
+                <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
+                  <Form.Select name="statusFilter" aria-label="Floating label select example" value={statusFilter} onChange={handleSelectChange}>
+                    <option value="all">All</option>
+                    <option value="approved">Approved</option>
+                    <option value="endorsed">Endorsed</option>
+                    <option value="pending">Pending</option>
+                    <option value="declined">Declined</option>
+                  </Form.Select>
+                </FloatingLabel>
+              </Col>
+            )}
           </Row>
         </Col>
 
@@ -613,34 +615,32 @@ export default function Trips() {
             driver={"ongoing"}
             vehicle={"past"}
           /> */}
-          {userRole.toLowerCase() === "guard" ? null : (
-            <>
-              <CreateUpdateTrip
-                passedData={{
-                  id: "",
-                  title: "",
-                  tripStart: "", // ISO 8601 date-time string
-                  tripEnd: "", // ISO 8601 date-time string
-                  destination: "",
-                  purpose: "",
-                  status: "",
-                  timeDeparture: "", // ISO 8601 date-time string
-                  timeArrival: "", // ISO 8601 date-time strin
-                  remarks: "",
-                  createdDate: "", // ISO 8601 date-time string
-                  updatedDate: "", // ISO 8601 date-time string
-                  isDeleted: false,
-                  tripChecklists: [],
-                  department: { id: "", name: "" },
-                  driverRequest: true,
-                  vehicleRequest: true,
-                }}
-                departments={allDepartmentData}
-                access_token={access_token}
-                vehicles={allVehicleData}
-                drivers={allDriverData}
-              />
-            </>
+          {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "driver") && (
+            <CreateUpdateTrip
+              passedData={{
+                id: "",
+                title: "",
+                tripStart: "", // ISO 8601 date-time string
+                tripEnd: "", // ISO 8601 date-time string
+                destination: "",
+                purpose: "",
+                status: "",
+                timeDeparture: "", // ISO 8601 date-time string
+                timeArrival: "", // ISO 8601 date-time strin
+                remarks: "",
+                createdDate: "", // ISO 8601 date-time string
+                updatedDate: "", // ISO 8601 date-time string
+                isDeleted: false,
+                tripChecklists: [],
+                department: { id: "", name: "" },
+                driverRequest: true,
+                vehicleRequest: true,
+              }}
+              departments={allDepartmentData}
+              access_token={access_token}
+              vehicles={allVehicleData}
+              drivers={allDriverData}
+            />
           )}
         </Col>
       </Row>
