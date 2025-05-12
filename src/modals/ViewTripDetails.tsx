@@ -283,45 +283,53 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
               )}
 
               {passedData.feedbacks && passedData.feedbacks.length > 0 && (
-                <>
-                  <Row className="mt-3">
-                    <Row>
-                      <h5 className="text-primary thin-text">Feedback</h5>
-                    </Row>
-                    {passedData.feedbacks.map((feedback) => (
-                      <>
-                        {passedData.vehicle && (
-                          <Row>
-                            <Col lg={3}>
-                              <span className="">Vehicle Rating</span>
-                            </Col>
-                            <Col lg={9}>
-                              <span className="thick-text">{feedback.vehicleRating}</span>
-                            </Col>
-                          </Row>
-                        )}
-                        {passedData.driver && (
-                          <Row>
-                            <Col lg={3}>
-                              <span className="">Driver Rating</span>
-                            </Col>
-                            <Col lg={9}>
-                              <span className="thick-text">{feedback.driverRating}</span>
-                            </Col>
-                          </Row>
-                        )}
-                        <Row>
-                          <Col lg={3}>
+                <Row className="mt-3">
+                  <Row>
+                    <h5 className="text-primary thin-text">Feedback</h5>
+                  </Row>
+                  {passedData.feedbacks.map((feedback) => (
+                    <div key={`feedback-div-block-${feedback.id}`}>
+                      {passedData.vehicle && (
+                        <Row key={`feedback-vehicle-row-${feedback.id}`}>
+                          <Col key={`feedback-vehicle-col-1-${feedback.id}`} lg={3}>
+                            <span className="">Vehicle Rating</span>
+                          </Col>
+                          <Col key={`feedback-vehicle-col-2-${feedback.id}`} lg={9}>
+                            <span className="thick-text">{feedback.vehicleRating}</span>
+                          </Col>
+                        </Row>
+                      )}
+                      {passedData.driver && (
+                        <Row key={`feedback-driver-row-${feedback.id}`}>
+                          <Col key={`feedback-driver-col-1-${feedback.id}`} lg={3}>
+                            <span className="">Driver Rating</span>
+                          </Col>
+                          <Col key={`feedback-driver-col-2-${feedback.id}`} lg={9}>
+                            <span className="thick-text">{feedback.driverRating}</span>
+                          </Col>
+                        </Row>
+                      )}
+                      <Row key={`feedback-service-col-1-${feedback.id}`}>
+                        <Col key={`feedback-service-col-1-${feedback.id}`} lg={3}>
+                          <span className="">Service Rating</span>
+                        </Col>
+                        <Col key={`feedback-service-col-2-${feedback.id}`} lg={9}>
+                          <span className="thick-text">{feedback.serviceRating}</span>
+                        </Col>
+                      </Row>
+                      {feedback.remarks.length > 0 && (
+                        <Row key={`feedback-remarks-col-1-${feedback.id}`}>
+                          <Col key={`feedback-remarks-col-1-${feedback.id}`} lg={3}>
                             <span className="">Service Rating</span>
                           </Col>
-                          <Col lg={9}>
+                          <Col key={`feedback-remarks-col-2-${feedback.id}`} lg={9}>
                             <span className="thick-text">{feedback.serviceRating}</span>
                           </Col>
                         </Row>
-                      </>
-                    ))}
-                  </Row>
-                </>
+                      )}
+                    </div>
+                  ))}
+                </Row>
               )}
             </Col>
             <Col lg={6}>

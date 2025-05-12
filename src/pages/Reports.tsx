@@ -216,6 +216,8 @@ export default function Reports() {
 
         const allMonthlyTripData: TripProps[] = [...row.internalTrips, ...row.outsourcedTrips, ...row.rejectedTrips];
 
+        console.log(allMonthlyTripData);
+
         const rows = allMonthlyTripData
           .sort((a, b) => new Date(a.tripStart).getTime() - new Date(b.tripStart).getTime())
           .sort((a, b) => a.status.localeCompare(b.status))
@@ -230,7 +232,13 @@ export default function Reports() {
             vehicle: trip.vehicle ? trip.vehicle.model : "-",
             driver: trip.driver ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "-",
             contactNo: trip.driver ? trip.driver.contactNumber : "-",
+            vehicleRating: trip.vehicle && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].vehicleRating : "-") : "-",
+            driverRating: trip.driver && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].driverRating : "-") : "-",
+            serviceRating: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].serviceRating : "-",
+            ratingRemarks: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].remarks : "-",
           }));
+
+        console.log(rows);
 
         return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} type={"trips"} /> : row.month;
       },
@@ -304,6 +312,10 @@ export default function Reports() {
     { field: "vehicle", headerName: "Vehicle", width: 150 },
     { field: "driver", headerName: "Driver", width: 150 },
     { field: "contactNo", headerName: "Contact No", width: 150 },
+    { field: "vehicleRating", headerName: "Vehicle Rating", width: 150 },
+    { field: "driverRating", headerName: "Driver Rating", width: 150 },
+    { field: "serviceRating", headerName: "Service Rating", width: 150 },
+    { field: "ratingRemarks", headerName: "Rating Remarks", width: 150 },
   ];
 
   const monthlyReportVehicleCols = [

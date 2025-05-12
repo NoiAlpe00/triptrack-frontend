@@ -453,17 +453,20 @@ export default function Trips() {
                         <ViewTripDetails passedData={passedData} type={"operation"} />
                       </Col>
 
-                      {row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && !hasFeedback && (
-                        <Col>
-                          <Feedback
-                            userId={decodedToken.sub.userId}
-                            access_token={access_token}
-                            tripId={row.id}
-                            vehicleId={row.vehicle?.id ?? ""}
-                            driverId={row.driver?.id ?? ""}
-                          />
-                        </Col>
-                      )}
+                      {!(decodedToken.userType.toLowerCase() === "driver") &&
+                        row.tripStatus.toLowerCase() === "past" &&
+                        row.user.id === decodedToken.sub.userId &&
+                        !hasFeedback && (
+                          <Col>
+                            <Feedback
+                              userId={decodedToken.sub.userId}
+                              access_token={access_token}
+                              tripId={row.id}
+                              vehicleId={row.vehicle?.id ?? ""}
+                              driverId={row.driver?.id ?? ""}
+                            />
+                          </Col>
+                        )}
                     </Row>
                   </>
                 )}
@@ -559,7 +562,7 @@ export default function Trips() {
   }, []);
 
   const finalCols =
-    userRole.toLowerCase() === "guard"
+    userRole.toLowerCase() === "guard" || userRole.toLowerCase() === "driver"
       ? columns.slice(1)
       : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "requisitioner"
       ? columns

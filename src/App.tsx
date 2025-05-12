@@ -50,7 +50,7 @@ export default function App() {
         <Route
           path="/trips"
           element={
-            <ProtectedRoutes allowedRoles={["Requisitioner", "Admin", "Guard", "Head"]}>
+            <ProtectedRoutes allowedRoles={["Requisitioner", "Admin", "Guard", "Head", "Driver"]}>
               <Trips />
             </ProtectedRoutes>
           }

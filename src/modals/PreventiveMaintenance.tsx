@@ -46,6 +46,7 @@ export default function PreventiveMaintenance(passedData: CreatePreventiveMainte
           remarks: "",
         });
         handleClose();
+        window.location.reload();
       } else {
         alert(`Somthing went wrong - ${res.message}`);
       }

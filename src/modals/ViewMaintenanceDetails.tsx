@@ -14,7 +14,7 @@ export default function ViewMaintenanceDetails({ vehicle, rows, cols }: { vehicl
         <i className="bi bi-eye-fill" /> View Logs
       </Button>
 
-      <Modal show={show} onHide={handleClose} centered size="lg">
+      <Modal show={show} onHide={handleClose} centered size="xl">
         <Modal.Header closeButton>
           <Modal.Title className="me-3">{vehicle}</Modal.Title>{" "}
         </Modal.Header>

@@ -57,6 +57,7 @@ export default function Driver() {
     },
     { field: "details", headerName: "Details", width: 300 },
     { field: "remarks", headerName: "Remarks", width: 250 },
+    { field: "user", headerName: "Performed By", width: 250 },
   ];
 
   const vehicleCols = [
@@ -113,7 +114,9 @@ export default function Driver() {
 
         const maintenance: MaintenanceProps[] = row.maintenance;
 
-        return maintenance.length > 0 ? <ViewMaintenanceDetails vehicle={vehicle} rows={maintenance} cols={maintenanceCols} /> : "-";
+        const formattedMaintenance = maintenance.map((record) => ({ ...record, user: `${record.user.lastName}, ${record.user.firstName}` }));
+
+        return maintenance.length > 0 ? <ViewMaintenanceDetails vehicle={vehicle} rows={formattedMaintenance} cols={maintenanceCols} /> : "-";
       },
     },
   ];

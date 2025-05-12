@@ -41,11 +41,11 @@ export default function CustomNavbar() {
               Dashboard
             </Nav.Link>
           )}
-          {!(decodedToken.userType.toLowerCase() === "driver") && (
-            <Nav.Link className="px-3" as={Link} to="/trips" eventKey="/trips">
-              Trips
-            </Nav.Link>
-          )}
+
+          <Nav.Link className="px-3" as={Link} to="/trips" eventKey="/trips">
+            Trips
+          </Nav.Link>
+
           {(decodedToken.userType.toLowerCase() === "driver" || decodedToken.userType.toLowerCase() === "admin") && (
             <Nav.Link className="px-3" as={Link} to="/maintenance" eventKey="/maintenance">
               Maintenance
