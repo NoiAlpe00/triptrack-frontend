@@ -25,6 +25,10 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
         <Button size="sm" className="w-100" onClick={handleShow}>
           <i className="bi bi-eye-fill" /> View
         </Button>
+      ) : type == "title" ? (
+        <Button variant="link" size="sm" className="w-100 text-start" onClick={handleShow}>
+          {passedData.title}
+        </Button>
       ) : (
         <Button size="sm" className="w-100" onClick={handleShow}>
           <i className="bi bi-eye-fill" /> View Details

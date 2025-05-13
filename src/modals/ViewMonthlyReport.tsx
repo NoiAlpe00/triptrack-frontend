@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import CustomTable from "../components/Table";
+import ViewDetails from "./ViewDetails";
 
 export default function ViewMontlyReport({ month, rows, cols, type }: { month: string; rows: any; cols: any; type: string }) {
   const [show, setShow] = useState(false);
@@ -37,6 +38,29 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
     URL.revokeObjectURL(url);
   };
 
+  const formattedCols = [
+    {
+      field: "view",
+      headerName: "view",
+      width: 300,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        let title;
+
+        if (type == "trips") title = row.title;
+        else if (type == "vehicle") title = row.model;
+        else if (type == "driver") title = row.driver;
+
+        console.log(row);
+
+        return <ViewDetails title={title} data={row} cols={cols} />;
+      },
+    },
+    ,
+    ...cols.slice(1),
+  ];
+
   return (
     <>
       <Button variant="link" className="m-0 p-0" onClick={handleShow}>
@@ -56,7 +80,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
           </Button>
         </Modal.Header>
         <Modal.Body>
-          <CustomTable rows={rows} columns={cols} type={"settings"} />
+          <CustomTable rows={rows} columns={formattedCols} type={"settings"} />
         </Modal.Body>
       </Modal>
     </>

@@ -6,7 +6,6 @@ import { decodeToken, formatISOString, isDateRangeOverlapping, requestGuard } fr
 import { addNewTrip, updateExistingTrip } from "../hooks/axios";
 
 export default function CreateUpdateTrip({ passedData, access_token, departments, vehicles, drivers }: CreateUpdateTripProps) {
-  console.log(passedData)
   const [show, setShow] = useState(false);
 
   const auth = useAuthUser();
@@ -20,7 +19,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -29,7 +27,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name, value);
     if (name === "vehicle" || name === "driver" || name === "department") {
       setFormData((prevData) => ({
         ...prevData,
@@ -67,7 +64,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       purpose: formData.purpose,
       status: "Pending",
     };
-    console.log(requestData);
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["id", "authorizedBy", "driverId", "vehicleId"]);
     if (isDataValid) {
       const res = await addNewTrip(requestData, access_token);
@@ -118,7 +114,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       purpose: formData.purpose,
       status: (formData.status === "Approved" || formData.status === "Declined") && decodedToken.userType !== "Admin" ? "Pending" : formData.status,
     };
-    console.log(requestData);
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
     if (isDataValid) {
       const res = await updateExistingTrip(requestData, access_token);
