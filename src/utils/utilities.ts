@@ -20,6 +20,24 @@ export function formatISOString(isoString: string): string {
   return `${mm}/${dd}/${yyyy} (${hh}:${minutes} ${ampm})`;
 }
 
+export function formatISOStringActualData(isoString: string): string {
+  const date = new Date(isoString);
+
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const yyyy = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // hour 0 should be 12
+
+  const hh = String(hours).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${minutes}:00`;
+}
+
 export function formatISOStringDateOnly(isoString: string): string {
   const date = new Date(isoString);
 

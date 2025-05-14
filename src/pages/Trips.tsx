@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col, FloatingLabel, Form, Button, Image } from "react-bootstrap";
+import { Container, Row, Col, FloatingLabel, Form, Button, Image, InputGroup } from "react-bootstrap";
 import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import CreateUpdateTrip from "../modals/CreateUpdateTrip";
@@ -9,7 +9,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, formatISOStringActualData, formatISOStringDateOnly } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -43,6 +43,7 @@ export default function Trips() {
   const [allVehicleData, setAllVehicleData] = useState<VehicleProps[]>([]);
   const [allTripSpecificChecklistData, setAllTripSpecificChecklistData] = useState<TripSpecificChecklistProps[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [search, setSearch] = useState<string>("");
 
   const auth = useAuthUser();
   const userRole = auth()?.role ?? "Requisitioner";
@@ -56,6 +57,9 @@ export default function Trips() {
     (async () => {
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
+        .filter((trip) =>
+          search.length == 0 ? true : trip.title.toLowerCase().includes(search.toLowerCase()) || trip.id.toLowerCase().includes(search.toLowerCase())
+        )
         .map((trip: TripProps) => {
           return {
             id: trip.id,
@@ -88,11 +92,16 @@ export default function Trips() {
         });
       setTableData(formattedTableData);
     })();
-  }, [statusFilter]);
+  }, [statusFilter, search]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
     setStatusFilter(value);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSearch(value);
   };
 
   const columns = [
@@ -106,11 +115,13 @@ export default function Trips() {
       renderCell: (params: any) => {
         const row = params.row;
 
+        console.log(row);
+
         const passedData: TripTableProps = {
           id: row.id,
           title: row.title,
-          tripStart: row.tripStart.slice(0, -1),
-          tripEnd: row.tripEnd.slice(0, -1),
+          tripStart: formatISOStringActualData(row.tripStart),
+          tripEnd: formatISOStringActualData(row.tripEnd),
           destination: row.destination,
           purpose: row.purpose,
           status: row.status,
@@ -588,8 +599,8 @@ export default function Trips() {
 
   return (
     <Container fluid>
-      <Row className="pt-5 pb-3 px-1 d-flex justify-content-center">
-        <Col md={6} className="mb-2">
+      <Row className="pt-5 pb-2 px-1 d-flex justify-content-center">
+        <Col md={6} className="mb-1">
           <Row className="d-flex align-items-center">
             <Col md={2} className="">
               <h2 className="text-primary thin-text text-start">All Trips</h2>
@@ -610,7 +621,7 @@ export default function Trips() {
           </Row>
         </Col>
 
-        <Col md={6} className="d-flex justify-content-end mb-2">
+        <Col md={6} className="d-flex justify-content-end mb-1">
           {/* <CreateUpdateTrip
             id="asdasdasd"
             title={"Eme"}
@@ -651,6 +662,16 @@ export default function Trips() {
               drivers={allDriverData}
             />
           )}
+        </Col>
+      </Row>
+      <Row className="d-flex justify-content-end mb-2">
+        <Col lg={2}>
+          <InputGroup>
+            <InputGroup.Text id="basic-addon1">
+              <i className="bi bi-search"></i>
+            </InputGroup.Text>
+            <Form.Control name="search" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" onChange={handleChange} />
+          </InputGroup>
         </Col>
       </Row>
       <Row>
