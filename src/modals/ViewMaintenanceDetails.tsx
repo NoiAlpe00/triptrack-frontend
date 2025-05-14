@@ -1,12 +1,42 @@
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import CustomTable from "../components/Table";
+import ViewDetails from "./ViewDetails";
+import { formatISOString, formatISOStringDateOnly } from "../utils/utilities";
+
+interface MaintenanceReportProps {
+  date: string;
+  details: string;
+  remarks: string;
+  user: string;
+}
 
 export default function ViewMaintenanceDetails({ vehicle, rows, cols }: { vehicle: string; rows: any; cols: any }) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const formattedCols = [
+    {
+      field: "date",
+      headerName: "Date",
+      width: 300,
+      renderCell: (params: any) => {
+        const row: MaintenanceReportProps = params.row;
+
+        console.log(row);
+
+        const passedData = {
+          ...row,
+          date: formatISOString(row.date),
+        };
+
+        return <ViewDetails title={formatISOStringDateOnly(row.date)} data={passedData} cols={cols} />;
+      },
+    },
+    ...cols.slice(1),
+  ];
 
   return (
     <>
@@ -19,7 +49,7 @@ export default function ViewMaintenanceDetails({ vehicle, rows, cols }: { vehicl
           <Modal.Title className="me-3">{vehicle}</Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
-          <CustomTable rows={rows} columns={cols} type={"settings"} />
+          <CustomTable rows={rows} columns={formattedCols} type={"settings"} />
         </Modal.Body>
       </Modal>
     </>

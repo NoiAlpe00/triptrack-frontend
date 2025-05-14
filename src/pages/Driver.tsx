@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getAllVehicle } from "../hooks/axios";
 import CustomTable from "../components/Table";
 import ViewMaintenanceDetails from "../modals/ViewMaintenanceDetails";
+import ViewDetails from "../modals/ViewDetails";
 
 export default function Driver() {
   const authHeader = useAuthHeader();
@@ -60,6 +61,17 @@ export default function Driver() {
     { field: "user", headerName: "Performed By", width: 250 },
   ];
 
+  const vehicleColsView = [
+    { field: "model", headerName: "Model", width: 600 },
+    { field: "plateNumber", headerName: "Plate Number", width: 150 },
+    { field: "seats", headerName: "Seats", width: 100 },
+    {
+      field: "isDeleted",
+      headerName: "Status",
+      width: 200,
+    },
+  ];
+
   const vehicleCols = [
     {
       field: "maintenance",
@@ -90,7 +102,23 @@ export default function Driver() {
       },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    { field: "model", headerName: "Model", width: 600 },
+    {
+      field: "model",
+      headerName: "Model",
+      width: 600,
+      renderCell: (params: any) => {
+        const row = params.row;
+
+        const passedData = {
+          model: row.model,
+          plateNumber: row.plateNumber,
+          seats: row.seats,
+          isDeleted: row.isDeleted ? "Inactive" : "Active",
+        };
+
+        return <ViewDetails title={row.model} data={passedData} cols={vehicleColsView} />;
+      },
+    },
     { field: "plateNumber", headerName: "Plate Number", width: 150 },
     { field: "seats", headerName: "Seats", width: 100 },
     {

@@ -52,8 +52,6 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
         else if (type == "vehicle") title = row.model;
         else if (type == "driver") title = row.driver;
 
-        console.log(row);
-
         return <ViewDetails title={title} data={row} cols={cols} />;
       },
     },
