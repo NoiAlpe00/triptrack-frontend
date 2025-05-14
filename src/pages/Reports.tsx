@@ -127,79 +127,165 @@ export default function Reports() {
     })();
   }, [year]);
 
-  const handleTripExport = () => {
-    // Prepare CSV headers
-    const headers = ["Month", "Total Trips", "Approved", "Approved (Outsourced)", "Rejected"];
+  // const handleTripExport = () => {
+  //   // Prepare CSV headers
+  //   const headers = ["Month", "Total Trips", "Approved", "Approved (Outsourced)", "Rejected"];
 
-    // Map the data to CSV rows
-    const rows = tripTableData.map((trip) => [trip.month, trip.noOfTrips, trip.approvedOutsourced, trip.rejected]);
+  //   // Map the data to CSV rows
+  //   const rows = tripTableData.map((trip) => [trip.month, trip.noOfTrips, trip.approvedOutsourced, trip.rejected]);
 
-    // Combine headers and rows
-    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+  //   // Combine headers and rows
+  //   const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
 
-    // Create a Blob from the CSV content
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   // Create a Blob from the CSV content
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-    // Create a temporary <a> element to trigger the download
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute("download", `trips_summary_${year}.csv`);
-    document.body.appendChild(link);
-    link.click();
+  //   // Create a temporary <a> element to trigger the download
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute("download", `trips_summary_${year}.csv`);
+  //   document.body.appendChild(link);
+  //   link.click();
 
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
+
+  // const handleVehicleExport = () => {
+  //   // Prepare CSV headers
+  //   const headers = ["Month", "Total Assigned Trips", "Most Used Vehicle", "Least Used"];
+
+  //   // Map the data to CSV rows
+  //   const rows = vehicleTableData.map((vehicle) => [vehicle.month, vehicle.totalAssigned, vehicle.mostUsed, vehicle.leastUsed]);
+
+  //   // Combine headers and rows
+  //   const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+  //   // Create a Blob from the CSV content
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  //   // Create a temporary <a> element to trigger the download
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute("download", `vehicle_summary_${year}.csv`);
+  //   document.body.appendChild(link);
+  //   link.click();
+
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
+
+  // const handleDriverExport = () => {
+  //   // Prepare CSV headers
+  //   const headers = ["Month", "Total Assigned Trips", "Highest Rating Driver", "Most Active Driver"];
+
+  //   // Map the data to CSV rows
+  //   const rows = driverTableData.map((driver) => [driver.month, driver.totalAssigned, driver.highRating, driver.mostActive]);
+
+  //   // Combine headers and rows
+  //   const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+  //   // Create a Blob from the CSV content
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  //   // Create a temporary <a> element to trigger the download
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute("download", `driver_summary_${year}.csv`);
+  //   document.body.appendChild(link);
+  //   link.click();
+
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
 
   const handleVehicleExport = () => {
-    // Prepare CSV headers
     const headers = ["Month", "Total Assigned Trips", "Most Used Vehicle", "Least Used"];
-
-    // Map the data to CSV rows
     const rows = vehicleTableData.map((vehicle) => [vehicle.month, vehicle.totalAssigned, vehicle.mostUsed, vehicle.leastUsed]);
 
-    // Combine headers and rows
     const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
 
-    // Create a Blob from the CSV content
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const filename = `vehicle_summary_${year}.csv`;
 
-    // Create a temporary <a> element to trigger the download
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute("download", `vehicle_summary_${year}.csv`);
-    document.body.appendChild(link);
-    link.click();
+    // Check if running in Android WebView
+    if (typeof (window as any).AndroidBridge !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(",")[1]; // strip data: URI prefix
+        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      // Normal browser download fallback
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
 
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleTripExport = () => {
+    const headers = ["Month", "Total Trips", "Approved", "Approved (Outsourced)", "Rejected"];
+    const rows = tripTableData.map((trip) => [trip.month, trip.noOfTrips, trip.approvedOutsourced, trip.rejected]);
+
+    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const filename = `trips_summary_${year}.csv`;
+
+    if (typeof (window as any).AndroidBridge !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(",")[1];
+        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleDriverExport = () => {
-    // Prepare CSV headers
     const headers = ["Month", "Total Assigned Trips", "Highest Rating Driver", "Most Active Driver"];
-
-    // Map the data to CSV rows
     const rows = driverTableData.map((driver) => [driver.month, driver.totalAssigned, driver.highRating, driver.mostActive]);
 
-    // Combine headers and rows
     const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
 
-    // Create a Blob from the CSV content
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const filename = `driver_summary_${year}.csv`;
 
-    // Create a temporary <a> element to trigger the download
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute("download", `driver_summary_${year}.csv`);
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    if (typeof (window as any).AndroidBridge !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(",")[1];
+        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const tripCols = [

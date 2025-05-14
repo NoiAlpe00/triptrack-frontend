@@ -293,11 +293,37 @@ export default function Dashboard() {
     })();
   }, []);
 
+  // const handleExport = () => {
+  //   // 1. Extract headers from cols
+  //   const headers = columns.map((col: any) => col.headerName);
+
+  //   // 2. Map rows to values in the same order as cols
+  //   const dataRows = tableData.map((row: any) => columns.map((col: any) => row[col.field]));
+
+  //   // 3. Combine headers and rows into CSV format
+  //   const csvContent = [headers, ...dataRows]
+  //     .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+  //     .join("\n");
+
+  //   // 4. Create and trigger download
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute("download", `${yearFilter}_monthly_report_${monthFilter}.csv`);
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
+
   const handleExport = () => {
-    // 1. Extract headers from cols
+    if (!columns?.length || !tableData?.length) return;
+
+    // 1. Extract headers from columns
     const headers = columns.map((col: any) => col.headerName);
 
-    // 2. Map rows to values in the same order as cols
+    // 2. Map rows to values in the same order as columns
     const dataRows = tableData.map((row: any) => columns.map((col: any) => row[col.field]));
 
     // 3. Combine headers and rows into CSV format
@@ -305,17 +331,30 @@ export default function Dashboard() {
       .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
       .join("\n");
 
-    // 4. Create and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute("download", `${yearFilter}_monthly_report_${monthFilter}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const filename = `${yearFilter}_monthly_report_${monthFilter}.csv`;
+
+    // Check if running inside Android WebView
+    if (typeof (window as any).AndroidBridge !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(",")[1];
+        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      // Normal browser download fallback
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
+  
 
   return (
     <Container fluid>

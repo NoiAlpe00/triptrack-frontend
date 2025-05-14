@@ -12,32 +12,65 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  // const handleExport = () => {
+  //   if (!cols?.length || !rows?.length) return;
+
+  //   // 1. Extract headers from cols
+  //   const headers = cols.map((col: any) => col.headerName);
+
+  //   // 2. Map rows to values in the same order as cols
+  //   const dataRows = rows.map((row: any) => cols.map((col: any) => row[col.field]));
+
+  //   // 3. Combine headers and rows into CSV format
+  //   const csvContent = [headers, ...dataRows]
+  //     .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+  //     .join("\n");
+
+  //   // 4. Create and trigger download
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.href = url;
+  //   link.setAttribute("download", `${type}_monthly_report_${month}.csv`);
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
+
   const handleExport = () => {
     if (!cols?.length || !rows?.length) return;
 
-    // 1. Extract headers from cols
     const headers = cols.map((col: any) => col.headerName);
-
-    // 2. Map rows to values in the same order as cols
     const dataRows = rows.map((row: any) => cols.map((col: any) => row[col.field]));
 
-    // 3. Combine headers and rows into CSV format
     const csvContent = [headers, ...dataRows]
       .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
       .join("\n");
 
-    // 4. Create and trigger download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute("download", `${type}_monthly_report_${month}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const filename = `${type}_monthly_report_${month}.csv`;
+
+    if (typeof (window as any).AndroidBridge !== "undefined") {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = (reader.result as string).split(",")[1];
+        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
   };
 
+  
   const formattedCols = [
     {
       field: "view",
