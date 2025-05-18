@@ -63,6 +63,14 @@ export function capitalize(str: string) {
 
 export function requestGuard<T extends Record<string, any>>(formData: T, excluded: string[]): boolean {
   for (const [key, value] of Object.entries(formData)) {
+    if (key.toLowerCase().includes("email")) {
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      if (isValidEmail) {
+        continue;
+      } else {
+        return false;
+      }
+    }
     if (excluded.includes(key)) continue;
     if (value === undefined || value === null || value.toString().length === 0) {
       return false;

@@ -18,9 +18,10 @@ export default function CreateUpdateUser({ passedData, departments, access_token
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    const numericValue = value.replace(/\D/g, "").slice(0, 11);
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: !(name === "contactNumber") ? value : numericValue,
     }));
   };
 
@@ -78,7 +79,7 @@ export default function CreateUpdateUser({ passedData, departments, access_token
         alert(`Somthing went wrong - ${res.data}`);
       }
     } else {
-      alert("Fill out all the fields.");
+      alert("Fill out all the fields and check the format of email.");
     }
   };
 
@@ -149,7 +150,7 @@ export default function CreateUpdateUser({ passedData, departments, access_token
           <FloatingLabel controlId="contactNumber" label="Contact Number" className="mb-2 small-input">
             <Form.Control
               name="contactNumber"
-              type="text"
+              type="tel"
               placeholder=""
               onChange={handleOnChange}
               maxLength={11}
