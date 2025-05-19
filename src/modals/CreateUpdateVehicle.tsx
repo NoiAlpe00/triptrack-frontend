@@ -113,7 +113,7 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
               name="isDeleted"
               onClick={handleRequestButtonClick}
             >
-              {!formData.isDeleted ? "Delete" : "Undo Delete"}
+              {!formData.isDeleted ? "Deactivate" : "Activate"}
             </Button>
           )}
         </Modal.Body>

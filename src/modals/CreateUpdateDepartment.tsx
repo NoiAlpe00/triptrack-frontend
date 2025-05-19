@@ -103,7 +103,7 @@ export default function CreateUpdateDepartment({ passedData, access_token }: Cre
               name="isDeleted"
               onClick={handleRequestButtonClick}
             >
-              {!formData.isDeleted ? "Delete" : "Undo Delete"}
+              {!formData.isDeleted ? "Deactivate" : "Activate"}
             </Button>
           )}
         </Modal.Body>
