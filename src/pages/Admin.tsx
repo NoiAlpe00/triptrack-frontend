@@ -324,7 +324,13 @@ export default function AdminPage() {
       },
     },
     { field: "title", headerName: "Name", width: 650 },
-    { field: "typed", headerName: "Typed?", width: 100 },
+    { field: "typed", 
+      headerName: "Typed?", 
+      width: 100,
+      renderCell: (params: any) => {
+    return params.row.typed ? "Yes" : "No";
+  },
+     },
     {
       field: "isDeleted",
       headerName: "Status",
