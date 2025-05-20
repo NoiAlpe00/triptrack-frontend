@@ -16,8 +16,8 @@ import {
   VehicleProps,
 } from "../utils/TypesIndex";
 
-const URL = "https://ojtdwwkfaa.execute-api.ap-southeast-1.amazonaws.com/prod/";
-// const URL = "http://localhost:8888";
+const URL = "https://nl4oz30sz4.execute-api.ap-southeast-1.amazonaws.com/prod";
+// const URL = "http://localhost:3000/prod";
 // = "http://10.0.2.2:8888";
 
 export const loginUser = async ({ email, password }: LoginRequestProps) => {
@@ -29,7 +29,7 @@ export const loginUser = async ({ email, password }: LoginRequestProps) => {
         email: email,
         password: password,
       },
-      withCredentials: true,
+      // withCredentials: true,
     });
     return { statusCode: res.status, data: res.data.access_token };
   } catch (error: any) {
