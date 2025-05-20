@@ -354,7 +354,6 @@ export default function Dashboard() {
       URL.revokeObjectURL(url);
     }
   };
-  
 
   return (
     <Container fluid>
@@ -530,7 +529,7 @@ export default function Dashboard() {
       <Row className="px-3">
         <CustomTable rows={tableData} columns={columns} type={"dashboard"} />
       </Row>
-      <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
+      <CustomToast header={"Login"} body={"Login Successful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
     </Container>
   );
 }

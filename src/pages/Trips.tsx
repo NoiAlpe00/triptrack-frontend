@@ -679,7 +679,7 @@ export default function Trips() {
           <CustomTable rows={tableData} columns={finalCols} type={"trips"} />
         </Col>
       </Row>
-      <CustomToast header={"Login"} body={"Login Unsuccessful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
+      <CustomToast header={"Login"} body={"Login Successful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
     </Container>
   );
 }
