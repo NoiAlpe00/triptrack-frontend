@@ -16,12 +16,8 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState<TripChecklistProps>(passedData);
 
-  console.log(passedData);
-
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(type, phase);
-    console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -30,7 +26,6 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    // console.log(name, value);
     setFormData((prevData) => ({
       ...prevData,
       checklist: prevData.checklist.map((checklist) => (checklist.checklistId === name ? { ...checklist, data: value } : checklist)),
@@ -66,6 +61,8 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
           tripId: "",
           checklist: passedData.checklist,
           timing: "",
+          tripStart: "",
+          tripEnd: "",
         });
         handleClose();
         window.location.reload();
@@ -164,11 +161,19 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
                 placeholder=""
                 onChange={handleOnChange}
                 value={formData.timeDeparture ?? ""}
+                min={formData.tripStart ?? ""}
               />
             </FloatingLabel>
           ) : (
             <FloatingLabel controlId="timeArrival" label="Arrival Time" className="mb-2 small-input">
-              <Form.Control name="timeArrival" type="datetime-local" placeholder="" onChange={handleOnChange} value={formData.timeArrival ?? ""} />
+              <Form.Control
+                name="timeArrival"
+                type="datetime-local"
+                placeholder=""
+                onChange={handleOnChange}
+                value={formData.timeArrival ?? ""}
+                min={formData.timeDeparture}
+              />
             </FloatingLabel>
           )}
           {formData.checklist.map((checklist, index) =>

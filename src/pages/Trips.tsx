@@ -9,7 +9,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly, isDatePast } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -50,6 +50,8 @@ export default function Trips() {
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
+
+  const now = new Date().toISOString();
 
   const decodedToken = decodeToken(access_token);
 
@@ -160,11 +162,10 @@ export default function Trips() {
           dateRequested: formatISOString(row.createdDate),
         };
 
-        console.log(passedData);
-
         return (
           passedData.timeDeparture == null &&
-          passedData.timeArrival == null && (
+          passedData.timeArrival == null &&
+          !isDatePast(now, passedData.tripStart) && (
             <Row className="d-flex">
               <Col className="px-1">
                 <CreateUpdateTrip
@@ -313,7 +314,6 @@ export default function Trips() {
           headerName: "Departure Time",
           width: 200,
           renderCell: (params: any) => {
-            console.log(params.row);
             return (
               <>
                 <CreateUpdateTripChecklist
@@ -324,6 +324,8 @@ export default function Trips() {
                     timing: params.row.timeDeparture == undefined ? "Before" : "After",
                     checklist: allTripSpecificChecklistData,
                     guard: params.row.guard,
+                    tripStart: params.row.tripStart.slice(0, -8),
+                    tripEnd: params.row.tripEnd.slice(0, -8),
                   }}
                   type={"table"}
                   phase={"departure"}
@@ -393,6 +395,8 @@ export default function Trips() {
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
                   guard: params.row.guard,
+                  tripStart: params.row.tripStart.slice(0, -8),
+                  tripEnd: params.row.tripEnd.slice(0, -8),
                 }}
                 type={"table"}
                 phase={"arrival"}
@@ -442,13 +446,6 @@ export default function Trips() {
             const feedbacks: FeedbackProps[] = row.feedbacks ?? [];
 
             const hasFeedback = feedbacks.filter((feedback) => feedback.user.id === decodedToken.sub.userId).length > 0;
-
-            // console.log(
-            //   row.tripStatus.toLowerCase() === "past",
-            //   row.user.id === decodedToken.sub.userId,
-            //   hasFeedback.length != 0,
-            //   row.tripStatus.toLowerCase() === "past" && row.user.id === decodedToken.sub.userId && hasFeedback.length != 0
-            // );
 
             return (
               <>
@@ -538,6 +535,8 @@ export default function Trips() {
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
                   guard: params.row.guard,
+                  tripStart: params.row.tripStart.slice(0, -8),
+                  tripEnd: params.row.tripEnd.slice(0, -8),
                 }}
                 type={"operation"}
                 phase={params.row.timeDeparture && params.row.timeArrival ? "done" : params.row.timeDeparture == undefined ? "departure" : "arrival"}

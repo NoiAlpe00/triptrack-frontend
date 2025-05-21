@@ -89,3 +89,10 @@ export function isDateRangeOverlapping(date1: string, date2: string, date3: stri
 
   return start1 <= end2 && start2 <= end1;
 }
+
+export function isDatePast(date1: string, date2: string): boolean {
+  const dateOne = new Date(date1);
+  const dateTwo = new Date(date2);
+
+  return dateOne >= dateTwo;
+}

@@ -121,6 +121,8 @@ export interface TripChecklistProps {
   timing: string;
   checklist: TripSpecificChecklistProps[];
   guard?: UserProps;
+  tripStart?: string;
+  tripEnd?: string;
 }
 
 export interface CreateUpdateTripChecklistProps {
