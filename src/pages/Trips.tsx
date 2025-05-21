@@ -9,7 +9,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString, formatISOStringActualData, formatISOStringDateOnly } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -115,13 +115,11 @@ export default function Trips() {
       renderCell: (params: any) => {
         const row = params.row;
 
-        console.log(row);
-
         const passedData: TripTableProps = {
           id: row.id,
           title: row.title,
-          tripStart: formatISOStringActualData(row.tripStart),
-          tripEnd: formatISOStringActualData(row.tripEnd),
+          tripStart: row.tripStart.slice(0, -8),
+          tripEnd: row.tripEnd.slice(0, -8),
           destination: row.destination,
           purpose: row.purpose,
           status: row.status,
@@ -162,6 +160,8 @@ export default function Trips() {
           dateRequested: formatISOString(row.createdDate),
         };
 
+        console.log(passedData);
+
         return (
           passedData.timeDeparture == null &&
           passedData.timeArrival == null && (
@@ -189,7 +189,36 @@ export default function Trips() {
       renderCell: (params: any) => {
         const row = params.row;
 
-        return <ViewTripDetails passedData={row} type={"title"} />;
+        const passedData: TripTableProps = {
+          id: row.id,
+          title: row.title,
+          tripStart: row.tripStart.slice(0, -1),
+          tripEnd: row.tripEnd.slice(0, -1),
+          destination: row.destination,
+          purpose: row.purpose,
+          status: row.status,
+          timeDeparture: row.timeDeparture,
+          timeArrival: row.timeArrival,
+          remarks: row.remarks,
+          createdDate: row.createdDate,
+          updatedDate: row.updatedDate,
+          isDeleted: row.isDeleted,
+          tripChecklists: row.tripChecklists, // To Be Implemented yet
+          department: row.department,
+          driver: row.driver,
+          vehicle: row.vehicle,
+          user: row.user,
+          requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
+          driverRequest: row.driverRequest,
+          vehicleRequest: row.vehicleRequest,
+          requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
+          tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+          date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+          dateRequested: formatISOStringDateOnly(row.createdDate),
+          feedbacks: row.feedbacks,
+        };
+
+        return <ViewTripDetails passedData={passedData} type={"title"} />;
       },
     },
 
