@@ -29,7 +29,7 @@ export default function ViewMaintenanceDetails({ vehicle, rows, cols }: { vehicl
 
         const passedData = {
           ...row,
-          date: formatISOString(row.date.slice(0, -1)),
+          date: formatISOStringDateOnly(row.date.slice(0, -1)),
         };
 
         return <ViewDetails title={formatISOStringDateOnly(row.date)} data={passedData} cols={cols} />;
