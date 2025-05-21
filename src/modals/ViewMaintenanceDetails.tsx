@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import CustomTable from "../components/Table";
 import ViewDetails from "./ViewDetails";
-import { formatISOString, formatISOStringDateOnly } from "../utils/utilities";
+import { formatISOStringDateOnly } from "../utils/utilities";
 
 interface MaintenanceReportProps {
   date: string;

@@ -327,8 +327,8 @@ export default function Trips() {
                 <CreateUpdateTripChecklist
                   passedData={{
                     tripId: params.row.id,
-                    timeDeparture: params.row.timeDeparture.slice(0, -1),
-                    timeArrival: params.row.timeArrival.slice(0, -1),
+                    timeDeparture: params.row.timeDeparture ? params.row.timeDeparture.slice(0, -1) : undefined,
+                    timeArrival: params.row.timeArrival ? params.row.timeArrival.slice(0, -1) : undefined,
                     timing: params.row.timeDeparture == undefined ? "Before" : "After",
                     checklist: allTripSpecificChecklistData,
                     guard: params.row.guard,
@@ -413,8 +413,8 @@ export default function Trips() {
               <CreateUpdateTripChecklist
                 passedData={{
                   tripId: params.row.id,
-                  timeDeparture: params.row.timeDeparture.slice(0, -1),
-                  timeArrival: params.row.timeArrival.slice(0, -1),
+                  timeDeparture: params.row.timeDeparture ? params.row.timeDeparture.slice(0, -1) : undefined,
+                  timeArrival: params.row.timeArrival ? params.row.timeArrival?.slice(0, -1) : undefined,
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
                   guard: params.row.guard,
