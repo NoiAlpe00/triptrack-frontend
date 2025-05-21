@@ -8,13 +8,16 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { formatISOString } from "../utils/utilities";
+import { formatISOString, getLocalISOString, isDatePast } from "../utils/utilities";
 
 export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
   const [show, setShow] = useState(false);
 
   // const auth = useAuthUser();
   // const role = auth()?.role ?? "Requisitioner";
+
+  const now = getLocalISOString(new Date());
+  const isPast = isDatePast(passedData.tripStart, now);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -47,87 +50,107 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
             <Col lg={4}>
               <Row className="">
                 <Col lg={6} className="d-flex justify-content-center">
-                  {passedData.requestStatus?.toLowerCase() == "approved" ? (
+                  {
                     <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-1" src={CheckPurple} />
-                          <span className="text-primary">
-                            <strong>Approved</strong>
-                          </span>
-                        </Col>
-                      </Row>
+                      {passedData.requestStatus?.toLowerCase() == "approved" ? (
+                        <>
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-1" src={CheckPurple} />
+                              <span className="text-primary">
+                                <strong>Approved</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : passedData.requestStatus?.toLowerCase() == "declined" ? (
+                        <>
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={XRed} />
+                              <span className="text-danger">
+                                <strong>Declined</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : passedData.requestStatus?.toLowerCase() == "endorsed" && isPast ? (
+                        <>
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <i className="bi bi-file-earmark-arrow-up" />{" "}
+                              <span className="text-primary">
+                                <strong>Endorsed</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : isPast ? (
+                        <>
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={Pending} />
+                              <span className="text-primary">
+                                <strong>Pending</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : (
+                        "-"
+                      )}
                     </>
-                  ) : passedData.requestStatus?.toLowerCase() == "declined" ? (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-2" src={XRed} />
-                          <span className="text-danger">
-                            <strong>Declined</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  ) : passedData.requestStatus?.toLowerCase() == "endorsed" ? (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <i className="bi bi-file-earmark-arrow-up" />{" "}
-                          <span className="text-primary">
-                            <strong>Endorsed</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  ) : (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-2" src={Pending} />
-                          <span className="text-primary">
-                            <strong>Pending</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  )}
+                  }
                 </Col>
                 <Col lg={6} className="d-flex justify-content-center">
-                  {passedData.tripStatus?.toLowerCase() == "upcoming" ? (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-2" src={Upcoming} />
-                          <span className="text-primary">
-                            <strong>Upcoming</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  ) : passedData.tripStatus?.toLowerCase() == "ongoing" ? (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-2" src={Ongoing} />
-                          <span className="text-primary">
-                            <strong>Ongoing</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  ) : (
-                    <>
-                      <Row className="d-flex">
-                        <Col className="px-1">
-                          <Image className="pe-2" src={Past} />
-                          <span className="text-secondary">
-                            <strong>Past</strong>
-                          </span>
-                        </Col>
-                      </Row>
-                    </>
-                  )}
+                  {(() => {
+                    const requestStatus = passedData.requestStatus.toLowerCase();
+                    const tripStatus = passedData.tripStatus?.toLowerCase();
+                    const tripStart = passedData.tripStart.slice(0, -1); // remove trailing 'Z'
+                    const isPast = !isDatePast(tripStart, now);
+
+                    if (requestStatus === "declined") return "-";
+                    if (requestStatus === "pending" && isPast) return "-";
+
+                    if (isPast || requestStatus !== "declined") {
+                      if (tripStatus === "upcoming") {
+                        return (
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={Upcoming} />
+                              <span className="text-primary">
+                                <strong>Upcoming</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        );
+                      } else if (tripStatus === "ongoing") {
+                        return (
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={Ongoing} />
+                              <span className="text-primary">
+                                <strong>Ongoing</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        );
+                      } else {
+                        return (
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={Past} />
+                              <span className="text-secondary">
+                                <strong>Past</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        );
+                      }
+                    }
+
+                    return "-";
+                  })()}
                 </Col>
               </Row>
             </Col>

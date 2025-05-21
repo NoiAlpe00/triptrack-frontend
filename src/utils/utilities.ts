@@ -90,6 +90,24 @@ export function isDateRangeOverlapping(date1: string, date2: string, date3: stri
   return start1 <= end2 && start2 <= end1;
 }
 
+export function getLocalISOString(date: Date): string {
+  // Convert the date to PH time (UTC+8)
+  const phOffset = 8 * 60; // in minutes
+  const local = new Date(date.getTime() + phOffset * 60 * 1000);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  const yyyy = local.getUTCFullYear();
+  const mm = pad(local.getUTCMonth() + 1);
+  const dd = pad(local.getUTCDate());
+  const hh = pad(local.getUTCHours());
+  const min = pad(local.getUTCMinutes());
+  const ss = pad(local.getUTCSeconds());
+  const ms = String(local.getUTCMilliseconds()).padStart(3, "0");
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}.${ms}`;
+}
+
 export function isDatePast(date1: string, date2: string): boolean {
   const dateOne = new Date(date1);
   const dateTwo = new Date(date2);

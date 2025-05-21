@@ -9,7 +9,7 @@ import Pending from "../assets/svgs/pending.svg";
 import Upcoming from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
 import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly, isDatePast } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly, getLocalISOString, isDatePast } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -51,14 +51,16 @@ export default function Trips() {
   const authHeader = useAuthHeader();
   const access_token = authHeader();
 
-  const now = new Date().toISOString();
+  const now = getLocalISOString(new Date());
 
   const decodedToken = decodeToken(access_token);
 
   useEffect(() => {
     (async () => {
+      console.log(now);
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
+        .filter((trip) => (statusFilter !== "pending" ? true : isDatePast(trip.tripStart, now)))
         .filter((trip) =>
           search.length == 0 ? true : trip.title.toLowerCase().includes(search.toLowerCase()) || trip.id.toLowerCase().includes(search.toLowerCase())
         )
@@ -86,7 +88,7 @@ export default function Trips() {
             vehicleRequest: trip.vehicleRequest,
             requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
             tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
             user: trip.user,
             feedbacks: trip.feedbacks,
             dateRequested: formatISOStringDateOnly(trip.createdDate),
@@ -258,55 +260,62 @@ export default function Trips() {
           field: "requestStatus",
           headerName: "Request Status",
           width: 150,
-          renderCell: (params: any) => (
-            <>
-              {params.row.requestStatus?.toLowerCase() == "approved" ? (
-                <>
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <Image className="pe-1" src={CheckPurple} />
-                      <span className="text-primary">
-                        <strong>Approved</strong>
-                      </span>
-                    </Col>
-                  </Row>
-                </>
-              ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
-                <>
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <Image className="pe-2" src={XRed} />
-                      <span className="text-danger">
-                        <strong>Declined</strong>
-                      </span>
-                    </Col>
-                  </Row>
-                </>
-              ) : params.row.requestStatus?.toLowerCase() == "endorsed" ? (
-                <>
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <i className="bi bi-file-earmark-arrow-up" />{" "}
-                      <span className="text-primary">
-                        <strong>Endorsed</strong>
-                      </span>
-                    </Col>
-                  </Row>
-                </>
-              ) : (
-                <>
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <Image className="pe-2" src={Pending} />
-                      <span className="text-primary">
-                        <strong>Pending</strong>
-                      </span>
-                    </Col>
-                  </Row>
-                </>
-              )}
-            </>
-          ),
+          renderCell: (params: any) => {
+            const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
+            const isPast = isDatePast(tripStart, now);
+
+            return (
+              <>
+                {params.row.requestStatus?.toLowerCase() == "approved" ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <Image className="pe-1" src={CheckPurple} />
+                        <span className="text-primary">
+                          <strong>Approved</strong>
+                        </span>
+                      </Col>
+                    </Row>
+                  </>
+                ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <Image className="pe-2" src={XRed} />
+                        <span className="text-danger">
+                          <strong>Declined</strong>
+                        </span>
+                      </Col>
+                    </Row>
+                  </>
+                ) : params.row.requestStatus?.toLowerCase() == "endorsed" && isPast ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <i className="bi bi-file-earmark-arrow-up" />{" "}
+                        <span className="text-primary">
+                          <strong>Endorsed</strong>
+                        </span>
+                      </Col>
+                    </Row>
+                  </>
+                ) : isPast ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <Image className="pe-2" src={Pending} />
+                        <span className="text-primary">
+                          <strong>Pending</strong>
+                        </span>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  "-"
+                )}
+              </>
+            );
+          },
           // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
         }
       : {
@@ -342,10 +351,23 @@ export default function Trips() {
           field: "tripStatus",
           headerName: "Trip Status",
           width: 150,
-          renderCell: (params: any) => (
-            <>
-              {params.row.tripStatus?.toLowerCase() == "upcoming" ? (
-                <>
+          renderCell: (params: any) => {
+            const requestStatus = params.row.requestStatus.toLowerCase();
+            const tripStatus = params.row.tripStatus?.toLowerCase();
+            const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
+            const isPast = !isDatePast(tripStart, now);
+
+            if (requestStatus === "declined") {
+              return "-";
+            }
+
+            if (requestStatus === "pending" && isPast) {
+              return "-";
+            }
+
+            if (isPast || requestStatus !== "declined") {
+              if (tripStatus === "upcoming") {
+                return (
                   <Row className="d-flex">
                     <Col className="px-1">
                       <Image className="pe-2" src={Upcoming} />
@@ -354,9 +376,9 @@ export default function Trips() {
                       </span>
                     </Col>
                   </Row>
-                </>
-              ) : params.row.tripStatus?.toLowerCase() == "ongoing" ? (
-                <>
+                );
+              } else if (tripStatus === "ongoing") {
+                return (
                   <Row className="d-flex">
                     <Col className="px-1">
                       <Image className="pe-2" src={Ongoing} />
@@ -365,9 +387,9 @@ export default function Trips() {
                       </span>
                     </Col>
                   </Row>
-                </>
-              ) : (
-                <>
+                );
+              } else {
+                return (
                   <Row className="d-flex">
                     <Col className="px-1">
                       <Image className="pe-2" src={Past} />
@@ -376,10 +398,12 @@ export default function Trips() {
                       </span>
                     </Col>
                   </Row>
-                </>
-              )}
-            </>
-          ),
+                );
+              }
+            }
+
+            return "-";
+          },
         }
       : {
           field: "arrivalTime",
@@ -449,7 +473,9 @@ export default function Trips() {
 
             return (
               <>
-                {params.row.tripStatus?.toLowerCase() == "upcoming" && (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head") ? (
+                {params.row.tripStatus?.toLowerCase() == "upcoming" &&
+                (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head") &&
+                isDatePast(params.row.tripStart.slice(0, -1), now) ? (
                   <>
                     <Row className="d-flex">
                       <Col xs={4} className="px-1">
@@ -597,7 +623,7 @@ export default function Trips() {
                 vehicleRequest: trip.vehicleRequest,
                 requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
                 tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
-                date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+                date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
                 user: trip.user,
                 feedbacks: trip.feedbacks,
                 dateRequested: formatISOStringDateOnly(trip.createdDate),
