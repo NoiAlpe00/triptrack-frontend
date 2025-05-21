@@ -6,7 +6,6 @@ import { decodeToken, formatISOString, isDateRangeOverlapping, requestGuard } fr
 import { addNewTrip, updateExistingTrip } from "../hooks/axios";
 
 export default function CreateUpdateTrip({ passedData, access_token, departments, vehicles, drivers }: CreateUpdateTripProps) {
-  console.log(passedData);
   const [show, setShow] = useState(false);
 
   const auth = useAuthUser();
@@ -16,8 +15,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState<TripProps>(passedData);
   const now = new Date().toISOString().slice(0, -8);
-  console.log(formData);
-
   const decodedToken = decodeToken(access_token);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
