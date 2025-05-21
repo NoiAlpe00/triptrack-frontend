@@ -28,7 +28,7 @@ export default function PreventiveMaintenance(passedData: CreatePreventiveMainte
     const formattedData: CreatePreventiveMaintenanceRequestProps = {
       date: formData.date,
       details: formData.details,
-      remarks: formData.details,
+      remarks: formData.remarks,
       userId: passedData.userId,
       vehicleId: passedData.vehicleId,
       access_token: passedData.access_token,

@@ -215,7 +215,7 @@ export default function Trips() {
           vehicleRequest: row.vehicleRequest,
           requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
           tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
-          date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
+          date: `${formatISOString(row.tripStart.slice(0, -1))} - ${formatISOString(row.tripEnd.slice(0, -1))}`,
           dateRequested: formatISOStringDateOnly(row.createdDate),
           feedbacks: row.feedbacks,
         };
@@ -327,8 +327,8 @@ export default function Trips() {
                 <CreateUpdateTripChecklist
                   passedData={{
                     tripId: params.row.id,
-                    timeDeparture: params.row.timeDeparture,
-                    timeArrival: params.row.timeArrival,
+                    timeDeparture: params.row.timeDeparture.slice(0, -1),
+                    timeArrival: params.row.timeArrival.slice(0, -1),
                     timing: params.row.timeDeparture == undefined ? "Before" : "After",
                     checklist: allTripSpecificChecklistData,
                     guard: params.row.guard,
@@ -413,8 +413,8 @@ export default function Trips() {
               <CreateUpdateTripChecklist
                 passedData={{
                   tripId: params.row.id,
-                  timeDeparture: params.row.timeDeparture,
-                  timeArrival: params.row.timeArrival,
+                  timeDeparture: params.row.timeDeparture.slice(0, -1),
+                  timeArrival: params.row.timeArrival.slice(0, -1),
                   timing: params.row.timeDeparture == undefined ? "Before" : "After",
                   checklist: allTripSpecificChecklistData,
                   guard: params.row.guard,

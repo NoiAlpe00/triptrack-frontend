@@ -347,10 +347,10 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                       {feedback.remarks.length > 0 && (
                         <Row key={`feedback-remarks-col-1-${feedback.id}`}>
                           <Col key={`feedback-remarks-col-1-${feedback.id}`} lg={3}>
-                            <span className="">Service Rating</span>
+                            <span className="">Remarks</span>
                           </Col>
                           <Col key={`feedback-remarks-col-2-${feedback.id}`} lg={9}>
-                            <span className="thick-text">{feedback.serviceRating}</span>
+                            <span className="thick-text">{feedback.remarks}</span>
                           </Col>
                         </Row>
                       )}
@@ -368,7 +368,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                   <span className="">Time Departure</span>
                 </Col>
                 <Col lg={9}>
-                  <span className="thin-text">{passedData.timeDeparture ? formatISOString(passedData.timeDeparture) : "No Data"}</span>
+                  <span className="thin-text">{passedData.timeDeparture ? formatISOString(passedData.timeDeparture.slice(0, -1)) : "No Data"}</span>
                 </Col>
               </Row>
               <Row>
@@ -376,7 +376,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                   <span className="">Time Arrival</span>
                 </Col>
                 <Col lg={9}>
-                  <span className="thin-text">{passedData.timeArrival ? formatISOString(passedData.timeArrival) : "No Data"}</span>
+                  <span className="thin-text">{passedData.timeArrival ? formatISOString(passedData.timeArrival.slice(0, -1)) : "No Data"}</span>
                 </Col>
               </Row>
               <Row>
@@ -392,7 +392,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                       <span className="">
                         {passedData.tripChecklists.filter((check) => check.timing === "Before").length > 0
                           ? `${passedData.tripChecklists.filter((check) => check.timing === "Before")[0].guard.lastName}, ${
-                              passedData.tripChecklists.filter((check) => check.timing === "Before")[0].guard.lastName
+                              passedData.tripChecklists.filter((check) => check.timing === "Before")[0].guard.firstName
                             }`
                           : "-"}
                       </span>
@@ -441,7 +441,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                       <span className="">
                         {passedData.tripChecklists.filter((check) => check.timing === "After").length > 0
                           ? `${passedData.tripChecklists.filter((check) => check.timing === "After")[0].guard.lastName}, ${
-                              passedData.tripChecklists.filter((check) => check.timing === "After")[0].guard.lastName
+                              passedData.tripChecklists.filter((check) => check.timing === "After")[0].guard.firstName
                             }`
                           : "-"}
                       </span>
