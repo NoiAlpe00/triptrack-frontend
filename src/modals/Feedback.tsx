@@ -47,7 +47,7 @@ export default function Feedback(passedData: CreateTripFeedbackProps) {
     };
     const { access_token, ...rest } = formattedData;
     const isDataValid = requestGuard<CreateTripFeedbackRequestProps>(formattedData, ["remarks"]);
-    const final = confirm("Are the details in this preventive maintenance report final and correct?");
+    const final = confirm("Are the details in this feedback report final and correct?");
     if (isDataValid && final) {
       const res = await addNewTripFeedback(rest, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
