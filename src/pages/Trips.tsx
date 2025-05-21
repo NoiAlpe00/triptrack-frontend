@@ -57,7 +57,6 @@ export default function Trips() {
 
   useEffect(() => {
     (async () => {
-      console.log(now);
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
         .filter((trip) => (statusFilter !== "pending" ? true : isDatePast(trip.tripStart, now)))
