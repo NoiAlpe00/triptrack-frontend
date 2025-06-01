@@ -80,7 +80,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
 
         let title;
 
-        if (type == "trips") title = row.title;
+        if (type == "trips") title = row.id;
         else if (type == "vehicle") title = row.model;
         else if (type == "driver") title = row.driver;
 
@@ -88,7 +88,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
       },
     },
     ,
-    ...cols.slice(1),
+    ...(type == "trips" ? cols : cols.slice(1)),
   ];
 
   return (
