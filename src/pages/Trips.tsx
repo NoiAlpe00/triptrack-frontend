@@ -709,7 +709,7 @@ export default function Trips() {
             <CreateUpdateTrip
               passedData={{
                 id: "",
-                pax: 0,
+                pax: "",
                 tripStart: "", // ISO 8601 date-time string
                 tripEnd: "", // ISO 8601 date-time string
                 destination: "",

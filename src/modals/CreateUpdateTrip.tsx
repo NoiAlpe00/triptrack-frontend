@@ -19,10 +19,27 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name === "pax") {
+      // Allow empty value or numeric input only
+      if (value === "" || /^\d+$/.test(value)) {
+        if (value.length > 1 && value[0] == "0") {
+          setFormData((prevData) => ({
+            ...prevData,
+            [name]: value.slice(1),
+          }));
+        } else {
+          setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+          }));
+        }
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,7 +88,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
         alert(`Trip is added successfully.`);
         setFormData({
           id: "",
-          pax: 0,
+          pax: "",
           tripStart: "", // ISO 8601 date-time string
           tripEnd: "", // ISO 8601 date-time string
           destination: "",

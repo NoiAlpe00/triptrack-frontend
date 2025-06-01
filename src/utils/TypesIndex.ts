@@ -21,7 +21,7 @@ export interface CustomToastProps {
 
 export interface TripsProps {
   id?: string;
-  pax: number
+  pax: string;
   department: string;
   destination: string;
   purpose: string;
@@ -141,7 +141,7 @@ export interface CustomRadioButtonProps {
 
 export interface DoughnutChartDataProps {
   id: string;
-  pax: number
+  pax: string;
   date: string;
   destination: string;
   driver: string;
@@ -152,7 +152,7 @@ export interface DoughnutChartDataProps {
 
 export interface TripsTableProps {
   id: string;
-  pax: number
+  pax: string;
   date: string;
   destination: string;
   driver: string;
@@ -197,7 +197,7 @@ export interface TripChecklistIndividualProps {
 
 export interface TripProps {
   id: string;
-  pax: number;
+  pax: string;
   tripStart: string; // ISO 8601 date-time string
   tripEnd: string; // ISO 8601 date-time string
   destination: string;
@@ -303,7 +303,7 @@ export interface CreateUpdateTripRequestProps {
   userId: string;
   driverId: string | null;
   vehicleId: string | null;
-  pax: number
+  pax: string;
   tripStart: string;
   tripEnd: string;
   destination: string;

@@ -49,7 +49,7 @@ export default function Login() {
           tokenType: "Bearer",
           authState: { email: decodedToken.email, role: decodedToken.userType ?? role },
         });
-        const path = `${userType == "guard" ? "/trips" : userType == "driver" ? "/maintenance" : "/dashboard"}`;
+        const path = `${userType == "driver" ? "/maintenance" : userType == "admin" ? "/dashboard" : "/trips"}`;
         navigate(path);
       } else {
         setIsSuccess(false);

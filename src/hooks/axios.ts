@@ -272,7 +272,6 @@ export const getAllDrivers = async (access_token: string): Promise<ResponseProps
 };
 
 export const addNewTrip = async (data: CreateUpdateTripRequestProps, access_token: string) => {
-  console.log(data);
   try {
     const res = await axios({
       method: "POST",
@@ -280,7 +279,12 @@ export const addNewTrip = async (data: CreateUpdateTripRequestProps, access_toke
       headers: {
         authorization: access_token,
       },
-      data: { ...data, driverId: data.driverId?.length == 0 ? null : data.driverId, vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId },
+      data: {
+        ...data,
+        pax: parseInt(data.pax),
+        driverId: data.driverId?.length == 0 ? null : data.driverId,
+        vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId,
+      },
     });
     return res.data;
   } catch (error: any) {
@@ -296,7 +300,12 @@ export const updateExistingTrip = async (data: CreateUpdateTripRequestProps, acc
       headers: {
         authorization: access_token,
       },
-      data: { ...data, driverId: data.driverId?.length == 0 ? null : data.driverId, vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId },
+      data: {
+        ...data,
+        pax: parseInt(data.pax),
+        driverId: data.driverId?.length == 0 ? null : data.driverId,
+        vehicleId: data.vehicleId?.length == 0 ? null : data.vehicleId,
+      },
     });
     return res.data;
   } catch (error: any) {
@@ -345,6 +354,22 @@ export const declineExistingTrip = async (id: string, access_token: string) => {
         authorization: access_token,
       },
       params: { id, status: "Declined" },
+    });
+    return res.data;
+  } catch (error: any) {
+    return { statusCode: error.response.statusCode, data: error.response.data.message };
+  }
+};
+
+export const disapproveExistingTrip = async (id: string, access_token: string) => {
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `${URL}/trip/endorse-approve-trip`,
+      headers: {
+        authorization: access_token,
+      },
+      params: { id, status: "Disapprove" },
     });
     return res.data;
   } catch (error: any) {
