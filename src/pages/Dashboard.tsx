@@ -1,5 +1,5 @@
-import { Button, Card, Col, Container, Row, FloatingLabel, Form } from "react-bootstrap";
-import CustomTable from "../components/Table";
+import { Card, Col, Container, Row, FloatingLabel, Form } from "react-bootstrap";
+// import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import { useState, useEffect } from "react";
 import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
@@ -88,41 +88,41 @@ export default function Dashboard() {
     setTableData(formattedTableData);
   }, [yearFilter, monthFilter]);
 
-  const columns = [
-    { field: "title", headerName: "Title", width: 200 },
-    { field: "dateRequested", headerName: "Date Requested", width: 200 },
-    { field: "requisitioner", headerName: "Requisitioner", width: 150 },
-    { field: "date", headerName: "Date Needed", width: 450 },
-    {
-      field: "destination",
-      headerName: "Destination",
-      width: 200,
-    },
-    {
-      field: "driver",
-      headerName: "Driver",
-      width: 200,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    },
-    {
-      field: "vehicle",
-      headerName: "Vehicle",
-      width: 200,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    },
-    {
-      field: "requestStatus",
-      headerName: "Request Status",
-      width: 200,
-      // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    },
-    // {
-    //   field: "tripStatus",
-    //   headerName: "Trip Status",
-    //   flex: 1,
-    //   // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    // },
-  ];
+  // const columns = [
+  //   { field: "title", headerName: "Title", width: 200 },
+  //   { field: "dateRequested", headerName: "Date Requested", width: 200 },
+  //   { field: "requisitioner", headerName: "Requisitioner", width: 150 },
+  //   { field: "date", headerName: "Date Needed", width: 450 },
+  //   {
+  //     field: "destination",
+  //     headerName: "Destination",
+  //     width: 200,
+  //   },
+  //   {
+  //     field: "driver",
+  //     headerName: "Driver",
+  //     width: 200,
+  //     // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+  //   },
+  //   {
+  //     field: "vehicle",
+  //     headerName: "Vehicle",
+  //     width: 200,
+  //     // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+  //   },
+  //   {
+  //     field: "requestStatus",
+  //     headerName: "Request Status",
+  //     width: 200,
+  //     // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+  //   },
+  //   // {
+  //   //   field: "tripStatus",
+  //   //   headerName: "Trip Status",
+  //   //   flex: 1,
+  //   //   // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+  //   // },
+  // ];
 
   const handleOnClick = (key: string) => {
     if (yearFilter == "all")
@@ -319,43 +319,43 @@ export default function Dashboard() {
   //   URL.revokeObjectURL(url);
   // };
 
-  const handleExport = () => {
-    if (!columns?.length || !tableData?.length) return;
+  // const handleExport = () => {
+  //   if (!columns?.length || !tableData?.length) return;
 
-    // 1. Extract headers from columns
-    const headers = columns.map((col: any) => col.headerName);
+  //   // 1. Extract headers from columns
+  //   const headers = columns.map((col: any) => col.headerName);
 
-    // 2. Map rows to values in the same order as columns
-    const dataRows = tableData.map((row: any) => columns.map((col: any) => row[col.field]));
+  //   // 2. Map rows to values in the same order as columns
+  //   const dataRows = tableData.map((row: any) => columns.map((col: any) => row[col.field]));
 
-    // 3. Combine headers and rows into CSV format
-    const csvContent = [headers, ...dataRows]
-      .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
-      .join("\n");
+  //   // 3. Combine headers and rows into CSV format
+  //   const csvContent = [headers, ...dataRows]
+  //     .map((row) => row.map((cell: any) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+  //     .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const filename = `${yearFilter}_monthly_report_${monthFilter}.csv`;
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   const filename = `${yearFilter}_monthly_report_${monthFilter}.csv`;
 
-    // Check if running inside Android WebView
-    if (typeof (window as any).AndroidBridge !== "undefined") {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64data = (reader.result as string).split(",")[1];
-        (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
-      };
-      reader.readAsDataURL(blob);
-    } else {
-      // Normal browser download fallback
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.href = url;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
-  };
+  //   // Check if running inside Android WebView
+  //   if (typeof (window as any).AndroidBridge !== "undefined") {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       const base64data = (reader.result as string).split(",")[1];
+  //       (window as any).AndroidBridge.saveBlobData(base64data, "text/csv", filename);
+  //     };
+  //     reader.readAsDataURL(blob);
+  //   } else {
+  //     // Normal browser download fallback
+  //     const link = document.createElement("a");
+  //     const url = URL.createObjectURL(blob);
+  //     link.href = url;
+  //     link.setAttribute("download", filename);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(url);
+  //   }
+  // };
 
   return (
     <Container>
