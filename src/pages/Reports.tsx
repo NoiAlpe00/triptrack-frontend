@@ -309,7 +309,7 @@ export default function Reports() {
           .sort((a, b) => a.status.localeCompare(b.status))
           .map((trip) => ({
             id: trip.id,
-            title: trip.title,
+            pax: trip.pax,
             createdDate: formatISOString(trip.createdDate),
             dateNeeded: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)} `,
             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
@@ -389,7 +389,7 @@ export default function Reports() {
   ];
 
   const monthlyReportTripCols = [
-    { field: "title", headerName: "Title", width: 225 },
+    { field: "pax", headerName: "Pax", width: 225 },
     { field: "createdDate", headerName: "Date Requested", width: 180 },
     { field: "dateNeeded", headerName: "Date Needed", width: 350 },
     { field: "requisitioner", headerName: "Requisitioner", width: 120 },
@@ -530,7 +530,7 @@ export default function Reports() {
                   </FloatingLabel> */}
                 </Col>
                 <Col lg={2} className="">
-                  {/* <CreateUpdateChecklist passedData={{ title: "", typed: false }} access_token={access_token} /> */}
+                  {/* <CreateUpdateChecklist passedData={{ pax: "", typed: false }} access_token={access_token} /> */}
                 </Col>
               </Row>
               <Row>{activeTab === "driver" && <CustomTable rows={driverTableData} columns={driverCols} type={"settings"} />}</Row>

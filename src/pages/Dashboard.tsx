@@ -52,7 +52,7 @@ export default function Dashboard() {
       )
       .map((trip: TripProps) => ({
         id: trip.id,
-        title: trip.title,
+        pax: trip.pax,
         dateRequested: formatISOString(trip.createdDate),
         requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
@@ -89,7 +89,7 @@ export default function Dashboard() {
   }, [yearFilter, monthFilter]);
 
   // const columns = [
-  //   { field: "title", headerName: "Title", width: 200 },
+  //   { field: "title", headerName: "Pax", width: 200 },
   //   { field: "dateRequested", headerName: "Date Requested", width: 200 },
   //   { field: "requisitioner", headerName: "Requisitioner", width: 150 },
   //   { field: "date", headerName: "Date Needed", width: 450 },
@@ -130,7 +130,7 @@ export default function Dashboard() {
         setTableData(
           allTripData.map((trip: TripProps) => ({
             id: trip.id,
-            title: trip.title,
+            pax: trip.pax,
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
             destination: trip.destination,
             dateRequested: formatISOString(trip.createdDate),
@@ -147,7 +147,7 @@ export default function Dashboard() {
             .filter((trip) => trip.status === "Approved")
             .map((trip: TripProps) => ({
               id: trip.id,
-              title: trip.title,
+              pax: trip.pax,
               date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
               destination: trip.destination,
               dateRequested: formatISOString(trip.createdDate),
@@ -164,7 +164,7 @@ export default function Dashboard() {
             .filter((trip) => trip.status === "Declined")
             .map((trip: TripProps) => ({
               id: trip.id,
-              title: trip.title,
+              pax: trip.pax,
               date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
               destination: trip.destination,
               dateRequested: formatISOString(trip.createdDate),
@@ -181,7 +181,7 @@ export default function Dashboard() {
             .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
             .map((trip: TripProps) => ({
               id: trip.id,
-              title: trip.title,
+              pax: trip.pax,
               date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
               destination: trip.destination,
               dateRequested: formatISOString(trip.createdDate),
@@ -198,7 +198,7 @@ export default function Dashboard() {
             .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
             .map((trip: TripProps) => ({
               id: trip.id,
-              title: trip.title,
+              pax: trip.pax,
               date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
               destination: trip.destination,
               dateRequested: formatISOString(trip.createdDate),
@@ -215,7 +215,7 @@ export default function Dashboard() {
             .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
             .map((trip: TripProps) => ({
               id: trip.id,
-              title: trip.title,
+              pax: trip.pax,
               date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
               destination: trip.destination,
               dateRequested: formatISOString(trip.createdDate),
@@ -230,7 +230,7 @@ export default function Dashboard() {
         setTableData(
           allTripData.map((trip: TripProps) => ({
             id: trip.id,
-            title: trip.title,
+            pax: trip.pax,
             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
             destination: trip.destination,
             dateRequested: formatISOString(trip.createdDate),
@@ -259,7 +259,7 @@ export default function Dashboard() {
       setAllTripData(allTrips.data ?? []);
       const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
         id: trip.id,
-        title: trip.title,
+        pax: trip.pax,
         dateRequested: formatISOString(trip.createdDate),
         requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,

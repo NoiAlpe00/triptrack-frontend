@@ -73,7 +73,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
   const formattedCols = [
     {
       field: "view",
-      headerName: type == "trips" ? "Title" : type == "vehicle" ? "Vehicle" : type == "driver" ? "Driver" : "",
+      headerName: type == "trips" ? "Pax" : type == "vehicle" ? "Vehicle" : type == "driver" ? "Driver" : "",
       width: 300,
       renderCell: (params: any) => {
         const row = params.row;

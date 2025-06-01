@@ -57,7 +57,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       userId: decodedToken.sub.userId,
       driverId: formData.driver?.id ?? null,
       vehicleId: formData.vehicle?.id ?? null,
-      title: formData.title,
+      pax: formData.pax,
       tripStart: formData.tripStart,
       tripEnd: formData.tripEnd,
       destination: formData.destination,
@@ -68,10 +68,10 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
     if (isDataValid) {
       const res = await addNewTrip(requestData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
-        alert(`Trip ${requestData.title} is added successfully.`);
+        alert(`Trip is added successfully.`);
         setFormData({
           id: "",
-          title: "",
+          pax: 0,
           tripStart: "", // ISO 8601 date-time string
           tripEnd: "", // ISO 8601 date-time string
           destination: "",
@@ -107,7 +107,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       userId: decodedToken.sub.userId,
       driverId: formData.driver?.id ?? null,
       vehicleId: formData.vehicle?.id ?? null,
-      title: formData.title,
+      pax: formData.pax,
       tripStart: formData.tripStart,
       tripEnd: formData.tripEnd,
       destination: formData.destination,
@@ -118,7 +118,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
     if (isDataValid) {
       const res = await updateExistingTrip(requestData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
-        alert(`Trip ${requestData.title} was updated successfully.`);
+        alert(`Trip ${requestData.pax} was updated successfully.`);
 
         setFormData(passedData);
         window.location.reload();
@@ -150,9 +150,6 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
         <Modal.Body>
           <Row>
             <Col md={role.toLowerCase() === "admin" ? 4 : 12}>
-              <FloatingLabel controlId="floatingInput" label="Title" className="mb-2 small-input">
-                <Form.Control name="title" type="text" placeholder="" onChange={handleOnChange} value={formData.title ?? ""} />
-              </FloatingLabel>
               <FloatingLabel controlId="floatingSelect" label="Department" className="small-input mb-2">
                 <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
                   <option>Select Department</option>
@@ -168,7 +165,10 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
               <FloatingLabel controlId="floatingInput" label="Destination" className="mb-2 small-input">
                 <Form.Control name="destination" type="text" placeholder="" onChange={handleOnChange} value={formData.destination ?? ""} />
               </FloatingLabel>
-              <FloatingLabel controlId="floatingTextarea2" label="Number of Passengers and Purpose" className="small-input-textarea mb-2">
+              <FloatingLabel controlId="floatingInput" label="Pax" className="mb-2 small-input">
+                <Form.Control name="pax" type="text" placeholder="" onChange={handleOnChange} value={formData.pax ?? ""} />
+              </FloatingLabel>
+              <FloatingLabel controlId="floatingTextarea2" label="Purpose" className="small-input-textarea mb-2">
                 <Form.Control
                   name="purpose"
                   type="text"
@@ -179,6 +179,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
                   onChange={handleOnChange}
                 />
               </FloatingLabel>
+
               <FloatingLabel controlId="floatingInput" label="Date Start" className="small-input mb-2">
                 <Form.Control
                   name="tripStart"

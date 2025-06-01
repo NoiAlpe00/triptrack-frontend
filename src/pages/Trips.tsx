@@ -61,12 +61,12 @@ export default function Trips() {
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
         .filter((trip) => (statusFilter !== "waiting" ? true : isDateCompleted(trip.tripStart, now)))
         .filter((trip) =>
-          search.length == 0 ? true : trip.title.toLowerCase().includes(search.toLowerCase()) || trip.id.toLowerCase().includes(search.toLowerCase())
+          trip.id.toLowerCase().includes(search.toLowerCase())
         )
         .map((trip: TripProps) => {
           return {
             id: trip.id,
-            title: trip.title,
+            pax: trip.pax,
             tripStart: trip.tripStart,
             tripEnd: trip.tripEnd,
             destination: trip.destination,
@@ -120,7 +120,7 @@ export default function Trips() {
 
         const passedData: TripTableProps = {
           id: row.id,
-          title: row.title,
+          pax: row.pax,
           tripStart: row.tripStart.slice(0, -8),
           tripEnd: row.tripEnd.slice(0, -8),
           destination: row.destination,
@@ -192,7 +192,7 @@ export default function Trips() {
 
         const passedData: TripTableProps = {
           id: row.id,
-          title: row.title,
+          pax: row.pax,
           tripStart: row.tripStart.slice(0, -1),
           tripEnd: row.tripEnd.slice(0, -1),
           destination: row.destination,
@@ -223,9 +223,9 @@ export default function Trips() {
       },
     },
     {
-      field: "title",
-      headerName: "Title",
-      width: 200,
+      field: "pax",
+      headerName: "Pax",
+      width: 100,
     },
 
     {
@@ -257,7 +257,7 @@ export default function Trips() {
             return <span>{row.vehicle !== null ? `${row.vehicle.model} - ${row.vehicle.plateNumber}` : "Own Vehicle"}</span>;
           },
         },
-    { field: "date", headerName: "Date Needed", width: 350 },
+    { field: "date", headerName: "Date Needed", width: 400 },
     !(userRole.toLowerCase() == "guard")
       ? {
           field: "requestStatus",
@@ -291,6 +291,19 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
+                  
+                ): params.row.requestStatus?.toLowerCase() == "declined" ? (
+                  <>
+                    <Row className="d-flex">
+                      <Col className="px-1">
+                        <Image className="pe-2" src={XRed} />
+                        <span className="text-danger">
+                          <strong>Declined</strong>
+                        </span>
+                      </Col>
+                    </Row>
+                  </>
+                  
                 ) : params.row.requestStatus?.toLowerCase() == "endorsed" && isCompleted ? (
                   <>
                     <Row className="d-flex">
@@ -443,7 +456,7 @@ export default function Trips() {
             const row = params.row;
             const passedData: TripTableProps = {
               id: row.id,
-              title: row.title,
+              pax: row.pax,
               tripStart: row.tripStart.slice(0, -1),
               tripEnd: row.tripEnd.slice(0, -1),
               destination: row.destination,
@@ -605,7 +618,7 @@ export default function Trips() {
           ? allTrips.data.map((trip: TripProps) => {
               return {
                 id: trip.id,
-                title: trip.title,
+                pax: trip.pax,
                 tripStart: trip.tripStart,
                 tripEnd: trip.tripEnd,
                 destination: trip.destination,
@@ -696,7 +709,7 @@ export default function Trips() {
             <CreateUpdateTrip
               passedData={{
                 id: "",
-                title: "",
+                pax: 0,
                 tripStart: "", // ISO 8601 date-time string
                 tripEnd: "", // ISO 8601 date-time string
                 destination: "",

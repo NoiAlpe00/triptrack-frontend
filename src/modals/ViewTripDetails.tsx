@@ -40,12 +40,12 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
 
       <Modal show={show} onHide={handleClose} centered size="xl">
         <Modal.Header closeButton>
-          <Modal.Title>{passedData.id}</Modal.Title>
+          <Modal.Title>View Trip Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Row>
             <Col lg={8}>
-              <CustomHeader title={passedData.title} subtitle={`${formatISOString(passedData.tripStart)} - ${formatISOString(passedData.tripEnd)}`} />
+              <CustomHeader title={passedData.id} subtitle={`${formatISOString(passedData.tripStart)} - ${formatISOString(passedData.tripEnd)}`} />
             </Col>
             <Col lg={4}>
               <Row className="">
@@ -157,6 +157,14 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
           </Row>
           <Row>
             <Col lg={6}>
+              <Row>
+                <Col lg={3}>
+                  <span className="">Passengers</span>
+                </Col>
+                <Col lg={9}>
+                  <span className="thin-text">{passedData.pax}</span>
+                </Col>
+              </Row>
               <Row>
                 <Col lg={3}>
                   <span className="">Department</span>
