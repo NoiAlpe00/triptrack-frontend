@@ -73,7 +73,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
   const formattedCols = [
     {
       field: "view",
-      headerName: type == "trips" ? "Pax" : type == "vehicle" ? "Vehicle" : type == "driver" ? "Driver" : "",
+      headerName: type == "trips" ? "Trip Code" : type == "vehicle" ? "Vehicle" : type == "driver" ? "Driver" : "",
       width: 300,
       renderCell: (params: any) => {
         const row = params.row;
@@ -88,7 +88,7 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
       },
     },
     ,
-    ...(type == "trips" ? cols : cols.slice(1)),
+    ...cols.slice(1),
   ];
 
   return (
@@ -104,7 +104,6 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
           </Modal.Title>{" "}
           <Button
             onClick={() => {
-              console.log("Been Here");
               handleExport();
             }}
           >

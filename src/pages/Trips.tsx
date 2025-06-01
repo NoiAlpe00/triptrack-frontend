@@ -24,6 +24,7 @@ import {
 import {
   approveExistingTrip,
   declineExistingTrip,
+  disapproveExistingTrip,
   endorseExistingTrip,
   getAllChecklist,
   getAllDeparment,
@@ -60,9 +61,7 @@ export default function Trips() {
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
         .filter((trip) => (statusFilter !== "waiting" ? true : isDateCompleted(trip.tripStart, now)))
-        .filter((trip) =>
-          trip.id.toLowerCase().includes(search.toLowerCase())
-        )
+        .filter((trip) => trip.id.toLowerCase().includes(search.toLowerCase()))
         .map((trip: TripProps) => {
           return {
             id: trip.id,
@@ -291,8 +290,7 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
-                  
-                ): params.row.requestStatus?.toLowerCase() == "declined" ? (
+                ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
                   <>
                     <Row className="d-flex">
                       <Col className="px-1">
@@ -303,7 +301,6 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
-                  
                 ) : params.row.requestStatus?.toLowerCase() == "endorsed" && isCompleted ? (
                   <>
                     <Row className="d-flex">
@@ -451,7 +448,7 @@ export default function Trips() {
       ? {
           field: "operations",
           headerName: "",
-          width: 300,
+          width: 320,
           renderCell: (params: any) => {
             const row = params.row;
             const passedData: TripTableProps = {
@@ -500,9 +497,7 @@ export default function Trips() {
                           variant="success"
                           className="w-100"
                           onClick={async () => {
-                            const res = confirm(
-                              `Confirm to ${userRole.toLowerCase() === "head" ? "endorse" : "approve"} the trip ${params.row.title}`
-                            );
+                            const res = confirm(`Confirm to ${userRole.toLowerCase() === "head" ? "endorse" : "approve"} the trip ${params.row.id}`);
                             if (res) {
                               if (decodedToken.userType.toLowerCase() === "admin") await approveExistingTrip(params.row.id, access_token);
                               else await endorseExistingTrip(params.row.id, access_token);
@@ -513,23 +508,26 @@ export default function Trips() {
                           <i className="bi bi-check2" /> {decodedToken.userType.toLowerCase() === "head" ? "Endorse" : "Approve"}
                         </Button>
                       </Col>
-                      <Col xs={4} className="px-1">
+                      <Col xs={decodedToken.userType.toLowerCase() === "head" ? 5 : 4} className="px-1">
                         <Button
                           size="sm"
                           className="w-100 text-white"
                           variant="danger"
                           onClick={async () => {
-                            const res = confirm(`Confirm to decline the trip ${params.row.title}`);
+                            const res = confirm(
+                              `Confirm to ${decodedToken.userType.toLowerCase() === "head" ? "disapprove" : "decline"} the trip ${params.row.id}`
+                            );
                             if (res) {
-                              await declineExistingTrip(params.row.id, access_token);
+                              if (decodedToken.userType.toLowerCase() === "admin") await declineExistingTrip(params.row.id, access_token);
+                              else await disapproveExistingTrip(params.row.id, access_token);
                               window.location.reload();
                             }
                           }}
                         >
-                          <i className="bi bi-x-circle" /> Decline
+                          <i className="bi bi-x-circle" /> {decodedToken.userType.toLowerCase() === "admin" ? "Decline" : "Disapprove"}
                         </Button>
                       </Col>
-                      <Col xs={4} className="px-1">
+                      <Col xs={decodedToken.userType.toLowerCase() === "head" ? 3 : 4} className="px-1">
                         <ViewTripDetails passedData={passedData} type={"waiting"} />
                       </Col>
                     </Row>

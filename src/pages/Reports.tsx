@@ -302,8 +302,6 @@ export default function Reports() {
 
         const allMonthlyTripData: TripProps[] = [...row.internalTrips, ...row.outsourcedTrips, ...row.rejectedTrips];
 
-        console.log(allMonthlyTripData);
-
         const rows = allMonthlyTripData
           .sort((a, b) => new Date(a.tripStart).getTime() - new Date(b.tripStart).getTime())
           .sort((a, b) => a.status.localeCompare(b.status))
@@ -323,8 +321,6 @@ export default function Reports() {
             serviceRating: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].serviceRating : "-",
             ratingRemarks: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].remarks : "-",
           }));
-
-        console.log(rows);
 
         return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} type={"trips"} /> : row.month;
       },
@@ -389,7 +385,8 @@ export default function Reports() {
   ];
 
   const monthlyReportTripCols = [
-    { field: "pax", headerName: "Pax", width: 225 },
+    { field: "id", headerName: "Trip Code", width: 100 },
+    { field: "pax", headerName: "Pax", width: 100 },
     { field: "createdDate", headerName: "Date Requested", width: 180 },
     { field: "dateNeeded", headerName: "Date Needed", width: 350 },
     { field: "requisitioner", headerName: "Requisitioner", width: 120 },
