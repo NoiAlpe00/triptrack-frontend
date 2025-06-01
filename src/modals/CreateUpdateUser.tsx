@@ -208,8 +208,8 @@ export default function CreateUpdateUser({ passedData, departments, access_token
                   <option>Open this select menu</option>
                   <option value="all">All</option>
                   <option value="ongoing">Ongoing</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="past">Past</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
                 </Form.Select>
               </FloatingLabel>
               <FloatingLabel controlId="floatingInput" label="Destination" className="mb-2 small-input">
@@ -260,8 +260,8 @@ export default function CreateUpdateUser({ passedData, departments, access_token
                     <option>Open this select menu</option>
                     <option value="all">All</option>
                     <option value="ongoing">Ongoing</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
                   </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingTextarea2" label="Driver Schedule" className="no-resize small-input-textarea mb-2">
@@ -279,8 +279,8 @@ export default function CreateUpdateUser({ passedData, departments, access_token
                     <option>Open this select menu</option>
                     <option value="all">All</option>
                     <option value="ongoing">Ongoing</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
                   </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="floatingTextarea2" label="Vehicle Schedule" className="no-resize small-input-textarea mb-2">

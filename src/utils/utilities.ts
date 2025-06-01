@@ -108,7 +108,7 @@ export function getLocalISOString(date: Date): string {
   return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}.${ms}`;
 }
 
-export function isDatePast(date1: string, date2: string): boolean {
+export function isDateCompleted(date1: string, date2: string): boolean {
   const dateOne = new Date(date1);
   const dateTwo = new Date(date2);
 

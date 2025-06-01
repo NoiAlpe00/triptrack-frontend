@@ -37,7 +37,7 @@ body,
   max-width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
-  flex-direction: column; /* or row, depending on intent */
+  flex-direction: column; /* or row, dewaiting on intent */
 }
 
 h1 {
@@ -157,7 +157,6 @@ input[type="datetime-local"] {
 .schedule {
   height: 10rem;
 }
-
 
 @media (prefers-color-scheme: light) {
   :root {

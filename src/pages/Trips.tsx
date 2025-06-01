@@ -5,11 +5,11 @@ import CustomToast from "../components/Toast";
 import CreateUpdateTrip from "../modals/CreateUpdateTrip";
 import CheckPurple from "../assets/svgs/check-purple.svg";
 import XRed from "../assets/svgs/x-red.svg";
-import Pending from "../assets/svgs/pending.svg";
-import Upcoming from "../assets/svgs/upcoming.svg";
+import Waiting from "../assets/svgs/pending.svg";
+import Pending from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
-import Past from "../assets/svgs/past.svg";
-import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly, getLocalISOString, isDatePast } from "../utils/utilities";
+import Completed from "../assets/svgs/past.svg";
+import { capitalize, decodeToken, formatISOString, formatISOStringDateOnly, getLocalISOString, isDateCompleted } from "../utils/utilities";
 import { useAuthHeader, useAuthUser } from "react-auth-kit";
 import CreateUpdateTripChecklist from "../modals/CreateUpdateTripChecklist";
 import {
@@ -59,7 +59,7 @@ export default function Trips() {
     (async () => {
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
-        .filter((trip) => (statusFilter !== "pending" ? true : isDatePast(trip.tripStart, now)))
+        .filter((trip) => (statusFilter !== "waiting" ? true : isDateCompleted(trip.tripStart, now)))
         .filter((trip) =>
           search.length == 0 ? true : trip.title.toLowerCase().includes(search.toLowerCase()) || trip.id.toLowerCase().includes(search.toLowerCase())
         )
@@ -85,8 +85,8 @@ export default function Trips() {
             vehicle: trip.vehicle,
             driverRequest: trip.driverRequest,
             vehicleRequest: trip.vehicleRequest,
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
             user: trip.user,
             feedbacks: trip.feedbacks,
@@ -157,8 +157,8 @@ export default function Trips() {
           },
           driverRequest: row.driverRequest,
           vehicleRequest: row.vehicleRequest,
-          requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
-          tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+          requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
+          tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
           date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
           dateRequested: formatISOString(row.createdDate),
         };
@@ -166,7 +166,7 @@ export default function Trips() {
         return (
           passedData.timeDeparture == null &&
           passedData.timeArrival == null &&
-          !isDatePast(now, passedData.tripStart) && (
+          !isDateCompleted(now, passedData.tripStart) && (
             <Row className="d-flex">
               <Col className="px-1">
                 <CreateUpdateTrip
@@ -213,8 +213,8 @@ export default function Trips() {
           requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
           driverRequest: row.driverRequest,
           vehicleRequest: row.vehicleRequest,
-          requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
-          tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+          requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
+          tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
           date: `${formatISOString(row.tripStart.slice(0, -1))} - ${formatISOString(row.tripEnd.slice(0, -1))}`,
           dateRequested: formatISOStringDateOnly(row.createdDate),
           feedbacks: row.feedbacks,
@@ -261,7 +261,7 @@ export default function Trips() {
           width: 150,
           renderCell: (params: any) => {
             const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
-            const isPast = isDatePast(tripStart, now);
+            const isCompleted = isDateCompleted(tripStart, now);
 
             return (
               <>
@@ -287,7 +287,7 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
-                ) : params.row.requestStatus?.toLowerCase() == "endorsed" && isPast ? (
+                ) : params.row.requestStatus?.toLowerCase() == "endorsed" && isCompleted ? (
                   <>
                     <Row className="d-flex">
                       <Col className="px-1">
@@ -298,13 +298,13 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
-                ) : isPast ? (
+                ) : isCompleted ? (
                   <>
                     <Row className="d-flex">
                       <Col className="px-1">
-                        <Image className="pe-2" src={Pending} />
+                        <Image className="pe-2" src={Waiting} />
                         <span className="text-primary">
-                          <strong>Pending</strong>
+                          <strong>Waiting</strong>
                         </span>
                       </Col>
                     </Row>
@@ -354,24 +354,24 @@ export default function Trips() {
             const requestStatus = params.row.requestStatus.toLowerCase();
             const tripStatus = params.row.tripStatus?.toLowerCase();
             const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
-            const isPast = !isDatePast(tripStart, now);
+            const isCompleted = !isDateCompleted(tripStart, now);
 
             if (requestStatus === "declined") {
               return "-";
             }
 
-            if (requestStatus === "pending" && isPast) {
+            if (requestStatus === "waiting" && isCompleted) {
               return "-";
             }
 
-            if (isPast || requestStatus !== "declined") {
-              if (tripStatus === "upcoming") {
+            if (isCompleted || requestStatus !== "declined") {
+              if (tripStatus === "pending") {
                 return (
                   <Row className="d-flex">
                     <Col className="px-1">
-                      <Image className="pe-2" src={Upcoming} />
+                      <Image className="pe-2" src={Pending} />
                       <span className="text-primary">
-                        <strong>Upcoming</strong>
+                        <strong>Pending</strong>
                       </span>
                     </Col>
                   </Row>
@@ -391,9 +391,9 @@ export default function Trips() {
                 return (
                   <Row className="d-flex">
                     <Col className="px-1">
-                      <Image className="pe-2" src={Past} />
+                      <Image className="pe-2" src={Completed} />
                       <span className="text-secondary">
-                        <strong>Past</strong>
+                        <strong>Completed</strong>
                       </span>
                     </Col>
                   </Row>
@@ -459,8 +459,8 @@ export default function Trips() {
               requisitioner: `${row.user.lastName}, ${row.user.firstName}`,
               driverRequest: row.driverRequest,
               vehicleRequest: row.vehicleRequest,
-              requestStatus: capitalize(row.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: row.timeDeparture && row.timeArrival ? "Past" : row.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
               date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
               dateRequested: formatISOStringDateOnly(row.createdDate),
               feedbacks: row.feedbacks,
@@ -472,9 +472,9 @@ export default function Trips() {
 
             return (
               <>
-                {params.row.tripStatus?.toLowerCase() == "upcoming" &&
+                {params.row.tripStatus?.toLowerCase() == "pending" &&
                 (userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head") &&
-                isDatePast(params.row.tripStart.slice(0, -1), now) ? (
+                isDateCompleted(params.row.tripStart.slice(0, -1), now) ? (
                   <>
                     <Row className="d-flex">
                       <Col xs={4} className="px-1">
@@ -513,7 +513,7 @@ export default function Trips() {
                         </Button>
                       </Col>
                       <Col xs={4} className="px-1">
-                        <ViewTripDetails passedData={passedData} type={"pending"} />
+                        <ViewTripDetails passedData={passedData} type={"waiting"} />
                       </Col>
                     </Row>
                   </>
@@ -525,7 +525,7 @@ export default function Trips() {
                       </Col>
 
                       {!(decodedToken.userType.toLowerCase() === "driver") &&
-                        row.tripStatus.toLowerCase() === "past" &&
+                        row.tripStatus.toLowerCase() === "completed" &&
                         row.user.id === decodedToken.sub.userId &&
                         !hasFeedback && (
                           <Col>
@@ -620,8 +620,8 @@ export default function Trips() {
                 vehicle: trip.vehicle,
                 driverRequest: trip.driverRequest,
                 vehicleRequest: trip.vehicleRequest,
-                requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-                tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+                requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+                tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
                 date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
                 user: trip.user,
                 feedbacks: trip.feedbacks,
@@ -665,7 +665,7 @@ export default function Trips() {
                     <option value="all">All</option>
                     <option value="approved">Approved</option>
                     <option value="endorsed">Endorsed</option>
-                    <option value="pending">Pending</option>
+                    <option value="waiting">Waiting</option>
                     <option value="declined">Declined</option>
                   </Form.Select>
                 </FloatingLabel>
@@ -686,7 +686,7 @@ export default function Trips() {
             vehicleRequest={false}
             purpose={"dsadsadsadsadsa"}
             driver={"ongoing"}
-            vehicle={"past"}
+            vehicle={"completed"}
           /> */}
           {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "driver") && (
             <CreateUpdateTrip

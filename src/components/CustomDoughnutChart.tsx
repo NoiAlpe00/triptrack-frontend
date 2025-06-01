@@ -13,15 +13,15 @@ export default function CustomDoughnutChart({ requests }: { requests: DoughnutCh
       acc[request.requestStatus] = (acc[request.requestStatus] || 0) + 1;
       return acc;
     },
-    { Approved: 0, Pending: 0, Declined: 0 }
+    { Approved: 0, Waiting: 0, Declined: 0 }
   );
 
   // Prepare chart data
   const chartData = {
-    labels: ["Approved", "Pending", "Declined"],
+    labels: ["Approved", "Waiting", "Declined"],
     datasets: [
       {
-        data: [statusCounts.Approved, statusCounts.Pending, statusCounts.Declined],
+        data: [statusCounts.Approved, statusCounts.Waiting, statusCounts.Declined],
         backgroundColor: ["#C9FFCC", "#FFFCA1", "#FFB9B5"],
         hoverOffset: 4,
       },

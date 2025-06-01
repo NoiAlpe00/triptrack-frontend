@@ -15,13 +15,13 @@ export default function Dashboard() {
   const [requestStatusCounts, setRequestStatusCounts] = useState<StatusCounts<TripItem["requestStatus"]>>({
     Approved: 0,
     Declined: 0,
-    Pending: 0,
+    Waiting: 0,
   });
 
   const [tripStatusCounts, setTripStatusCounts] = useState<StatusCounts<TripItem["tripStatus"]>>({
-    Past: 0,
+    Completed: 0,
     Ongoing: 0,
-    Upcoming: 0,
+    Pending: 0,
   });
 
   const [yearFilter, setYearFilter] = useState("all");
@@ -57,8 +57,8 @@ export default function Dashboard() {
         destination: trip.destination,
         driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
         vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+        requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+        tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
       }));
 
     const requestCounts = formattedTableData.reduce(
@@ -66,19 +66,19 @@ export default function Dashboard() {
         acc[item.requestStatus]++;
         return acc;
       },
-      { Approved: 0, Declined: 0, Pending: 0 }
+      { Approved: 0, Declined: 0, Waiting: 0 }
     );
 
     const tripCounts = formattedTableData.reduce(
       (acc, item) => {
-        if (item.tripStatus === "Upcoming" && item.requestStatus === "Declined") {
+        if (item.tripStatus === "Pending" && item.requestStatus === "Declined") {
           return acc; // skip counting this item
         }
 
-        acc[item.tripStatus as "Past" | "Ongoing" | "Upcoming"]++;
+        acc[item.tripStatus as "Completed" | "Ongoing" | "Pending"]++;
         return acc;
       },
-      { Past: 0, Ongoing: 0, Upcoming: 0 }
+      { Completed: 0, Ongoing: 0, Pending: 0 }
     );
 
     setRequestStatusCounts(requestCounts);
@@ -135,8 +135,8 @@ export default function Dashboard() {
             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
           }))
         );
       else if (key == "approved")
@@ -152,8 +152,8 @@ export default function Dashboard() {
               requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
               driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
               vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             }))
         );
       else if (key == "declined")
@@ -169,11 +169,11 @@ export default function Dashboard() {
               requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
               driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
               vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             }))
         );
-      else if (key == "upcoming")
+      else if (key == "pending")
         setTableData(
           allTripData
             .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
@@ -186,8 +186,8 @@ export default function Dashboard() {
               requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
               driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
               vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             }))
         );
       else if (key == "ongoing")
@@ -203,11 +203,11 @@ export default function Dashboard() {
               requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
               driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
               vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             }))
         );
-      else if (key == "past")
+      else if (key == "completed")
         setTableData(
           allTripData
             .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
@@ -220,8 +220,8 @@ export default function Dashboard() {
               requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
               driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
               vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
             }))
         );
       else
@@ -235,8 +235,8 @@ export default function Dashboard() {
             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
           }))
         );
     // You can do something with `data`, like navigate or open a modal
@@ -264,27 +264,27 @@ export default function Dashboard() {
         destination: trip.destination,
         driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
         vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-        requestStatus: capitalize(trip.status) as "Pending" | "Approved" | "Declined",
-        tripStatus: trip.timeDeparture && trip.timeArrival ? "Past" : trip.timeDeparture ? "Ongoing" : "Upcoming",
+        requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+        tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
       }));
       const requestCounts = formattedTableData.reduce(
         (acc, item) => {
           acc[item.requestStatus]++;
           return acc;
         },
-        { Approved: 0, Declined: 0, Pending: 0 }
+        { Approved: 0, Declined: 0, Waiting: 0 }
       );
 
       const tripCounts = formattedTableData.reduce(
         (acc, item) => {
-          if (item.tripStatus === "Upcoming" && item.requestStatus === "Declined") {
+          if (item.tripStatus === "Pending" && item.requestStatus === "Declined") {
             return acc; // skip counting this item
           }
 
-          acc[item.tripStatus as "Past" | "Ongoing" | "Upcoming"]++;
+          acc[item.tripStatus as "Completed" | "Ongoing" | "Pending"]++;
           return acc;
         },
-        { Past: 0, Ongoing: 0, Upcoming: 0 }
+        { Completed: 0, Ongoing: 0, Pending: 0 }
       );
 
       setRequestStatusCounts(requestCounts);
@@ -458,16 +458,16 @@ export default function Dashboard() {
                   <Card
                     className="card-hover-effect p-0 m-2"
                     onClick={() => {
-                      handleOnClick("upcoming");
+                      handleOnClick("pending");
                     }}
                   >
                     <Card.Body>
                       <Row>
                         <Col className="d-flex align-items-center" sm={6}>
-                          <h4 className="text-secondary thin-text">Upcoming</h4>
+                          <h4 className="text-secondary thin-text">Pending</h4>
                         </Col>
                         <Col sm={6}>
-                          <h1 className="text-primary  text-end">{tripStatusCounts.Upcoming ?? 0}</h1>
+                          <h1 className="text-primary  text-end">{tripStatusCounts.Pending ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>
@@ -496,16 +496,16 @@ export default function Dashboard() {
                   <Card
                     className="card-hover-effect p-0 m-2"
                     onClick={() => {
-                      handleOnClick("past");
+                      handleOnClick("completed");
                     }}
                   >
                     <Card.Body>
                       <Row>
                         <Col className="d-flex align-items-center" sm={6}>
-                          <h4 className="text-secondary thin-text ">Past</h4>
+                          <h4 className="text-secondary thin-text ">Completed</h4>
                         </Col>
                         <Col sm={6}>
-                          <h1 className="text-secondary  text-end">{tripStatusCounts.Past ?? 0}</h1>
+                          <h1 className="text-secondary  text-end">{tripStatusCounts.Completed ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>

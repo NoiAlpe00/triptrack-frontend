@@ -62,7 +62,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       tripEnd: formData.tripEnd,
       destination: formData.destination,
       purpose: formData.purpose,
-      status: "Pending",
+      status: "Waiting",
     };
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["id", "authorizedBy", "driverId", "vehicleId"]);
     if (isDataValid) {
@@ -112,7 +112,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       tripEnd: formData.tripEnd,
       destination: formData.destination,
       purpose: formData.purpose,
-      status: (formData.status === "Approved" || formData.status === "Declined") && decodedToken.userType !== "Admin" ? "Pending" : formData.status,
+      status: (formData.status === "Approved" || formData.status === "Declined") && decodedToken.userType !== "Admin" ? "Waiting" : formData.status,
     };
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
     if (isDataValid) {

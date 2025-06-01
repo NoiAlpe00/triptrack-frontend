@@ -4,11 +4,11 @@ import CustomHeader from "../components/CustomHeader";
 import { ViewTripProps } from "../utils/TypesIndex";
 import CheckPurple from "../assets/svgs/check-purple.svg";
 import XRed from "../assets/svgs/x-red.svg";
-import Pending from "../assets/svgs/pending.svg";
-import Upcoming from "../assets/svgs/upcoming.svg";
+import Waiting from "../assets/svgs/pending.svg";
+import Pending from "../assets/svgs/upcoming.svg";
 import Ongoing from "../assets/svgs/ongoing.svg";
-import Past from "../assets/svgs/past.svg";
-import { formatISOString, getLocalISOString, isDatePast } from "../utils/utilities";
+import Completed from "../assets/svgs/past.svg";
+import { formatISOString, getLocalISOString, isDateCompleted } from "../utils/utilities";
 
 export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
   const [show, setShow] = useState(false);
@@ -17,14 +17,14 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
   // const role = auth()?.role ?? "Requisitioner";
 
   const now = getLocalISOString(new Date());
-  const isPast = isDatePast(passedData.tripStart, now);
+  const isCompleted = isDateCompleted(passedData.tripStart, now);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   return (
     <>
-      {type == "pending" ? (
+      {type == "waiting" ? (
         <Button size="sm" className="w-100" onClick={handleShow}>
           <i className="bi bi-eye-fill" /> View
         </Button>
@@ -74,7 +74,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                             </Col>
                           </Row>
                         </>
-                      ) : passedData.requestStatus?.toLowerCase() == "endorsed" && isPast ? (
+                      ) : passedData.requestStatus?.toLowerCase() == "endorsed" && isCompleted ? (
                         <>
                           <Row className="d-flex">
                             <Col className="px-1">
@@ -85,13 +85,13 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                             </Col>
                           </Row>
                         </>
-                      ) : isPast ? (
+                      ) : isCompleted ? (
                         <>
                           <Row className="d-flex">
                             <Col className="px-1">
-                              <Image className="pe-2" src={Pending} />
+                              <Image className="pe-2" src={Waiting} />
                               <span className="text-primary">
-                                <strong>Pending</strong>
+                                <strong>Waiting</strong>
                               </span>
                             </Col>
                           </Row>
@@ -107,19 +107,19 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                     const requestStatus = passedData.requestStatus.toLowerCase();
                     const tripStatus = passedData.tripStatus?.toLowerCase();
                     const tripStart = passedData.tripStart.slice(0, -1); // remove trailing 'Z'
-                    const isPast = !isDatePast(tripStart, now);
+                    const isCompleted = !isDateCompleted(tripStart, now);
 
                     if (requestStatus === "declined") return "-";
-                    if (requestStatus === "pending" && isPast) return "-";
+                    if (requestStatus === "waiting" && isCompleted) return "-";
 
-                    if (isPast || requestStatus !== "declined") {
-                      if (tripStatus === "upcoming") {
+                    if (isCompleted || requestStatus !== "declined") {
+                      if (tripStatus === "pending") {
                         return (
                           <Row className="d-flex">
                             <Col className="px-1">
-                              <Image className="pe-2" src={Upcoming} />
+                              <Image className="pe-2" src={Pending} />
                               <span className="text-primary">
-                                <strong>Upcoming</strong>
+                                <strong>Pending</strong>
                               </span>
                             </Col>
                           </Row>
@@ -139,9 +139,9 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                         return (
                           <Row className="d-flex">
                             <Col className="px-1">
-                              <Image className="pe-2" src={Past} />
+                              <Image className="pe-2" src={Completed} />
                               <span className="text-secondary">
-                                <strong>Past</strong>
+                                <strong>Completed</strong>
                               </span>
                             </Col>
                           </Row>
