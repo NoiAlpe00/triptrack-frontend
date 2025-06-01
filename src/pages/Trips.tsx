@@ -183,11 +183,10 @@ export default function Trips() {
       },
       // valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
     },
-    // { field: "id", headerName: "Trip Code", flex: 0.5 },
     {
-      field: "title",
-      headerName: "Title",
-      width: 320,
+      field: "id",
+      headerName: "Trip Code",
+      width: 150,
       renderCell: (params: any) => {
         const row = params.row;
 
@@ -222,6 +221,11 @@ export default function Trips() {
 
         return <ViewTripDetails passedData={passedData} type={"title"} />;
       },
+    },
+    {
+      field: "title",
+      headerName: "Title",
+      width: 200,
     },
 
     {

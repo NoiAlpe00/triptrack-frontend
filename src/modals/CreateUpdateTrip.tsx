@@ -145,7 +145,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
 
       <Modal size={role.toLowerCase() === "admin" ? "xl" : undefined} show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{formData.id ?? "Create New Trip"}</Modal.Title>
+          <Modal.Title>{formData.id.length > 0 ? formData.id : "Create New Trip"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Row>

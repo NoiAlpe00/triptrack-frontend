@@ -70,11 +70,10 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
     }
   };
 
-  
   const formattedCols = [
     {
       field: "view",
-      headerName: "view",
+      headerName: type == "trips" ? "Title" : type == "vehicle" ? "Vehicle" : type == "driver" ? "Driver" : "",
       width: 300,
       renderCell: (params: any) => {
         const row = params.row;
@@ -100,7 +99,9 @@ export default function ViewMontlyReport({ month, rows, cols, type }: { month: s
 
       <Modal show={show} onHide={handleClose} centered dialogClassName="custom-modal-90w">
         <Modal.Header closeButton>
-          <Modal.Title className="me-3">{month}</Modal.Title>{" "}
+          <Modal.Title className="me-3">
+            {month} - {type.charAt(0).toUpperCase() + type.slice(1)} Report
+          </Modal.Title>{" "}
           <Button
             onClick={() => {
               console.log("Been Here");

@@ -46,7 +46,7 @@ export default function ViewMaintenanceDetails({ vehicle, rows, cols }: { vehicl
 
       <Modal show={show} onHide={handleClose} centered size="xl">
         <Modal.Header closeButton>
-          <Modal.Title className="me-3">{vehicle}</Modal.Title>{" "}
+          <Modal.Title className="me-3">{vehicle} Maintenance Logs</Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
           <CustomTable rows={rows} columns={formattedCols} type={"settings"} />
