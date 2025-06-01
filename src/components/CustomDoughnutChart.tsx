@@ -42,7 +42,7 @@ export default function CustomDoughnutChart({ requests }: { requests: DoughnutCh
   };
 
   return (
-    <Col style={{ position: "relative", width: "350px", height: "300px" }}>
+    <Col style={{ position: "relative", width: "450px", height: "350px" }}>
       <Doughnut data={chartData} options={chartOptions} />
     </Col>
   );

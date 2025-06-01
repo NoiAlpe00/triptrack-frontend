@@ -24,8 +24,10 @@ export default function Dashboard() {
     Pending: 0,
   });
 
-  const [yearFilter, setYearFilter] = useState("all");
-  const [monthFilter, setMonthFilter] = useState("january");
+  const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
+  const [monthFilter, setMonthFilter] = useState(
+    new Date().getMonth().toString().length == 1 ? `0${new Date().getMonth().toString()}` : new Date().getMonth().toString()
+  );
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
@@ -356,13 +358,13 @@ export default function Dashboard() {
   };
 
   return (
-    <Container fluid>
+    <Container>
       <Row className="pt-5 mb-4 d-flex justify-content-center">
         <Row className="pb-3">
-          <Col lg={8} className="align-items-start">
+          <Col lg={7} className="align-items-start">
             <h2 className="text-primary thin-text text-start">Trips Overview</h2>
           </Col>
-          <Col lg={4}>
+          <Col lg={5}>
             <Row className="pe-0 d-flex justify-content-end">
               <Col lg={4}>
                 <FloatingLabel controlId="floatingSelectYear" label="Year" className="small-input mb-2">
@@ -393,18 +395,23 @@ export default function Dashboard() {
                   </Form.Select>
                 </FloatingLabel>
               </Col>
-              {userData.userType.toLowerCase() === "admin" && (
+              {/* {userData.userType.toLowerCase() === "admin" && (
                 <Col lg={4}>
                   <Button className="w-100 h-100" onClick={handleExport}>
                     Export Results <i className="bi bi-box-arrow-up" />
                   </Button>
                 </Col>
-              )}
+              )} */}
             </Row>
           </Col>
         </Row>
+        <Row className="d-flex justify-content-center align-items-center mb-3">
+          <Col lg={4}>
+            <CustomDoughnutChart requests={tableData} />
+          </Col>
+        </Row>
         <Row>
-          <Col lg={8} className="d-flex align-items-center ">
+          <Col className="d-flex align-items-center ">
             <div className="w-100">
               <Row>
                 <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
@@ -514,12 +521,9 @@ export default function Dashboard() {
               </Row>
             </div>
           </Col>
-          <Col lg={4} className="d-flex justify-content-center align-items-center">
-            <CustomDoughnutChart requests={tableData} />
-          </Col>
         </Row>
       </Row>
-      <Row className="mb-4">
+      {/* <Row className="mb-4">
         <Row>
           <Col md={12} className="">
             <h2 className="text-primary thin-text text-start">Trips Summary</h2>
@@ -528,7 +532,7 @@ export default function Dashboard() {
       </Row>
       <Row className="px-3">
         <CustomTable rows={tableData} columns={columns} type={"dashboard"} />
-      </Row>
+      </Row> */}
       <CustomToast header={"Login"} body={"Login Successful"} time={"Just now"} show={showToast} setShow={setShowToast} variant={"success"} />;
     </Container>
   );
