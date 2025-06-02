@@ -16,8 +16,8 @@ import {
   VehicleProps,
 } from "../utils/TypesIndex";
 
-// const URL = "https://nl4oz30sz4.execute-api.ap-southeast-1.amazonaws.com/prod";
-const URL = "http://localhost:8888";
+const URL = "https://u5bx9emvr2.execute-api.ap-southeast-1.amazonaws.com/prod";
+// const URL = "http://localhost:8888";
 // = "http://10.0.2.2:8888";
 
 export const loginUser = async ({ email, password }: LoginRequestProps) => {

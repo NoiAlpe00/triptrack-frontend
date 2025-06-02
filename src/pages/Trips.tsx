@@ -265,7 +265,6 @@ export default function Trips() {
           renderCell: (params: any) => {
             const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
             const isCompleted = isDateCompleted(tripStart, now);
-            console.log(params.row.id, params.row.requestStatus);
 
             return (
               <>
