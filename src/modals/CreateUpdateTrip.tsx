@@ -129,7 +129,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       tripEnd: formData.tripEnd,
       destination: formData.destination,
       purpose: formData.purpose,
-      status: (formData.status === "Approved" || formData.status === "Declined") && decodedToken.userType !== "Admin" ? "Waiting" : formData.status,
+      status: decodedToken.userType !== "Head" ? "Waiting" : formData.status,
     };
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
     if (isDataValid) {
@@ -166,7 +166,7 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col md={role.toLowerCase() === "admin" ? 4 : 12}>
+            <Col md={role.toLowerCase() === "admin" ? 5 : 12}>
               <FloatingLabel controlId="floatingSelect" label="Department" className="small-input mb-2">
                 <Form.Select name="department" onChange={handleSelectChange} value={formData.department.id ?? ""}>
                   <option>Select Department</option>
@@ -221,18 +221,18 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
               <Row className="d-flex">
                 <Col md={6} className="d-grid">
                   <Button variant={formData.driverRequest ? "primary" : "outline-primary"} name="driverRequest" onClick={handleRequestButtonClick}>
-                    {formData.driverRequest ? "Request Driver" : "Own Driver"}
+                    {formData.driverRequest ? "Request Driver" : "Outsourced Driver"}
                   </Button>
                 </Col>
                 <Col md={6} className="d-grid">
                   <Button variant={formData.vehicleRequest ? "primary" : "outline-primary"} name="vehicleRequest" onClick={handleRequestButtonClick}>
-                    {formData.vehicleRequest ? "Request Vechicle" : "Own Vechicle"}
+                    {formData.vehicleRequest ? "Request Vechicle" : "Outsourced Vechicle"}
                   </Button>
                 </Col>
               </Row>
             </Col>
             {role.toLowerCase() === "admin" && (
-              <Col md={8}>
+              <Col md={7}>
                 <FloatingLabel controlId="floatingSelect" label="Driver" className="small-input mb-2">
                   <Form.Select name="driver" onChange={handleSelectChange} value={formData.driver?.id ?? ""}>
                     <option value={""}>Select Driver</option>

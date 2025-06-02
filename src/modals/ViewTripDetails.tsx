@@ -63,13 +63,13 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                             </Col>
                           </Row>
                         </>
-                      ) : passedData.requestStatus?.toLowerCase() == "declined" ? (
+                      ) : passedData.requestStatus?.toLowerCase() == "declined" || passedData.requestStatus?.toLowerCase() == "disapproved" ? (
                         <>
                           <Row className="d-flex">
                             <Col className="px-1">
                               <Image className="pe-2" src={XRed} />
                               <span className="text-danger">
-                                <strong>Declined</strong>
+                                <strong>{passedData.requestStatus}</strong>
                               </span>
                             </Col>
                           </Row>
@@ -109,11 +109,32 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                     const tripStart = passedData.tripStart.slice(0, -1); // remove trailing 'Z'
                     const isCompleted = !isDateCompleted(tripStart, now);
 
-                    if (requestStatus === "declined") return "-";
-                    if (requestStatus === "waiting" && isCompleted) return "-";
+                    if (requestStatus === "declined" || requestStatus === "disapproved") {
+                      return (
+                        <Row className="d-flex">
+                          <Col className="px-1">
+                            <Image className="pe-2" src={XRed} />
+                            <span className="text-danger">
+                              <strong>Cancelled</strong>
+                            </span>
+                          </Col>
+                        </Row>
+                      );
+                    }
 
-                    if (isCompleted || requestStatus !== "declined") {
-                      if (tripStatus === "pending") {
+                    if (requestStatus == "approved") {
+                      if (isCompleted) {
+                        return (
+                          <Row className="d-flex">
+                            <Col className="px-1">
+                              <Image className="pe-2" src={Completed} />
+                              <span className="text-secondary">
+                                <strong>Completed</strong>
+                              </span>
+                            </Col>
+                          </Row>
+                        );
+                      } else if (tripStatus === "pending") {
                         return (
                           <Row className="d-flex">
                             <Col className="px-1">
@@ -131,17 +152,6 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                               <Image className="pe-2" src={Ongoing} />
                               <span className="text-primary">
                                 <strong>Ongoing</strong>
-                              </span>
-                            </Col>
-                          </Row>
-                        );
-                      } else {
-                        return (
-                          <Row className="d-flex">
-                            <Col className="px-1">
-                              <Image className="pe-2" src={Completed} />
-                              <span className="text-secondary">
-                                <strong>Completed</strong>
                               </span>
                             </Col>
                           </Row>
@@ -221,18 +231,18 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                 </Row>
                 <Row>
                   <Col lg={3}>
-                    <span className="">Req. Driver</span>
+                    <span className="">Driver</span>
                   </Col>
                   <Col lg={9}>
-                    <span className="thick-text">{passedData.driverRequest ? "Yes" : "No"}</span>
+                    <span className="thick-text">{passedData.driverRequest ? "Request" : "Outsourced"}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col lg={3}>
-                    <span className="">Req. Vehicle</span>
+                    <span className="">Vehicle</span>
                   </Col>
                   <Col lg={9}>
-                    <span className="thick-text">{passedData.vehicleRequest ? "Yes" : "No"}</span>
+                    <span className="thick-text">{passedData.vehicleRequest ? "Request" : "Oursourced"}</span>
                   </Col>
                 </Row>
                 <Row>

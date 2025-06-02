@@ -265,6 +265,7 @@ export default function Trips() {
           renderCell: (params: any) => {
             const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
             const isCompleted = isDateCompleted(tripStart, now);
+            console.log(params.row.id, params.row.requestStatus);
 
             return (
               <>
@@ -279,24 +280,13 @@ export default function Trips() {
                       </Col>
                     </Row>
                   </>
-                ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
+                ) : params.row.requestStatus?.toLowerCase() == "declined" || params.row.requestStatus?.toLowerCase() == "disapproved" ? (
                   <>
                     <Row className="d-flex">
                       <Col className="px-1">
                         <Image className="pe-2" src={XRed} />
                         <span className="text-danger">
-                          <strong>Declined</strong>
-                        </span>
-                      </Col>
-                    </Row>
-                  </>
-                ) : params.row.requestStatus?.toLowerCase() == "declined" ? (
-                  <>
-                    <Row className="d-flex">
-                      <Col className="px-1">
-                        <Image className="pe-2" src={XRed} />
-                        <span className="text-danger">
-                          <strong>Declined</strong>
+                          <strong>{params.row.requestStatus}</strong>
                         </span>
                       </Col>
                     </Row>
@@ -370,16 +360,32 @@ export default function Trips() {
             const tripStart = params.row.tripStart.slice(0, -1); // removing trailing Z
             const isCompleted = !isDateCompleted(tripStart, now);
 
-            if (requestStatus === "declined") {
-              return "-";
+            if (requestStatus === "declined" || requestStatus === "disapproved") {
+              return (
+                <Row className="d-flex">
+                  <Col className="px-1">
+                    <Image className="pe-2" src={XRed} />
+                    <span className="text-danger">
+                      <strong>Cancelled</strong>
+                    </span>
+                  </Col>
+                </Row>
+              );
             }
 
-            if (requestStatus === "waiting" && isCompleted) {
-              return "-";
-            }
-
-            if (isCompleted || requestStatus !== "declined") {
-              if (tripStatus === "pending") {
+            if (requestStatus == "approved") {
+              if (isCompleted) {
+                return (
+                  <Row className="d-flex">
+                    <Col className="px-1">
+                      <Image className="pe-2" src={Completed} />
+                      <span className="text-secondary">
+                        <strong>Completed</strong>
+                      </span>
+                    </Col>
+                  </Row>
+                );
+              } else if (tripStatus === "pending") {
                 return (
                   <Row className="d-flex">
                     <Col className="px-1">
@@ -397,17 +403,6 @@ export default function Trips() {
                       <Image className="pe-2" src={Ongoing} />
                       <span className="text-primary">
                         <strong>Ongoing</strong>
-                      </span>
-                    </Col>
-                  </Row>
-                );
-              } else {
-                return (
-                  <Row className="d-flex">
-                    <Col className="px-1">
-                      <Image className="pe-2" src={Completed} />
-                      <span className="text-secondary">
-                        <strong>Completed</strong>
                       </span>
                     </Col>
                   </Row>
@@ -650,9 +645,9 @@ export default function Trips() {
   }, []);
 
   const finalCols =
-    userRole.toLowerCase() === "guard" || userRole.toLowerCase() === "driver"
+    userRole.toLowerCase() === "guard" || userRole.toLowerCase() === "driver" || userRole.toLowerCase() === "requisitioner"
       ? columns.slice(1)
-      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head" || userRole.toLowerCase() === "requisitioner"
+      : userRole.toLowerCase() === "admin" || userRole.toLowerCase() === "head"
       ? columns
       : columns.slice(1, -1);
 
@@ -682,6 +677,7 @@ export default function Trips() {
                     <option value="endorsed">Endorsed</option>
                     <option value="waiting">Waiting</option>
                     <option value="declined">Declined</option>
+                    <option value="disapproved">Disapproved</option>
                   </Form.Select>
                 </FloatingLabel>
               </Col>

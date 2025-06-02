@@ -369,7 +369,7 @@ export const disapproveExistingTrip = async (id: string, access_token: string) =
       headers: {
         authorization: access_token,
       },
-      params: { id, status: "Disapprove" },
+      params: { id, status: "Disapproved" },
     });
     return res.data;
   } catch (error: any) {
