@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Col, FloatingLabel, Form, Modal, Row } from "react-bootstrap";
 import { CreateUpdateTripProps, CreateUpdateTripRequestProps, TripProps } from "../utils/TypesIndex";
 import { useAuthUser } from "react-auth-kit";
-import { decodeToken, formatISOString, isDateRangeOverlapping, requestGuard } from "../utils/utilities";
+import { decodeToken, formatISOString, getLocalISOString, isDateCompleted, isDateRangeOverlapping, requestGuard } from "../utils/utilities";
 import { addNewTrip, updateExistingTrip } from "../hooks/axios";
 
 export default function CreateUpdateTrip({ passedData, access_token, departments, vehicles, drivers }: CreateUpdateTripProps) {
@@ -11,10 +11,31 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
   const auth = useAuthUser();
   const role = auth()?.role ?? "Requisitioner";
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setFormData({
+      id: "",
+      pax: "",
+      tripStart: "", // ISO 8601 date-time string
+      tripEnd: "", // ISO 8601 date-time string
+      destination: "",
+      purpose: "",
+      status: "",
+      timeDeparture: "", // ISO 8601 date-time string
+      timeArrival: "", // ISO 8601 date-time strin
+      remarks: "",
+      createdDate: "", // ISO 8601 date-time string
+      updatedDate: "", // ISO 8601 date-time string
+      isDeleted: false,
+      tripChecklists: [],
+      department: { id: "", name: "" },
+      driverRequest: true,
+      vehicleRequest: true,
+    });
+    setShow(false);
+  };
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState<TripProps>(passedData);
-  const now = new Date().toISOString().slice(0, -8);
+  const now = getLocalISOString(new Date()).slice(0, -7);
   const decodedToken = decodeToken(access_token);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,8 +102,10 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       purpose: formData.purpose,
       status: "Waiting",
     };
+
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["id", "authorizedBy", "driverId", "vehicleId"]);
-    if (isDataValid) {
+    const isTimeValid = isDateCompleted(formData.tripStart, now) && isDateCompleted(formData.tripEnd, formData.tripStart);
+    if (isDataValid && isTimeValid) {
       const res = await addNewTrip(requestData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
         alert(`Trip is added successfully.`);
@@ -111,7 +134,8 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
         alert(`Somthing went wrong - ${res.data}`);
       }
     } else {
-      alert("Fill out all the fields.");
+      if (!isDataValid) alert("Fill out all the fields.");
+      else if (!isTimeValid) alert("Invalid Time");
     }
   };
 
@@ -132,7 +156,8 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
       status: decodedToken.userType !== "Head" ? "Waiting" : formData.status,
     };
     const isDataValid = requestGuard<CreateUpdateTripRequestProps>(requestData, ["authorizedBy", "driverId", "vehicleId", "status"]);
-    if (isDataValid) {
+    const isTimeValid = isDateCompleted(formData.tripStart, now) && isDateCompleted(formData.tripEnd, formData.tripStart);
+    if (isDataValid && isTimeValid) {
       const res = await updateExistingTrip(requestData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
         alert(`Trip ${requestData.pax} was updated successfully.`);
@@ -144,7 +169,8 @@ export default function CreateUpdateTrip({ passedData, access_token, departments
         alert(`Somthing went wrong - ${res.data}`);
       }
     } else {
-      alert("Fill out all the fields.");
+      if (!isDataValid) alert("Fill out all the fields.");
+      else if (!isTimeValid) alert("Invalid Time");
     }
   };
 

@@ -114,5 +114,7 @@ export function isDateCompleted(date1: string, date2: string): boolean {
   const dateOne = new Date(date1);
   const dateTwo = new Date(date2);
 
+  console.log(date1, dateOne, date2, dateTwo);
+
   return dateOne >= dateTwo;
 }

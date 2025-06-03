@@ -62,7 +62,10 @@ export default function Trips() {
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
         .filter((trip) => {
           const tripStatus = capitalize(trip.status);
-          const isPastStart = isDateCompleted(now, trip.tripStart);
+          console.log(now);
+          const isPastStart = isDateCompleted(now, trip.tripStart.slice(0, -1));
+          console.log(trip.tripStart);
+          console.log(isPastStart);
 
           if (statusFilter === "waiting" || statusFilter === "endorsed") {
             const isDeclinedOrDisapproved = tripStatus === "Declined" || tripStatus === "Disapproved";
@@ -747,7 +750,7 @@ export default function Trips() {
             <Col md={2} className="">
               <h2 className="text-primary thin-text text-start">All Trips</h2>
             </Col>
-            {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "driver") && (
+            {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "guard") && (
               <Col md={4} className="">
                 <FloatingLabel controlId="floatingSelect" label="Status" className="small-input">
                   <Form.Select name="statusFilter" aria-label="Floating label select example" value={statusFilter} onChange={handleSelectChange}>
