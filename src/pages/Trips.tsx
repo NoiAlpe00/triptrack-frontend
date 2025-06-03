@@ -781,7 +781,7 @@ export default function Trips() {
             driver={"ongoing"}
             vehicle={"completed"}
           /> */}
-          {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "driver") && (
+          {!(decodedToken.userType.toLowerCase() == "driver") && !(decodedToken.userType.toLowerCase() == "guard") && (
             <CreateUpdateTrip
               passedData={{
                 id: "",
