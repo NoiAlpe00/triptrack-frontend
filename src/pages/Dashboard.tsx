@@ -26,9 +26,7 @@ export default function Dashboard() {
   });
 
   const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
-  const [monthFilter, setMonthFilter] = useState(
-    new Date().getMonth().toString().length == 1 ? `0${new Date().getMonth().toString()}` : new Date().getMonth().toString()
-  );
+  const [monthFilter, setMonthFilter] = useState(new Date().toISOString().split("T")[0].split("-")[1]);
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
@@ -77,8 +75,6 @@ export default function Dashboard() {
           isCompleted,
         };
       });
-
-    console.log(formattedTableData);
 
     const requestCounts = formattedTableData.reduce(
       (acc, item) => {
@@ -417,8 +413,6 @@ export default function Dashboard() {
                 : "Pending",
           };
         });
-
-      console.log(formattedTableData);
 
       const requestCounts = formattedTableData.reduce(
         (acc, item) => {
