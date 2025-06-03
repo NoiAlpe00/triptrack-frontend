@@ -60,9 +60,23 @@ export default function Trips() {
     (async () => {
       const formattedTableData: TripTableProps[] = allTripData
         .filter((trip) => (statusFilter == "all" ? true : trip.status.toLowerCase() === statusFilter))
-        .filter((trip) => (statusFilter !== "waiting" ? true : isDateCompleted(trip.tripStart, now)))
+        .filter((trip) => {
+          const tripStatus = capitalize(trip.status);
+          const isPastStart = isDateCompleted(now, trip.tripStart);
+
+          if (statusFilter === "waiting" || statusFilter === "endorsed") {
+            const isDeclinedOrDisapproved = tripStatus === "Declined" || tripStatus === "Disapproved";
+            const isOverdueAndNotApproved = isPastStart && tripStatus !== "Approved";
+
+            return !isDeclinedOrDisapproved && !isOverdueAndNotApproved;
+          }
+
+          return true; // for other status filters, don't exclude anything
+        })
         .filter((trip) => trip.id.toLowerCase().includes(search.toLowerCase()))
+        .sort((a, b) => b.id.localeCompare(a.id))
         .map((trip: TripProps) => {
+          const isCompleted = isDateCompleted(now, trip.tripStart);
           return {
             id: trip.id,
             pax: trip.pax,
@@ -85,7 +99,16 @@ export default function Trips() {
             driverRequest: trip.driverRequest,
             vehicleRequest: trip.vehicleRequest,
             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+            tripStatus:
+              trip.timeDeparture && trip.timeArrival
+                ? "Completed"
+                : trip.timeDeparture
+                ? "Ongoing"
+                : (isCompleted && capitalize(trip.status) !== "Approved") ||
+                  capitalize(trip.status) === "Declined" ||
+                  capitalize(trip.status) == "Disapproved"
+                ? "Cancelled"
+                : "Pending",
             date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
             user: trip.user,
             feedbacks: trip.feedbacks,
@@ -116,6 +139,8 @@ export default function Trips() {
       sortable: false,
       renderCell: (params: any) => {
         const row = params.row;
+
+        const isCompleted = isDateCompleted(now, row.tripStart);
 
         const passedData: TripTableProps = {
           id: row.id,
@@ -157,7 +182,16 @@ export default function Trips() {
           driverRequest: row.driverRequest,
           vehicleRequest: row.vehicleRequest,
           requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
-          tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
+          tripStatus:
+            row.timeDeparture && row.timeArrival
+              ? "Completed"
+              : row.timeDeparture
+              ? "Ongoing"
+              : (isCompleted && capitalize(row.status) !== "Approved") ||
+                capitalize(row.status) === "Declined" ||
+                capitalize(row.status) == "Disapproved"
+              ? "Cancelled"
+              : "Pending",
           date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
           dateRequested: formatISOString(row.createdDate),
         };
@@ -189,6 +223,8 @@ export default function Trips() {
       renderCell: (params: any) => {
         const row = params.row;
 
+        const isCompleted = isDateCompleted(now, row.tripStart);
+
         const passedData: TripTableProps = {
           id: row.id,
           pax: row.pax,
@@ -212,7 +248,16 @@ export default function Trips() {
           driverRequest: row.driverRequest,
           vehicleRequest: row.vehicleRequest,
           requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
-          tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
+          tripStatus:
+            row.timeDeparture && row.timeArrival
+              ? "Completed"
+              : row.timeDeparture
+              ? "Ongoing"
+              : (isCompleted && capitalize(row.status) !== "Approved") ||
+                capitalize(row.status) === "Declined" ||
+                capitalize(row.status) == "Disapproved"
+              ? "Cancelled"
+              : "Pending",
           date: `${formatISOString(row.tripStart.slice(0, -1))} - ${formatISOString(row.tripEnd.slice(0, -1))}`,
           dateRequested: formatISOStringDateOnly(row.createdDate),
           feedbacks: row.feedbacks,
@@ -227,11 +272,13 @@ export default function Trips() {
       width: 100,
     },
 
-    {
-      field: "destination",
-      headerName: "Destination",
-      width: 250,
-    },
+    userRole.toLowerCase() == "guard"
+      ? { field: "requisitioner", headerName: "Requisitioner", width: 150 }
+      : {
+          field: "destination",
+          headerName: "Destination",
+          width: 250,
+        },
     !(userRole.toLowerCase() == "guard")
       ? { field: "dateRequested", headerName: "Date Requested", width: 150 }
       : {
@@ -373,7 +420,7 @@ export default function Trips() {
             }
 
             if (requestStatus == "approved") {
-              if (isCompleted) {
+              if (tripStatus == "completed") {
                 return (
                   <Row className="d-flex">
                     <Col className="px-1">
@@ -409,7 +456,18 @@ export default function Trips() {
               }
             }
 
-            return "-";
+            return isCompleted ? (
+              <Row className="d-flex">
+                <Col className="px-1">
+                  <Image className="pe-2" src={XRed} />
+                  <span className="text-danger">
+                    <strong>Cancelled</strong>
+                  </span>
+                </Col>
+              </Row>
+            ) : (
+              "-"
+            );
           },
         }
       : {
@@ -445,6 +503,7 @@ export default function Trips() {
           width: 320,
           renderCell: (params: any) => {
             const row = params.row;
+            const isCompleted = isDateCompleted(now, row.tripStart);
             const passedData: TripTableProps = {
               id: row.id,
               pax: row.pax,
@@ -468,7 +527,16 @@ export default function Trips() {
               driverRequest: row.driverRequest,
               vehicleRequest: row.vehicleRequest,
               requestStatus: capitalize(row.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: row.timeDeparture && row.timeArrival ? "Completed" : row.timeDeparture ? "Ongoing" : "Pending",
+              tripStatus:
+                row.timeDeparture && row.timeArrival
+                  ? "Completed"
+                  : row.timeDeparture
+                  ? "Ongoing"
+                  : (isCompleted && capitalize(row.status) !== "Approved") ||
+                    capitalize(row.status) === "Declined" ||
+                    capitalize(row.status) == "Disapproved"
+                  ? "Cancelled"
+                  : "Pending",
               date: `${formatISOString(row.tripStart)} - ${formatISOString(row.tripEnd)}`,
               dateRequested: formatISOStringDateOnly(row.createdDate),
               feedbacks: row.feedbacks,
@@ -607,36 +675,48 @@ export default function Trips() {
       if (allTrips.statusCode >= 200 && allTrips.statusCode < 400) {
         setAllTripData(allTrips.data ?? []);
         const formattedTableData: TripTableProps[] = allTrips.data
-          ? allTrips.data.map((trip: TripProps) => {
-              return {
-                id: trip.id,
-                pax: trip.pax,
-                tripStart: trip.tripStart,
-                tripEnd: trip.tripEnd,
-                destination: trip.destination,
-                purpose: trip.purpose,
-                status: trip.status,
-                timeDeparture: trip.timeDeparture,
-                timeArrival: trip.timeArrival,
-                remarks: trip.remarks,
-                createdDate: trip.createdDate,
-                updatedDate: trip.updatedDate,
-                isDeleted: trip.isDeleted,
-                tripChecklists: trip.tripChecklists, // To Be Implemented yet
-                department: { id: trip.department.id, name: trip.department.name },
-                requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-                driver: trip.driver,
-                vehicle: trip.vehicle,
-                driverRequest: trip.driverRequest,
-                vehicleRequest: trip.vehicleRequest,
-                requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-                tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-                date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
-                user: trip.user,
-                feedbacks: trip.feedbacks,
-                dateRequested: formatISOStringDateOnly(trip.createdDate),
-              };
-            })
+          ? allTrips.data
+              .sort((a, b) => b.id.localeCompare(a.id))
+              .map((trip: TripProps) => {
+                const isCompleted = isDateCompleted(now, trip.tripStart);
+                return {
+                  id: trip.id,
+                  pax: trip.pax,
+                  tripStart: trip.tripStart,
+                  tripEnd: trip.tripEnd,
+                  destination: trip.destination,
+                  purpose: trip.purpose,
+                  status: trip.status,
+                  timeDeparture: trip.timeDeparture,
+                  timeArrival: trip.timeArrival,
+                  remarks: trip.remarks,
+                  createdDate: trip.createdDate,
+                  updatedDate: trip.updatedDate,
+                  isDeleted: trip.isDeleted,
+                  tripChecklists: trip.tripChecklists, // To Be Implemented yet
+                  department: { id: trip.department.id, name: trip.department.name },
+                  requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+                  driver: trip.driver,
+                  vehicle: trip.vehicle,
+                  driverRequest: trip.driverRequest,
+                  vehicleRequest: trip.vehicleRequest,
+                  requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+                  tripStatus:
+                    trip.timeDeparture && trip.timeArrival
+                      ? "Completed"
+                      : trip.timeDeparture
+                      ? "Ongoing"
+                      : (isCompleted && capitalize(trip.status) !== "Approved") ||
+                        capitalize(trip.status) === "Declined" ||
+                        capitalize(trip.status) == "Disapproved"
+                      ? "Cancelled"
+                      : "Pending",
+                  date: `${formatISOString(trip.tripStart.slice(0, -1))} - ${formatISOString(trip.tripEnd.slice(0, -1))}`,
+                  user: trip.user,
+                  feedbacks: trip.feedbacks,
+                  dateRequested: formatISOStringDateOnly(trip.createdDate),
+                };
+              })
           : [];
         setTableData(formattedTableData);
       }

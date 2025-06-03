@@ -6,11 +6,11 @@ import { getYearlyDriverReport, getYearlyTripReport, getYearlyVehicleReport } fr
 import { useAuthHeader } from "react-auth-kit";
 import { DriverUsage, TripProps, VehicleUsage, YearlyDriverTableProps, YearlyTripTableProps, YearlyVehicleTableProps } from "../utils/TypesIndex";
 import ViewMontlyReport from "../modals/ViewMonthlyReport";
-import { formatISOString } from "../utils/utilities";
+import { capitalize, formatISOString, getLocalISOString, isDateCompleted } from "../utils/utilities";
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState("trip");
-  const [year, setYear] = useState(new Date().toISOString().split("T")[0].split("-")[0]);
+  const [year, setYear] = useState(getLocalISOString(new Date()).split("T")[0].split("-")[0]);
   const [tripTableData, setTripTableData] = useState<YearlyTripTableProps[]>([]);
   const [vehicleTableData, setVehicleTableData] = useState<YearlyVehicleTableProps[]>([]);
   const [driverTableData, setDriverTableData] = useState<YearlyDriverTableProps[]>([]);
@@ -19,6 +19,8 @@ export default function Reports() {
 
   const authHeader = useAuthHeader();
   const access_token = authHeader();
+
+  const now = getLocalISOString(new Date());
 
   useEffect(() => {
     (async () => {
@@ -304,23 +306,49 @@ export default function Reports() {
 
         const rows = allMonthlyTripData
           .sort((a, b) => new Date(a.tripStart).getTime() - new Date(b.tripStart).getTime())
-          .sort((a, b) => a.status.localeCompare(b.status))
-          .map((trip) => ({
-            id: trip.id,
-            pax: trip.pax,
-            createdDate: formatISOString(trip.createdDate),
-            dateNeeded: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)} `,
-            requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-            purpose: trip.purpose,
-            status: trip.status,
-            vehicle: trip.vehicle ? trip.vehicle.model : "-",
-            driver: trip.driver ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "-",
-            contactNo: trip.driver ? trip.driver.contactNumber : "-",
-            vehicleRating: trip.vehicle && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].vehicleRating : "-") : "-",
-            driverRating: trip.driver && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].driverRating : "-") : "-",
-            serviceRating: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].serviceRating : "-",
-            ratingRemarks: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].remarks : "-",
-          }));
+
+          .map((trip) => {
+            const isCompleted = isDateCompleted(now, trip.tripStart);
+            return {
+              id: trip.id,
+              pax: trip.pax,
+              createdDate: formatISOString(trip.createdDate),
+              dateNeeded: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)} `,
+              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+              purpose: trip.purpose,
+              requestStatus: trip.status !== "Approved" ? (isCompleted ? "-" : trip.status) : trip.status,
+              tripStatus:
+                trip.timeDeparture && trip.timeArrival
+                  ? "Completed"
+                  : trip.timeDeparture
+                  ? "Ongoing"
+                  : (isCompleted && capitalize(trip.status) !== "Approved") ||
+                    capitalize(trip.status) === "Declined" ||
+                    capitalize(trip.status) == "Disapproved"
+                  ? "Cancelled"
+                  : "Pending",
+              vehicle: trip.vehicle ? trip.vehicle.model : "-",
+              driver: trip.driver ? `${trip.driver.lastName}, ${trip.driver.firstName}` : "-",
+              contactNo: trip.driver ? trip.driver.contactNumber : "-",
+              vehicleRating: trip.vehicle && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].vehicleRating : "-") : "-",
+              driverRating: trip.driver && trip.feedbacks ? (trip.feedbacks.length > 0 ? trip.feedbacks[0].driverRating : "-") : "-",
+              serviceRating: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].serviceRating : "-",
+              ratingRemarks: trip.feedbacks && trip.feedbacks.length > 0 ? trip.feedbacks[0].remarks : "-",
+            };
+          })
+          // .sort((a, b) => b.id.localeCompare(a.id))
+          .sort((a, b) => {
+            const isSymbol = (str: string) => /^[^a-zA-Z0-9]/.test(str);
+
+            const aIsSymbol = isSymbol(a.requestStatus);
+            const bIsSymbol = isSymbol(b.requestStatus);
+
+            if (aIsSymbol && !bIsSymbol) return 1; // a comes after
+            if (!aIsSymbol && bIsSymbol) return -1; // a comes before
+
+            return a.requestStatus.localeCompare(b.requestStatus);
+          });
+        // .sort((a, b) => a.tripStatus.localeCompare(b.tripStatus));
 
         return row.noOfTrips != 0 ? <ViewMontlyReport month={row.month} rows={rows} cols={monthlyReportTripCols} type={"trips"} /> : row.month;
       },
@@ -391,7 +419,8 @@ export default function Reports() {
     { field: "dateNeeded", headerName: "Date Needed", width: 350 },
     { field: "requisitioner", headerName: "Requisitioner", width: 120 },
     { field: "purpose", headerName: "Purpose", width: 150 },
-    { field: "status", headerName: "Status  ", width: 120 },
+    { field: "requestStatus", headerName: "Request Status", width: 120 },
+    { field: "tripStatus", headerName: "Trip Status", width: 120 },
     { field: "vehicle", headerName: "Vehicle", width: 150 },
     { field: "driver", headerName: "Driver", width: 150 },
     { field: "contactNo", headerName: "Contact No", width: 150 },

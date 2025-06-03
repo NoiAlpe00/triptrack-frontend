@@ -148,6 +148,7 @@ export interface DoughnutChartDataProps {
   vehicle: string;
   requestStatus: "Waiting" | "Approved" | "Declined";
   tripStatus: string;
+  isCompleted: boolean;
 }
 
 export interface TripsTableProps {
@@ -222,7 +223,7 @@ export interface TripProps {
 
 export interface TripTableProps extends TripProps {
   date: string;
-  requestStatus: "Waiting" | "Approved" | "Declined";
+  requestStatus: "Waiting" | "Approved" | "Declined" | null;
   tripStatus: string;
   requisitioner: string;
   dateRequested: string;
@@ -255,7 +256,7 @@ export interface ResponsePropsSolo<T> {
 
 export type TripItem = {
   requestStatus: "Approved" | "Declined" | "Waiting";
-  tripStatus: "Completed" | "Ongoing" | "Pending";
+  tripStatus: "Completed" | "Ongoing" | "Pending" | "Cancelled";
 };
 
 export type StatusCounts<T extends string> = Record<T, number>;

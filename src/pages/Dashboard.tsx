@@ -2,7 +2,7 @@ import { Card, Col, Container, Row, FloatingLabel, Form } from "react-bootstrap"
 // import CustomTable from "../components/Table";
 import CustomToast from "../components/Toast";
 import { useState, useEffect } from "react";
-import { capitalize, decodeToken, formatISOString } from "../utils/utilities";
+import { capitalize, decodeToken, formatISOString, getLocalISOString, isDateCompleted } from "../utils/utilities";
 import CustomDoughnutChart from "../components/CustomDoughnutChart";
 import { DoughnutChartDataProps, StatusCounts, TripItem, TripProps } from "../utils/TypesIndex";
 import { getAllTrips } from "../hooks/axios";
@@ -22,6 +22,7 @@ export default function Dashboard() {
     Completed: 0,
     Ongoing: 0,
     Pending: 0,
+    Cancelled: 0,
   });
 
   const [yearFilter, setYearFilter] = useState(new Date().getFullYear().toString());
@@ -44,24 +45,40 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const now = getLocalISOString(new Date());
     const formattedTableData = allTripData
       .filter((trip) =>
         yearFilter == "all"
           ? true
           : trip.createdDate.split("T")[0].split("-")[0] === yearFilter && trip.createdDate.split("T")[0].split("-")[1] === monthFilter
       )
-      .map((trip: TripProps) => ({
-        id: trip.id,
-        pax: trip.pax,
-        dateRequested: formatISOString(trip.createdDate),
-        requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-        destination: trip.destination,
-        driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-        vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-        requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-        tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-      }));
+      .map((trip: TripProps) => {
+        const isCompleted = isDateCompleted(now, trip.tripStart);
+        return {
+          id: trip.id,
+          pax: trip.pax,
+          dateRequested: formatISOString(trip.createdDate),
+          requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+          date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+          destination: trip.destination,
+          driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+          vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+          requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+          tripStatus:
+            trip.timeDeparture && trip.timeArrival
+              ? "Completed"
+              : trip.timeDeparture
+              ? "Ongoing"
+              : (isCompleted && capitalize(trip.status) !== "Approved") ||
+                capitalize(trip.status) === "Declined" ||
+                capitalize(trip.status) == "Disapproved"
+              ? "Cancelled"
+              : "Pending",
+          isCompleted,
+        };
+      });
+
+    console.log(formattedTableData);
 
     const requestCounts = formattedTableData.reduce(
       (acc, item) => {
@@ -77,10 +94,10 @@ export default function Dashboard() {
           return acc; // skip counting this item
         }
 
-        acc[item.tripStatus as "Completed" | "Ongoing" | "Pending"]++;
+        acc[item.tripStatus as "Completed" | "Ongoing" | "Pending" | "Cancelled"]++;
         return acc;
       },
-      { Completed: 0, Ongoing: 0, Pending: 0 }
+      { Completed: 0, Ongoing: 0, Pending: 0, Cancelled: 0 }
     );
 
     setRequestStatusCounts(requestCounts);
@@ -124,125 +141,125 @@ export default function Dashboard() {
   //   // },
   // ];
 
-  const handleOnClick = (key: string) => {
-    if (yearFilter == "all")
-      if (key == "total")
-        setTableData(
-          allTripData.map((trip: TripProps) => ({
-            id: trip.id,
-            pax: trip.pax,
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-            destination: trip.destination,
-            dateRequested: formatISOString(trip.createdDate),
-            requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-          }))
-        );
-      else if (key == "approved")
-        setTableData(
-          allTripData
-            .filter((trip) => trip.status === "Approved")
-            .map((trip: TripProps) => ({
-              id: trip.id,
-              pax: trip.pax,
-              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-              destination: trip.destination,
-              dateRequested: formatISOString(trip.createdDate),
-              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-            }))
-        );
-      else if (key == "declined")
-        setTableData(
-          allTripData
-            .filter((trip) => trip.status === "Declined")
-            .map((trip: TripProps) => ({
-              id: trip.id,
-              pax: trip.pax,
-              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-              destination: trip.destination,
-              dateRequested: formatISOString(trip.createdDate),
-              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-            }))
-        );
-      else if (key == "pending")
-        setTableData(
-          allTripData
-            .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
-            .map((trip: TripProps) => ({
-              id: trip.id,
-              pax: trip.pax,
-              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-              destination: trip.destination,
-              dateRequested: formatISOString(trip.createdDate),
-              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-            }))
-        );
-      else if (key == "ongoing")
-        setTableData(
-          allTripData
-            .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
-            .map((trip: TripProps) => ({
-              id: trip.id,
-              pax: trip.pax,
-              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-              destination: trip.destination,
-              dateRequested: formatISOString(trip.createdDate),
-              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-            }))
-        );
-      else if (key == "completed")
-        setTableData(
-          allTripData
-            .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
-            .map((trip: TripProps) => ({
-              id: trip.id,
-              pax: trip.pax,
-              date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-              destination: trip.destination,
-              dateRequested: formatISOString(trip.createdDate),
-              requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-              driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-              vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-              requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-              tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-            }))
-        );
-      else
-        setTableData(
-          allTripData.map((trip: TripProps) => ({
-            id: trip.id,
-            pax: trip.pax,
-            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-            destination: trip.destination,
-            dateRequested: formatISOString(trip.createdDate),
-            requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-            tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-          }))
-        );
-    // You can do something with `data`, like navigate or open a modal
-  };
+  // const handleOnClick = (key: string) => {
+  //   if (yearFilter == "all")
+  //     if (key == "total")
+  //       setTableData(
+  //         allTripData.map((trip: TripProps) => ({
+  //           id: trip.id,
+  //           pax: trip.pax,
+  //           date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //           destination: trip.destination,
+  //           dateRequested: formatISOString(trip.createdDate),
+  //           requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //           driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //           vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //           requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //           tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //         }))
+  //       );
+  //     else if (key == "approved")
+  //       setTableData(
+  //         allTripData
+  //           .filter((trip) => trip.status === "Approved")
+  //           .map((trip: TripProps) => ({
+  //             id: trip.id,
+  //             pax: trip.pax,
+  //             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //             destination: trip.destination,
+  //             dateRequested: formatISOString(trip.createdDate),
+  //             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //             tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //           }))
+  //       );
+  //     else if (key == "declined")
+  //       setTableData(
+  //         allTripData
+  //           .filter((trip) => trip.status === "Declined")
+  //           .map((trip: TripProps) => ({
+  //             id: trip.id,
+  //             pax: trip.pax,
+  //             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //             destination: trip.destination,
+  //             dateRequested: formatISOString(trip.createdDate),
+  //             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //             tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //           }))
+  //       );
+  //     else if (key == "pending")
+  //       setTableData(
+  //         allTripData
+  //           .filter((trip) => trip.timeDeparture === null && trip.timeArrival === null && trip.status !== "Declined")
+  //           .map((trip: TripProps) => ({
+  //             id: trip.id,
+  //             pax: trip.pax,
+  //             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //             destination: trip.destination,
+  //             dateRequested: formatISOString(trip.createdDate),
+  //             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //             tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //           }))
+  //       );
+  //     else if (key == "ongoing")
+  //       setTableData(
+  //         allTripData
+  //           .filter((trip) => trip.timeDeparture !== null && trip.timeArrival === null)
+  //           .map((trip: TripProps) => ({
+  //             id: trip.id,
+  //             pax: trip.pax,
+  //             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //             destination: trip.destination,
+  //             dateRequested: formatISOString(trip.createdDate),
+  //             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //             tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //           }))
+  //       );
+  //     else if (key == "completed")
+  //       setTableData(
+  //         allTripData
+  //           .filter((trip) => trip.timeDeparture !== null && trip.timeArrival !== null)
+  //           .map((trip: TripProps) => ({
+  //             id: trip.id,
+  //             pax: trip.pax,
+  //             date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //             destination: trip.destination,
+  //             dateRequested: formatISOString(trip.createdDate),
+  //             requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //             driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //             vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //             requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //             tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //           }))
+  //       );
+  //     else
+  //       setTableData(
+  //         allTripData.map((trip: TripProps) => ({
+  //           id: trip.id,
+  //           pax: trip.pax,
+  //           date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //           destination: trip.destination,
+  //           dateRequested: formatISOString(trip.createdDate),
+  //           requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //           driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //           vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //           requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //           tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //         }))
+  //       );
+  //   // You can do something with `data`, like navigate or open a modal
+  // };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -253,47 +270,52 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      const allTrips = await getAllTrips({ id: undefined, type: userData.userType, withDeleted: false }, access_token);
-      setAllTripData(allTrips.data ?? []);
-      const formattedTableData = allTrips.data!!.map((trip: TripProps) => ({
-        id: trip.id,
-        pax: trip.pax,
-        dateRequested: formatISOString(trip.createdDate),
-        requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
-        date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
-        destination: trip.destination,
-        driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
-        vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
-        requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
-        tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
-      }));
-      const requestCounts = formattedTableData.reduce(
-        (acc, item) => {
-          acc[item.requestStatus]++;
-          return acc;
-        },
-        { Approved: 0, Declined: 0, Waiting: 0 }
-      );
+  // useEffect(() => {
+  //   (async () => {
+  //     const allTrips = await getAllTrips({ id: undefined, type: userData.userType, withDeleted: false }, access_token);
+  //     setAllTripData(allTrips.data ?? []);
+  //     const now = new Date().toISOString();
 
-      const tripCounts = formattedTableData.reduce(
-        (acc, item) => {
-          if (item.tripStatus === "Pending" && item.requestStatus === "Declined") {
-            return acc; // skip counting this item
-          }
+  //     const formattedTableData = allTrips.data!!.map((trip: TripProps) => {
+  //       const isCompleted = isDateCompleted(now, trip.tripStart);
+  //       return {
+  //         id: trip.id,
+  //         pax: trip.pax,
+  //         dateRequested: formatISOString(trip.createdDate),
+  //         requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+  //         date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+  //         destination: trip.destination,
+  //         driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+  //         vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+  //         requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+  //         tripStatus: trip.timeDeparture && trip.timeArrival ? "Completed" : trip.timeDeparture ? "Ongoing" : "Pending",
+  //       };
+  //     });
+  //     const requestCounts = formattedTableData.reduce(
+  //       (acc, item) => {
+  //         acc[item.requestStatus]++;
+  //         return acc;
+  //       },
+  //       { Approved: 0, Declined: 0, Waiting: 0 }
+  //     );
 
-          acc[item.tripStatus as "Completed" | "Ongoing" | "Pending"]++;
-          return acc;
-        },
-        { Completed: 0, Ongoing: 0, Pending: 0 }
-      );
+  //     const tripCounts = formattedTableData.reduce(
+  //       (acc, item) => {
+  //         if (item.tripStatus === "Pending" && item.requestStatus === "Declined") {
+  //           return acc; // skip counting this item
+  //         }
 
-      setRequestStatusCounts(requestCounts);
-      setTripStatusCounts(tripCounts);
-      setTableData(formattedTableData);
-    })();
-  }, []);
+  //         acc[item.tripStatus as "Completed" | "Ongoing" | "Pending"]++;
+  //         return acc;
+  //       },
+  //       { Completed: 0, Ongoing: 0, Pending: 0 }
+  //     );
+
+  //     setRequestStatusCounts(requestCounts);
+  //     setTripStatusCounts(tripCounts);
+  //     setTableData(formattedTableData);
+  //   })();
+  // }, []);
 
   // const handleExport = () => {
   //   // 1. Extract headers from cols
@@ -357,6 +379,78 @@ export default function Dashboard() {
   //   }
   // };
 
+  useEffect(() => {
+    (async () => {
+      const allTrips = await getAllTrips({ id: undefined, type: userData.userType, withDeleted: false }, access_token);
+      setAllTripData(allTrips.data ?? []);
+      const now = getLocalISOString(new Date());
+
+      const formattedTableData = allTrips
+        .data!!.filter((trip) =>
+          yearFilter == "all"
+            ? true
+            : trip.createdDate.split("T")[0].split("-")[0] === yearFilter && trip.createdDate.split("T")[0].split("-")[1] === monthFilter
+        )
+        .map((trip: TripProps) => {
+          const isCompleted = isDateCompleted(now, trip.tripStart);
+
+          return {
+            id: trip.id,
+            pax: trip.pax,
+            isCompleted, // add it to the object for later use
+            dateRequested: formatISOString(trip.createdDate),
+            requisitioner: `${trip.user?.lastName}, ${trip.user?.firstName}`,
+            date: `${formatISOString(trip.tripStart)} - ${formatISOString(trip.tripEnd)}`,
+            destination: trip.destination,
+            driver: trip.driver !== null && trip.driver !== undefined ? `${trip.driver?.lastName}, ${trip.driver?.firstName}` : "Self Drive",
+            vehicle: trip.vehicle !== null && trip.vehicle !== undefined ? trip.vehicle?.model : "Own Vehicle",
+            requestStatus: capitalize(trip.status) as "Waiting" | "Approved" | "Declined",
+            tripStatus:
+              trip.timeDeparture && trip.timeArrival
+                ? "Completed"
+                : trip.timeDeparture
+                ? "Ongoing"
+                : (isCompleted && capitalize(trip.status) !== "Approved") ||
+                  capitalize(trip.status) === "Declined" ||
+                  capitalize(trip.status) == "Disapproved"
+                ? "Cancelled"
+                : "Pending",
+          };
+        });
+
+      console.log(formattedTableData);
+
+      const requestCounts = formattedTableData.reduce(
+        (acc, item) => {
+          // ⛔ Skip "Waiting" requests that are already past
+          if (item.requestStatus === "Waiting" && item.isCompleted) return acc;
+
+          acc[item.requestStatus]++;
+          return acc;
+        },
+        { Approved: 0, Declined: 0, Waiting: 0 }
+      );
+
+      const tripCounts = formattedTableData.reduce(
+        (acc, item) => {
+          // ⛔ Skip Declined + Pending, as before
+          if (item.tripStatus === "Pending" && item.requestStatus === "Declined") return acc;
+
+          // ⛔ Skip "Pending" trips where the tripStart has already passed
+          if (item.tripStatus === "Pending" && item.isCompleted) return acc;
+
+          acc[item.tripStatus as "Completed" | "Ongoing" | "Pending" | "Cancelled"]++;
+          return acc;
+        },
+        { Completed: 0, Ongoing: 0, Pending: 0, Cancelled: 0 }
+      );
+
+      setRequestStatusCounts(requestCounts);
+      setTripStatusCounts(tripCounts);
+      setTableData(formattedTableData);
+    })();
+  }, []);
+
   return (
     <Container>
       <Row className="pt-5 mb-4 d-flex justify-content-center">
@@ -417,9 +511,9 @@ export default function Dashboard() {
                 <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("total");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("total");
+                    // }}
                   >
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Total Requests</Card.Title>
@@ -432,9 +526,9 @@ export default function Dashboard() {
                 <Col md={{ order: 1 }} lg={{ span: 4, order: 2 }} xs={{ order: 1 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("approved");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("approved");
+                    // }}
                   >
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Approved</Card.Title>
@@ -447,9 +541,9 @@ export default function Dashboard() {
                 <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 3 }} xs={{ order: 3 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("declined");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("declined");
+                    // }}
                   >
                     <Card.Body>
                       <Card.Title className="text-start text-secondary">Declined</Card.Title>
@@ -461,12 +555,12 @@ export default function Dashboard() {
                 </Col>
               </Row>
               <Row>
-                <Col lg={{ span: 4, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
+                <Col lg={{ span: 3, order: 1 }} md={{ span: 6, order: 2 }} xs={{ order: 2 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("pending");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("pending");
+                    // }}
                   >
                     <Card.Body>
                       <Row>
@@ -480,12 +574,12 @@ export default function Dashboard() {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col lg={{ span: 4, order: 2 }} md={{ order: 1 }} xs={{ order: 1 }}>
+                <Col lg={{ span: 3, order: 2 }} md={{ order: 1 }} xs={{ order: 1 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("ongoing");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("ongoing");
+                    // }}
                   >
                     <Card.Body>
                       <Row>
@@ -499,12 +593,12 @@ export default function Dashboard() {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col lg={{ span: 4, order: 3 }} md={{ span: 6, order: 2 }} xs={{ order: 3 }}>
+                <Col lg={{ span: 3, order: 3 }} md={{ span: 6, order: 2 }} xs={{ order: 3 }}>
                   <Card
                     className="card-hover-effect p-0 m-2"
-                    onClick={() => {
-                      handleOnClick("completed");
-                    }}
+                    // onClick={() => {
+                    //   handleOnClick("completed");
+                    // }}
                   >
                     <Card.Body>
                       <Row>
@@ -513,6 +607,25 @@ export default function Dashboard() {
                         </Col>
                         <Col sm={6}>
                           <h1 className="text-secondary  text-end">{tripStatusCounts.Completed ?? 0}</h1>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col lg={{ span: 3, order: 4 }} md={{ span: 12, order: 2 }} xs={{ order: 4 }}>
+                  <Card
+                    className="card-hover-effect p-0 m-2"
+                    // onClick={() => {
+                    //   handleOnClick("completed");
+                    // }}
+                  >
+                    <Card.Body>
+                      <Row>
+                        <Col className="d-flex align-items-center" sm={6}>
+                          <h4 className="text-secondary thin-text ">Cancelled</h4>
+                        </Col>
+                        <Col sm={6}>
+                          <h1 className="text-secondary  text-end">{tripStatusCounts.Cancelled ?? 0}</h1>
                         </Col>
                       </Row>
                     </Card.Body>

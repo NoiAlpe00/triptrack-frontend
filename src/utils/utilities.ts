@@ -109,6 +109,8 @@ export function getLocalISOString(date: Date): string {
 }
 
 export function isDateCompleted(date1: string, date2: string): boolean {
+  if (date1 == undefined || date2 == undefined) return true;
+
   const dateOne = new Date(date1);
   const dateTwo = new Date(date2);
 

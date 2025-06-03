@@ -4,7 +4,7 @@ import CustomHeader from "../components/CustomHeader";
 import { CreateUpdateTripChecklistProps, TripChecklistProps } from "../utils/TypesIndex";
 import CustomRadioButton from "../components/CustomRadioButton";
 import { addNewTripChecklist } from "../hooks/axios";
-import { formatISOString, requestGuard } from "../utils/utilities";
+import { formatISOString, getLocalISOString, isDateCompleted, requestGuard } from "../utils/utilities";
 
 export default function CreateUpdateTripChecklist({ passedData, type, phase, access_token }: CreateUpdateTripChecklistProps) {
   const [show, setShow] = useState(false);
@@ -50,7 +50,10 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
       timing: passedData.timing,
     };
 
-    const isTimeValid = type === "operation" && phase === "departure" ? formData.timeDeparture !== null : formData.timeArrival !== null;
+    const isTimeValid =
+      type === "operation" && phase === "departure"
+        ? formData.timeDeparture !== null && !isDateCompleted(getLocalISOString(new Date()), formData.timeDeparture!!)
+        : formData.timeArrival !== null && !isDateCompleted(formData.timeDeparture!!.slice(0, -8), formData.timeArrival!!);
     const isDataValid = requestGuard<TripChecklistProps>(requestData, []);
     const doubleCheck = confirm("This step is final and uneditable, are you sure the data is correct?");
     if (isDataValid && doubleCheck && isTimeValid) {
@@ -71,7 +74,8 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
       }
     } else {
       if (!doubleCheck) {
-      } else alert("Fill out all the fields.");
+      } else if (!isDataValid) alert("Fill out all the fields.");
+      else if (!isTimeValid) alert("Invalid Time.");
     }
   };
 
@@ -132,11 +136,11 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
         ) : null
       ) : type == "operation" && phase == "departure" ? (
         <Button variant="primary w-100" size="sm" onClick={handleShow}>
-          Departure Create Checklist
+          Departure Checklist
         </Button>
       ) : phase !== "done" ? (
         <Button variant="primary w-100" size="sm" onClick={handleShow}>
-          Arrival Create Checklist
+          Return Checklist
         </Button>
       ) : (
         "-"
@@ -160,8 +164,8 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
                 type="datetime-local"
                 placeholder=""
                 onChange={handleOnChange}
-                value={formData.timeDeparture ?? ""}
-                min={formData.tripStart ?? ""}
+                value={formData.timeDeparture ?? getLocalISOString(new Date()).slice(0, -7)}
+                min={getLocalISOString(new Date()).slice(0, -7)}
               />
             </FloatingLabel>
           ) : (
@@ -171,37 +175,46 @@ export default function CreateUpdateTripChecklist({ passedData, type, phase, acc
                 type="datetime-local"
                 placeholder=""
                 onChange={handleOnChange}
-                value={formData.timeArrival ?? ""}
+                value={formData.timeArrival ?? getLocalISOString(new Date()).slice(0, -7)}
                 min={formData.timeDeparture}
               />
             </FloatingLabel>
           )}
-          {formData.checklist.map((checklist, index) =>
-            checklist.typed ? (
-              <FloatingLabel
-                key={`${checklist.checklistId}-${index}`}
-                controlId={checklist.title}
-                label={checklist.title}
-                className="mb-2 small-input"
-              >
-                <Form.Control
+          {formData.checklist
+            .sort((a, b) => {
+              // Prioritize typed === true
+              if (a.typed === b.typed) {
+                // Same group, sort by title
+                return a.title.localeCompare(b.title);
+              }
+              return a.typed ? -1 : 1;
+            })
+            .map((checklist, index) =>
+              checklist.typed ? (
+                <FloatingLabel
+                  key={`${checklist.checklistId}-${index}`}
+                  controlId={checklist.title}
+                  label={checklist.title}
+                  className="mb-2 small-input"
+                >
+                  <Form.Control
+                    name={checklist.checklistId}
+                    type="text"
+                    placeholder=""
+                    onChange={handleSpecificChecklist}
+                    value={formData.checklist.find((data) => data.checklistId == checklist.checklistId)?.data ?? ""}
+                  />
+                </FloatingLabel>
+              ) : (
+                <CustomRadioButton
+                  key={`${checklist.checklistId}-${index}`}
                   name={checklist.checklistId}
-                  type="text"
-                  placeholder=""
-                  onChange={handleSpecificChecklist}
-                  value={formData.checklist.find((data) => data.checklistId == checklist.checklistId)?.data ?? ""}
+                  value={checklist.data}
+                  label={checklist.title}
+                  onChange={handleRadioChange}
                 />
-              </FloatingLabel>
-            ) : (
-              <CustomRadioButton
-                key={`${checklist.checklistId}-${index}`}
-                name={checklist.checklistId}
-                value={checklist.data}
-                label={checklist.title}
-                onChange={handleRadioChange}
-              />
-            )
-          )}
+              )
+            )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

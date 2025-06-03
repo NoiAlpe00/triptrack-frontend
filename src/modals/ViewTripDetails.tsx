@@ -44,12 +44,15 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col lg={8}>
+            <Col lg={6}>
               <CustomHeader title={passedData.id} subtitle={`${formatISOString(passedData.tripStart)} - ${formatISOString(passedData.tripEnd)}`} />
             </Col>
-            <Col lg={4}>
+            <Col lg={6}>
               <Row className="">
-                <Col lg={6} className="d-flex justify-content-center">
+                <Col lg={3}>
+                  <span className="">Request Status</span>
+                </Col>
+                <Col lg={3} className="d-flex justify-content-center">
                   {
                     <>
                       {passedData.requestStatus?.toLowerCase() == "approved" ? (
@@ -102,9 +105,12 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                     </>
                   }
                 </Col>
-                <Col lg={6} className="d-flex justify-content-center">
+                <Col lg={3}>
+                  <span className="">Trip Status</span>
+                </Col>
+                <Col lg={3} className="d-flex justify-content-center">
                   {(() => {
-                    const requestStatus = passedData.requestStatus.toLowerCase();
+                    const requestStatus = passedData.requestStatus?.toLowerCase();
                     const tripStatus = passedData.tripStatus?.toLowerCase();
                     const tripStart = passedData.tripStart.slice(0, -1); // remove trailing 'Z'
                     const isCompleted = !isDateCompleted(tripStart, now);
@@ -123,7 +129,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                     }
 
                     if (requestStatus == "approved") {
-                      if (isCompleted) {
+                      if (tripStatus == "completed") {
                         return (
                           <Row className="d-flex">
                             <Col className="px-1">
@@ -159,7 +165,18 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                       }
                     }
 
-                    return "-";
+                    return isCompleted ? (
+                      <Row className="d-flex">
+                        <Col className="px-1">
+                          <Image className="pe-2" src={XRed} />
+                          <span className="text-danger">
+                            <strong>Cancelled</strong>
+                          </span>
+                        </Col>
+                      </Row>
+                    ) : (
+                      "-"
+                    );
                   })()}
                 </Col>
               </Row>
@@ -253,14 +270,14 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                     <span className="thin-text">{formatISOString(passedData.createdDate)}</span>
                   </Col>
                 </Row>
-                <Row>
+                {/* <Row>
                   <Col lg={3}>
                     <span className="">Last Updated</span>
                   </Col>
                   <Col lg={9}>
                     <span className="thin-text">{formatISOString(passedData.updatedDate)}</span>
                   </Col>
-                </Row>
+                </Row> */}
               </Row>
               {passedData.driver && (
                 <Row className="mt-3">
@@ -449,7 +466,7 @@ export default function ViewTripDetails({ passedData, type }: ViewTripProps) {
                 </Col>
                 <Col lg={6} className="mt-2">
                   <Row>
-                    <h5 className="text-primary thin-text">Arrival Checklist</h5>
+                    <h5 className="text-primary thin-text">Return Checklist</h5>
                   </Row>
                   <Row>
                     <Col lg={3}>
