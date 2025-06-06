@@ -32,7 +32,7 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
   };
 
   const handleSave = async () => {
-    const isDataValid = requestGuard<VehicleProps>(formData, ["id", "seats", "isDeleted"]);
+    const isDataValid = requestGuard<VehicleProps>(formData, ["id", "seats", "isDeleted", "trips", "maintenance"]);
     if (isDataValid) {
       const res = await addNewVehicle(formData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
@@ -56,7 +56,7 @@ export default function CreateUpdateVehicle({ passedData, access_token }: Create
   };
 
   const handleUpdate = async () => {
-    const isDataValid = requestGuard<VehicleProps>(formData, ["seats"]);
+    const isDataValid = requestGuard<VehicleProps>(formData, ["seats", "trips", "maintenance"]);
     if (isDataValid) {
       const res = await updateExistingVehicle(formData, access_token);
       if (res.statusCode >= 200 && res.statusCode < 400) {
